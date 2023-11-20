@@ -18,6 +18,7 @@ OBJS := $(CSRC:%=$(BUILD_DIR)/%.o)
 all: run
 
 run: $(BUILD_DIR)/$(TARGET)
+	clear
 	cat - | $<
 
 $(BUILD_DIR)/$(TARGET): $(BUILD_DIR)/$(TARGET).o $(MAIN)
