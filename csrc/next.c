@@ -23,28 +23,9 @@ byte fetch(VM *vm) {
     return opcode;
 }
 void exec(VM *vm, byte opcode) {
-    const fun prims[] = {
-        _nop, _halt, _lit,
-        _next, _nest, _unnest,
-        _jmp, _jz, _exe,
-        _dup, _drop, _swap,
-        _push, _pop,
-        _pick, _rick,
-        _ldp, _ldr,
-        _eq, _neq, _gt, _lt,
-        _and, _or, _xor,
-        _shr, _shl,
-        _tru, _fls,
-        _add, _sub, _mul,
-        _div, _mod,
-        _ldc, _strc,
-        _ldb, _strb,
-        _cell, _byte,
-        _mem,
-        _key, _emit,
-    };
+    //const fun prims[] = PRIMS;
     printf("opcode: %i\n", opcode);
-    prims[opcode](vm);
+    PRIMS[opcode](vm);
     stacks(vm);
 }
 void tick(VM *vm) {

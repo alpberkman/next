@@ -6,18 +6,17 @@
 
 
 #define MEM_SIZE (0x8000)
+#define CELL_TYPE signed short
+#define BYTE_TYPE unsigned char
+
 
 #define FALSE (0)
 #define TRUE (-1)
-#define LOGICAL(FLAG) (FLAG ? TRUE : FALSE)
-
-#define CELL_SIZE ((cell) sizeof(cell))
-#define BYTE_SIZE ((cell) sizeof(byte))
 
 
 typedef enum power power;
-typedef short cell;
-typedef unsigned char byte;
+typedef CELL_TYPE cell;
+typedef BYTE_TYPE byte;
 typedef struct SPU SPU;
 typedef byte *RAM;
 typedef struct VM VM;
@@ -82,6 +81,10 @@ void exec(VM *vm, byte opcode);
 void tick(VM *vm);
 void run(VM *vm);
 
+
+#define CELL_SIZE ((cell) sizeof(cell))
+#define BYTE_SIZE ((cell) sizeof(byte))
+
 #define P   (vm->spu.p)
 #define IP  (vm->spu.ip)
 #define WP  (vm->spu.wp)
@@ -95,8 +98,12 @@ void run(VM *vm);
 #define RPOP    (RS[--RSP])
 #define RPUSH   (RS[RSP++])
 
-#define CELL_VAL(ADDR) (*((cell *) &(vm->ram[(ADDR)])))
-#define BYTE_VAL(ADDR) (*((byte *) &(vm->ram[(ADDR)])))
+#define READAS(TYPE, VAR)   (*((TYPE *) &(VAR)))
+#define READAS_CELL(VAR)    (READAS(cell, VAR))
+#define READAS_BYTE(VAR)    (READAS(byte, VAR))
+
+#define CELL_VAL(ADDR) (READAS_CELL(vm->ram[(ADDR)]))
+#define BYTE_VAL(ADDR) (READAS_BYTE(vm->ram[(ADDR)]))
 
 
 #define MEXT(IADDR) \
@@ -107,6 +114,30 @@ void run(VM *vm);
 
 #define INCIP (IP += BYTE_SIZE)
 #define INCWP (WP += CELL_SIZE)
+
+#define LOGICAL(FLAG) (FLAG ? TRUE : FALSE)
+
+#define PRIMS \
+    ((fun []) { \
+        _nop, _halt, _lit, \
+        _next, _nest, _unnest, \
+        _jmp, _jz, _exe, \
+        _dup, _drop, _swap, \
+        _push, _pop, \
+        _pick, _rick, \
+        _ldp, _ldr, \
+        _eq, _neq, _gt, _lt, \
+        _and, _or, _xor, \
+        _shr, _shl, \
+        _tru, _fls, \
+        _add, _sub, _mul, \
+        _div, _mod, \
+        _ldc, _strc, \
+        _ldb, _strb, \
+        _cell, _byte, \
+        _mem, \
+        _key, _emit, \
+    })
 
 #define MACRO_NEXT \
     cell addr = CELL_VAL(vm->spu.wp); \
