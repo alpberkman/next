@@ -9,6 +9,7 @@
 
 #define FALSE (0)
 #define TRUE (-1)
+#define LOGICAL(FLAG) (FLAG ? TRUE : FALSE)
 
 #define CELL_SIZE ((cell) sizeof(cell))
 #define BYTE_SIZE ((cell) sizeof(byte))
@@ -81,16 +82,31 @@ void exec(VM *vm, byte opcode);
 void tick(VM *vm);
 void run(VM *vm);
 
-#define PPOP    vm->spu.ps[--vm->spu.psp]
-#define PPUSH   vm->spu.ps[vm->spu.psp++]
-#define RPOP    vm->spu.rs[--vm->spu.rsp]
-#define RPUSH   vm->spu.rs[vm->spu.rsp++]
+#define P   (vm->spu.p)
+#define IP  (vm->spu.ip)
+#define WP  (vm->spu.wp)
+#define PSP (vm->spu.psp)
+#define RSP (vm->spu.rsp)
+#define PS  (vm->spu.ps)
+#define RS  (vm->spu.rs)
+
+#define PPOP    (PS[--PSP])
+#define PPUSH   (PS[PSP++])
+#define RPOP    (RS[--RSP])
+#define RPUSH   (RS[RSP++])
 
 #define CELL_VAL(ADDR) (*((cell *) &(vm->ram[(ADDR)])))
 #define BYTE_VAL(ADDR) (*((byte *) &(vm->ram[(ADDR)])))
 
-#define INCIP (vm->spu.ip += BYTE_SIZE)
-#define INCWP (vm->spu.wp += CELL_SIZE)
+
+#define MEXT(IADDR) \
+    cell iaddr = (IADDR); \
+    cell addr = CELL_VAL(iaddr); \
+    WP += CELL_SIZE; \
+    IP = addr;
+
+#define INCIP (IP += BYTE_SIZE)
+#define INCWP (WP += CELL_SIZE)
 
 #define MACRO_NEXT \
     cell addr = CELL_VAL(vm->spu.wp); \

@@ -18,7 +18,7 @@ void stacks(VM *vm) {
 }
 
 byte fetch(VM *vm) {
-    byte opcode = BYTE_VAL(vm->spu.ip);
+    byte opcode = BYTE_VAL(IP);
     INCIP;
     return opcode;
 }
@@ -53,46 +53,44 @@ void tick(VM *vm) {
     exec(vm, fetch(vm));
 }
 void run(VM *vm) {
-    for(vm->spu.p = ON; vm->spu.p == ON; tick(vm));
+    for(P = ON; P == ON; tick(vm));
 }
 
 void _nop(VM *vm) {
     (void) vm;
 }
 void _halt(VM *vm) {
-    vm->spu.p = OFF;
+    P = OFF;
 }
 void _lit(VM *vm) {
-    cell val = CELL_VAL(vm->spu.wp);
+    cell val = CELL_VAL(WP);
     INCWP;
     PPUSH = val;
 }
 void _next(VM *vm) {
-    MACRO_NEXT;
+    MEXT(WP);
 }
 void _nest(VM *vm) {
-    RPUSH = vm->spu.wp;
-    vm->spu.wp = vm->spu.ip;
-    MACRO_NEXT;
+    RPUSH = WP;
+    WP = IP;
+    MEXT(WP);
 }
 void _unnest(VM *vm) {
-    vm->spu.wp = RPOP;
-    MACRO_NEXT;
+    WP = RPOP;
+    MEXT(WP);
 }
 void _jmp(VM *vm) {
     cell addr = PPOP;
-    vm->spu.wp = addr;
+    WP = addr;
 }
 void _jz(VM *vm) {
     cell addr = PPOP;
     cell flag = PPOP;
     if(flag == ((cell) FALSE))
-        vm->spu.wp = addr;
+        WP = addr;
 }
 void _exe(VM *vm) {
-    cell addr = CELL_VAL(PPOP);
-    INCWP;
-    vm->spu.ip = addr;
+    MEXT(PPOP);
 }
 void _dup(VM *vm) {
     cell val = PPOP;
@@ -100,7 +98,7 @@ void _dup(VM *vm) {
     PPUSH = val;
 }
 void _drop(VM *vm) {
-    --vm->spu.psp;
+    (void) PPOP;
 }
 void _swap(VM *vm) {
     cell a = PPOP;
@@ -116,41 +114,41 @@ void _pop(VM *vm) {
 }
 void _pick(VM *vm) {
     byte n = PPOP + 1;
-    n = vm->spu.psp - n;
-    PPUSH = vm->spu.ps[n];
+    n = PSP - n;
+    PPUSH = PS[n];
 }
 void _rick(VM *vm) {
     byte n = PPOP + 1;
-    n = vm->spu.rsp - n;
-    PPUSH = vm->spu.rs[n];
+    n = RSP - n;
+    PPUSH = RS[n];
 }
 void _ldp(VM *vm) {
-    byte val = vm->spu.psp;
+    byte val = PSP;
     PPUSH = val;
 }
 void _ldr(VM *vm) {
-    byte val = vm->spu.rsp;
+    byte val = RSP;
     PPUSH = val;
 }
 void _eq(VM *vm) {
     cell a = PPOP;
     cell b = PPOP;
-    PPUSH = b == a ? TRUE : FALSE;
+    PPUSH = LOGICAL(b == a);
 }
 void _neq(VM *vm) {
     cell a = PPOP;
     cell b = PPOP;
-    PPUSH = b != a ? TRUE : FALSE;
+    PPUSH = LOGICAL(b != a);
 }
 void _gt(VM *vm) {
     cell a = PPOP;
     cell b = PPOP;
-    PPUSH = b > a ? TRUE : FALSE;
+    PPUSH = LOGICAL(b > a);
 }
 void _lt(VM *vm) {
     cell a = PPOP;
     cell b = PPOP;
-    PPUSH = b < a ? TRUE : FALSE;
+    PPUSH = LOGICAL(b < a);
 }
 void _and(VM *vm) {
     cell a = PPOP;
