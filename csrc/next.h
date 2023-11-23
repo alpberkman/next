@@ -42,58 +42,69 @@ struct VM {
     RAM ram;
 };
 
-
+#define ENUM(E, F)  E,
+#define FUN(E, F)   F,
+#define ENAME(E, F) #E,
+#define FSIG(E, F) void F (VM *vm);
+#define FTAB(E, F) [E] = F,
 #define TABLE(APPLY) \
-    APPLY(NOP, _nop) \
+    APPLY(NOP,  _nop) \
     APPLY(HALT, _halt) \
-    APPLY(LIT, _lit) \
-
-enum prim {
-
-
+    APPLY(LIT,  _lit) \
     APPLY(NEXT, _next) \
     APPLY(NEST, _nest) \
-    APPLY(UNNEST,
-    ) \
-    APPLY(JMP, ) \
-    APPLY(JZ, ) \
-    APPLY(EXE,
-// Stack
-    ) \
-    APPLY(DUP, ) \
-    APPLY(DROP, ) \
-    APPLY(SWAP,
-    ) \
-    APPLY(PUSH, ) \
-    APPLY(POP,
-    ) \
-    APPLY(PICK, ) \
-    APPLY(RICK,
-    ) \
-    APPLY(LDP, ) \
-    APPLY(LDR,
-// Logic
-    EQ, NEQ, GT, LT,
-    AND, OR, XOR,
-    SHR, SHL,
-    TRU, FLS,
-// Arithmetic
-    ADD, SUB, MUL,
-    DIV, MOD,
-// Memory
-    LDC, STRC,
-    LDB, STRB,
-    CELL, BYTE,
-    MEM,
-// IO
-    KEY, EMIT,
+    APPLY(UNNEST, _unnest) \
+    APPLY(JMP,  _jmp) \
+    APPLY(JZ,   _jz) \
+    APPLY(EXE,  _exe) \
+    APPLY(DUP,  _dup) \
+    APPLY(DROP, _drop) \
+    APPLY(SWAP, _swap) \
+    APPLY(PUSH, _push) \
+    APPLY(POP,  _pop) \
+    APPLY(PICK, _pick) \
+    APPLY(RICK, _rick) \
+    APPLY(LDP,  _ldp) \
+    APPLY(LDR,  _ldr) \
+    APPLY(EQ,   _eq) \
+    APPLY(NEQ,  _neq) \
+    APPLY(GT,   _gt) \
+    APPLY(LT,   _lt) \
+    APPLY(AND,  _and) \
+    APPLY(OR,   _or) \
+    APPLY(XOR,  _xor) \
+    APPLY(SHR,  _shr) \
+    APPLY(SHL,  _shl) \
+    APPLY(TRU,  _tru) \
+    APPLY(FLS,  _fls) \
+    APPLY(ADD,  _add) \
+    APPLY(SUB,  _sub) \
+    APPLY(MUL,  _mul) \
+    APPLY(DIV,  _div) \
+    APPLY(MOD,  _mod) \
+    APPLY(LDC,  _ldc) \
+    APPLY(STRC, _strc) \
+    APPLY(LDB,  _ldb) \
+    APPLY(STRB, _strb) \
+    APPLY(CELL, _cell) \
+    APPLY(BYTE, _byte) \
+    APPLY(MEM,  _mem) \
+    APPLY(KEY,  _key) \
+    APPLY(EMIT, _emit)
+
+enum prim {
+    TABLE(ENUM)
 };
+
+#define LUT ((fun[]) { TABLE(FUN) })
 
 
 byte fetch(VM *vm);
 void exec(VM *vm, byte opcode);
 void tick(VM *vm);
 void run(VM *vm);
+
+TABLE(FSIG)
 
 
 #define CELL_SIZE (sizeof(cell))
@@ -135,72 +146,9 @@ void run(VM *vm);
 
 #define LOGICAL(FLAG) (FLAG ? TRUE : FALSE)
 
-#define PRIMS \
-    ((fun[]) { \
-        _nop, _halt, _lit, \
-        _next, _nest, _unnest, \
-        _jmp, _jz, _exe, \
-        _dup, _drop, _swap, \
-        _push, _pop, \
-        _pick, _rick, \
-        _ldp, _ldr, \
-        _eq, _neq, _gt, _lt, \
-        _and, _or, _xor, \
-        _shr, _shl, \
-        _tru, _fls, \
-        _add, _sub, _mul, \
-        _div, _mod, \
-        _ldc, _strc, \
-        _ldb, _strb, \
-        _cell, _byte, \
-        _mem, \
-        _key, _emit, \
-    })
 
 
-void _nop(VM *vm);
-void _halt(VM *vm);
-void _lit(VM *vm);
-void _next(VM *vm);
-void _nest(VM *vm);
-void _unnest(VM *vm);
-void _jmp(VM *vm);
-void _jz(VM *vm);
-void _exe(VM *vm);
-void _dup(VM *vm);
-void _drop(VM *vm);
-void _swap(VM *vm);
-void _push(VM *vm);
-void _pop(VM *vm);
-void _pick(VM *vm);
-void _rick(VM *vm);
-void _ldp(VM *vm);
-void _ldr(VM *vm);
-void _eq(VM *vm);
-void _neq(VM *vm);
-void _gt(VM *vm);
-void _lt(VM *vm);
-void _and(VM *vm);
-void _or(VM *vm);
-void _xor(VM *vm);
-void _shr(VM *vm);
-void _shl(VM *vm);
-void _tru(VM *vm);
-void _fls(VM *vm);
-void _add(VM *vm);
-void _sub(VM *vm);
-void _mul(VM *vm);
-void _div(VM *vm);
-void _mod(VM *vm);
-void _ldc(VM *vm);
-void _strc(VM *vm);
-void _ldb(VM *vm);
-void _strb(VM *vm);
-void _cell(VM *vm);
-void _byte(VM *vm);
-void _mem(VM *vm);
-void _key(VM *vm);
-void _emit(VM *vm);
+
 
 
 

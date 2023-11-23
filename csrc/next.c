@@ -26,7 +26,7 @@ byte fetch(VM *vm) {
 }
 void exec(VM *vm, byte opcode) {
     printf("opcode: %i\n", opcode);
-    PRIMS[opcode](vm);
+    LUT[opcode](vm);
     stacks(vm);
 }
 void tick(VM *vm) {
@@ -225,7 +225,6 @@ void _emit(VM *vm) {
     byte c = PPOP;
     putchar(c);
 }
-
 
 
 

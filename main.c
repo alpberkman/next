@@ -36,6 +36,6 @@ int main(/*int argc, char *argv[]*/) {
 
     int arr[32] = {[12] = 123,};
 
-    pint(sizeof(PRIMS)/sizeof(fun));
+    pint(sizeof(LUT)/sizeof(fun));
     return 0;
 }
