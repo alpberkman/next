@@ -1,8 +1,10 @@
 
 
+#include "next.h"
+
 #include <stdio.h>
 
-#include "next.h"
+
 void stacks(VM *vm) {
     printf("IP<%i>\n", vm->spu.ip);
     printf("WP<%i>\n", vm->spu.wp);
@@ -23,7 +25,6 @@ byte fetch(VM *vm) {
     return opcode;
 }
 void exec(VM *vm, byte opcode) {
-    //const fun prims[] = PRIMS;
     printf("opcode: %i\n", opcode);
     PRIMS[opcode](vm);
     stacks(vm);

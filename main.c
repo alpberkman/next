@@ -2,7 +2,7 @@
 #include <stdlib.h>
 
 #define streq(X, Y) (strcmp((X), (Y)) == 0)
-#define pint(X) printf("%i\n", X)
+#define pint(X) printf("%li\n", X)
 
 #include "csrc/next.h"
 
@@ -34,5 +34,8 @@ int main(/*int argc, char *argv[]*/) {
     x.ram = (byte *) mem;
     run(&x);
 
+    int arr[32] = {[12] = 123,};
+
+    pint(sizeof(PRIMS)/sizeof(fun));
     return 0;
 }

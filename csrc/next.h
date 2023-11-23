@@ -1,17 +1,8 @@
 
 
-#define MASK_VIS (1<<7)
-#define MASK_IMM (1<<6)
-#define WORD_LEN (31)
-
-
 #define MEM_SIZE (0x8000)
 #define CELL_TYPE signed short
 #define BYTE_TYPE unsigned char
-
-
-#define FALSE (0)
-#define TRUE (-1)
 
 
 typedef enum power power;
@@ -24,6 +15,9 @@ typedef struct VM VM;
 typedef enum prim prim;
 typedef void (*fun) (VM *vm);
 
+
+#define FALSE (0)
+#define TRUE (-1)
 
 enum power {
     OFF = FALSE,
@@ -48,16 +42,36 @@ struct VM {
     RAM ram;
 };
 
+
+#define TABLE(APPLY) \
+    APPLY(NOP, _nop) \
+    APPLY(HALT, _halt) \
+    APPLY(LIT, _lit) \
+
 enum prim {
-    NOP, HALT, LIT,
-// Controlflow
-    NEXT, NEST, UNNEST,
-    JMP, JZ, EXE,
+
+
+    APPLY(NEXT, _next) \
+    APPLY(NEST, _nest) \
+    APPLY(UNNEST,
+    ) \
+    APPLY(JMP, ) \
+    APPLY(JZ, ) \
+    APPLY(EXE,
 // Stack
-    DUP, DROP, SWAP,
-    PUSH, POP,
-    PICK, RICK,
-    LDP, LDR,
+    ) \
+    APPLY(DUP, ) \
+    APPLY(DROP, ) \
+    APPLY(SWAP,
+    ) \
+    APPLY(PUSH, ) \
+    APPLY(POP,
+    ) \
+    APPLY(PICK, ) \
+    APPLY(RICK,
+    ) \
+    APPLY(LDP, ) \
+    APPLY(LDR,
 // Logic
     EQ, NEQ, GT, LT,
     AND, OR, XOR,
@@ -82,8 +96,12 @@ void tick(VM *vm);
 void run(VM *vm);
 
 
-#define CELL_SIZE ((cell) sizeof(cell))
-#define BYTE_SIZE ((cell) sizeof(byte))
+#define CELL_SIZE (sizeof(cell))
+#define BYTE_SIZE (sizeof(byte))
+
+#define CELLS(N) (CELL_SIZE*(N))
+#define BYTES(N) (BYTE_SIZE*(N))
+
 
 #define P   (vm->spu.p)
 #define IP  (vm->spu.ip)
@@ -118,7 +136,7 @@ void run(VM *vm);
 #define LOGICAL(FLAG) (FLAG ? TRUE : FALSE)
 
 #define PRIMS \
-    ((fun []) { \
+    ((fun[]) { \
         _nop, _halt, _lit, \
         _next, _nest, _unnest, \
         _jmp, _jz, _exe, \
@@ -139,10 +157,6 @@ void run(VM *vm);
         _key, _emit, \
     })
 
-#define MACRO_NEXT \
-    cell addr = CELL_VAL(vm->spu.wp); \
-    INCWP; \
-    vm->spu.ip = addr;
 
 void _nop(VM *vm);
 void _halt(VM *vm);
