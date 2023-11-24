@@ -39,3 +39,4 @@ int main(/*int argc, char *argv[]*/) {
     pint(sizeof(LUT)/sizeof(fun));
     return 0;
 }
+

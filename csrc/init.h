@@ -1,5 +1,8 @@
 
 
+#ifndef _INIT_H
+#define _INIT_H
+
 #include "next.h"
 
 
@@ -8,60 +11,79 @@
 #define WORD_LEN (31)
 
 
-#define MLIT(NUM) LIT, NUM
+#define LIT(NUM) LIT, NUM
 
-#define MIF
-#define MELSE
-#define MTHEN
+#define BRANCH(ADDR)    LIT(ADDR), JMP
+#define BRANCH0(ADDR)   LIT(ADDR), JZ
+
 
 //printf("%i\n", (sizeof((int[]){1,2,(3,x(),4),5,6})/sizeof(int)));
 // When jumping back first one just marks the spot jump
 // pushes the here but then how to handle the first words?
 
 
-#define HEADER(NAME) header(vm, NAME, (sizeof(NAME)-1))
-#define CODE(...) code(vm, (sizeof((int[]){__VA_ARGS__})/sizeof(int)), __VA_ARGS__)
-#define COLON(...) CODE(NEXT); colon(vm, (sizeof((int[]){__VA_ARGS__})/sizeof(int)), __VA_ARGS__)
-#define IMMEDIATE immediate(vm)
+#define HEADER(NAME)    header(vm, NAME, (sizeof(NAME)-1))
+#define CF(...)         cf(vm, (sizeof((int[]){__VA_ARGS__})/sizeof(int)), __VA_ARGS__)
+#define PF(...)         pf(vm, (sizeof((int[]){__VA_ARGS__})/sizeof(int)), __VA_ARGS__)
 
-#define BRANCH
-#define BRANCH0
+#define CODE(...)   CF(__VA_ARGS__)
+#define COLON(...)  CF(NEXT); PF(__VA_ARGS__)
+#define IMMEDIATE   BYTE_VAL(lp+CELL_SIZE) |= MASK_IMM;
 
-#define SELF
-#define RECURSE
 
-#define IF(...)     nif(vm);    colon(vm, (sizeof((int[]){__VA_ARGS__})/sizeof(int)), __VA_ARGS__)
-#define ELSE(...)   nelse(vm);  colon(vm, (sizeof((int[]){__VA_ARGS__})/sizeof(int)), __VA_ARGS__)
-#define THEN(...)   nthen(vm);  colon(vm, (sizeof((int[]){__VA_ARGS__})/sizeof(int)), __VA_ARGS__)
+#define SELF    BRANCH((lp+CELL_SIZE+BYTE_SIZE+(BYTE_VAL(lp+CELL_SIZE)&WORD_LEN)))
+#define RECURSE (lp+CELL_SIZE+BYTE_SIZE+(BYTE_VAL(lp+CELL_SIZE)&WORD_LEN))
 
-#define BEGIN
-#define AGAIN
-#define UNTIL
-#define WHILE
-#define REPEAT
+#define IF(...)     PPUSH = hp+CELL_SIZE;   PF(BRANCH0(0), __VA_ARGS__)
+#define THEN(...)   CELL_VAL(PPOP) = hp;    PF(__VA_ARGS__)
+#define ELSE(...)   \
+                    CELL_VAL(PPOP) = hp+CELLS(3); \
+                    PPUSH = hp+CELL_SIZE; \
+                    PF(BRANCH(0), __VA_ARGS__)
 
-#define DO
-#define LOOP
-#define PLOOP
+#define BEGIN(...)  nbegin(vm); PF(__VA_ARGS__)
+#define AGAIN(...)  nagain(vm); PF(__VA_ARGS__)
+#define UNTIL(...)  nuntil(vm); PF(__VA_ARGS__)
+#define WHILE(...)  nwhile(vm); PF(__VA_ARGS__)
+#define REPEAT(...) nrepeat(vm);PF(__VA_ARGS__)
+
+#define DO(...)     ndo(vm);    PF(__VA_ARGS__)
+#define LOOP(...)   nloop(vm);  PF(__VA_ARGS__)
+#define PLOOP(...)  nploop(vm); PF(__VA_ARGS__)
 #define UNLOOP // Not immediate
 #define LEAVE  // Can be implemented as a regular word since the immediate version just compiles itself
+
 
 #define INIT(VM) init(vm)
 
 
 int header(VM *vm, const char *name, int len);
-void code(VM *vm, int len, ...);
-void colon(VM *vm, int len, ...);
-void immediate(VM *vm);
-
-void nif(VM *vm);
+void cf(VM *vm, int len, ...);
+void pf(VM *vm, int len, ...);
+/*
+void nif(VM *vm, cell lit_addr, cell jmp_addr, cell jz);
 void nelse(VM *vm);
 void nthen(VM *vm);
 
-//void (VM *vm, int len, ...);
-//void (VM *vm, int len, ...);
+void nbegin(VM *vm);
+void nagin(VM *vm);
+void nuntil(VM *vm);
+void nwhile(VM *vm);
+void nrepeat(VM *vm);
 
-
-
-
+void ndo(VM *vm);
+void nloop(VM *vm);
+void nploop(VM *vm);
+*/
 void init(VM *vm);
+
+#endif
+
+
+
+
+
+
+
+
+

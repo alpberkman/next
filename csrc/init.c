@@ -23,7 +23,7 @@ int header(VM *vm, const char *name, int len) {
 
     return hp;
 }
-void code(VM *vm, int len, ...) {
+void cf(VM *vm, int len, ...) {
     va_list l;
     va_start(l, len);
 
@@ -33,7 +33,7 @@ void code(VM *vm, int len, ...) {
 
     va_end(l);
 }
-void colon(VM *vm, int len, ...) {
+void pf(VM *vm, int len, ...) {
     va_list l;
     va_start(l, len);
 
@@ -46,9 +46,7 @@ void colon(VM *vm, int len, ...) {
 
     va_end(l);
 }
-void immediate(VM *vm) {
-    BYTE_VAL(lp+CELL_SIZE) |= MASK_IMM;
-}
+
 
 
 

@@ -124,6 +124,7 @@ TABLE(FSIG)
 #define RSP (vm->spu.rsp)
 #define PS  (vm->spu.ps)
 #define RS  (vm->spu.rs)
+#define RAM (vm->ram)
 
 #define PPOP    (PS[--PSP])
 #define PPUSH   (PS[PSP++])
@@ -134,8 +135,8 @@ TABLE(FSIG)
 #define READAS_CELL(VAR)    (READAS(cell, VAR))
 #define READAS_BYTE(VAR)    (READAS(byte, VAR))
 
-#define CELL_VAL(ADDR) (READAS_CELL(vm->ram[(ADDR)]))
-#define BYTE_VAL(ADDR) (READAS_BYTE(vm->ram[(ADDR)]))
+#define CELL_VAL(ADDR) (READAS_CELL(RAM[(ADDR)]))
+#define BYTE_VAL(ADDR) (READAS_BYTE(RAM[(ADDR)]))
 
 
 #define MEXT(IADDR) \
