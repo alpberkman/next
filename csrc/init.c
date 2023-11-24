@@ -37,8 +37,8 @@ void colon(VM *vm, int len, ...) {
     va_list l;
     va_start(l, len);
 
-    BYTE_VAL(hp) = NEST;
-    hp += BYTE_SIZE;
+    //BYTE_VAL(hp) = NEST;
+    //hp += BYTE_SIZE;
 
     for(int i = 0; i < len; ++i)
         CELL_VAL(hp+CELLS(i)) = va_arg(l, int);

@@ -5,7 +5,7 @@
 #define pint(X) printf("%li\n", X)
 
 #include "csrc/next.h"
-
+#include "csrc/init.h"
 int main(/*int argc, char *argv[]*/) {
 
     VM x;

@@ -1,5 +1,8 @@
 
 
+#ifndef _NEXT_H
+#define _NEXT_H
+
 #define MEM_SIZE (0x8000)
 #define CELL_TYPE signed short
 #define BYTE_TYPE unsigned char
@@ -146,7 +149,7 @@ TABLE(FSIG)
 
 #define LOGICAL(FLAG) (FLAG ? TRUE : FALSE)
 
-
+#endif
 
 
 
