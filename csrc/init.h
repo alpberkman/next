@@ -36,20 +36,20 @@
 
 #define IF(...)     PPUSH = hp+CELL_SIZE;   PF(BRANCH0(0), __VA_ARGS__)
 #define THEN(...)   CELL_VAL(PPOP) = hp;    PF(__VA_ARGS__)
-#define ELSE(...)   \
-                    CELL_VAL(PPOP) = hp+CELLS(3); \
+#define ELSE(...)   CELL_VAL(PPOP) = hp+CELLS(3); \
                     PPUSH = hp+CELL_SIZE; \
                     PF(BRANCH(0), __VA_ARGS__)
 
-#define BEGIN(...)  nbegin(vm); PF(__VA_ARGS__)
-#define AGAIN(...)  nagain(vm); PF(__VA_ARGS__)
-#define UNTIL(...)  nuntil(vm); PF(__VA_ARGS__)
-#define WHILE(...)  nwhile(vm); PF(__VA_ARGS__)
-#define REPEAT(...) nrepeat(vm);PF(__VA_ARGS__)
+#define BEGIN(...)  PPUSH = hp; PF(__VA_ARGS__)
+#define AGAIN(...)  PF(BRANCH(PPOP), __VA_ARGS__)
+#define UNTIL(...)  PF(BRANCH0(PPOP), __VA_ARGS__)
+#define WHILE(...)  PPUSH = hp+CELL_SIZE; PF(BRANCH0(0), __VA_ARGS__)
+#define REPEAT(...) CELL_VAL(PPOP) = hp+CELLS(3); \
+                    PF(BRANCH(PPOP), __VA_ARGS__)
 
-#define DO(...)     ndo(vm);    PF(__VA_ARGS__)
-#define LOOP(...)   nloop(vm);  PF(__VA_ARGS__)
-#define PLOOP(...)  nploop(vm); PF(__VA_ARGS__)
+#define DO(...)     PPUSH = hp+CELL_SIZE; PPUSH = hp+CELLS(3); PF(LIT(0), DOI, __VA_ARGS__) // first one is leave , the second one is jumpback
+#define LOOP(...)   _swap(vm); CELL_VAL(PPOP) = hp+CELLS(3); PF(LIT(PPOP), LOOPI, __VA_ARGS__)
+#define PLOOP(...)  _swap(vm); CELL_VAL(PPOP) = hp+CELLS(3); PF(LIT(PPOP), PLOOPI, __VA_ARGS__)
 #define UNLOOP // Not immediate
 #define LEAVE  // Can be implemented as a regular word since the immediate version just compiles itself
 
