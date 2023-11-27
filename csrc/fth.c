@@ -18,28 +18,27 @@ void _next(VM *vm) {
     MEXT(DTC);
 }
 void _nest(VM *vm) {
-    RPUSH.cp = TP;
+    RPUSH = (cell) TP;
     TP = FP;
     MEXT(DTC);
 }
 void _unnest(VM *vm) {
-    TP = RPOP.cp;
+    TP = (reg) RPOP;
     MEXT(DTC);
 }
 void _jmp(VM *vm) {
     cell addr = PPOP;
-    TP = addr.cp;
+    TP = (reg) addr;
 }
 void _jz(VM *vm) {
     cell addr = PPOP;
     cell flag = PPOP;
-    if(flag.i == FALSE)
-        TP = addr.cp;
+    if(flag == FALSE)
+        TP = (reg) addr;
 }
 void _exe(VM *vm) {
     cell addr = PPOP;
-    TP++;
-    FP = addr.cp;
+    FP = (reg) addr;
 }
 
 void _dup(VM *vm) {
@@ -63,125 +62,127 @@ void _pop(VM *vm) {
     PPUSH = RPOP;
 }
 void _pick(VM *vm) {
-    byte n = PPOP.i + 1;
+    byte n = PPOP + 1;
     n = PSP - n;
     PPUSH = PS[n];
 }
 void _rick(VM *vm) {
-    byte n = PPOP.i + 1;
+    byte n = PPOP + 1;
     n = RSP - n;
     PPUSH = RS[n];
 }
 void _ldp(VM *vm) {
-    PPUSH = ((cell) {.i = PSP});
+    byte val = PSP;
+    PPUSH = val;
 }
 void _ldr(VM *vm) {
-    PPUSH = ((cell) {.i = RSP});
+    byte val = RSP;
+    PPUSH = val;
 }
 void _eq(VM *vm) {
     cell a = PPOP;
     cell b = PPOP;
-    PPUSH = ((cell) {.i = LOGICAL(b.i == a.i)});
+    PPUSH = LOGICAL(b == a);
 }
 void _neq(VM *vm) {
     cell a = PPOP;
     cell b = PPOP;
-    PPUSH = ((cell) {.i = LOGICAL(b.i != a.i)});
+    PPUSH = LOGICAL(b != a);
 }
 void _gt(VM *vm) {
     cell a = PPOP;
     cell b = PPOP;
-    PPUSH = ((cell) {.i = LOGICAL(b.i > a.i)});
+    PPUSH = LOGICAL(b > a);
 }
 void _lt(VM *vm) {
     cell a = PPOP;
     cell b = PPOP;
-    PPUSH = ((cell) {.i = LOGICAL(b.i < a.i)});
+    PPUSH = LOGICAL(b < a);
 }
 void _and(VM *vm) {
     cell a = PPOP;
     cell b = PPOP;
-    PPUSH = ((cell) {.i = LOGICAL(b.i & a.i)});
+    PPUSH = b & a;
 }
 void _or(VM *vm) {
     cell a = PPOP;
     cell b = PPOP;
-    PPUSH = ((cell) {.i = LOGICAL(b.i | a.i)});
+    PPUSH = b | a;
 }
 void _xor(VM *vm) {
     cell a = PPOP;
     cell b = PPOP;
-    PPUSH = ((cell) {.i = LOGICAL(b.i ^ a.i)});
+    PPUSH = b ^ a;
 }
 void _shr(VM *vm) {
     cell a = PPOP;
     cell b = PPOP;
-    PPUSH = ((cell) {.i = (b.i >> a.i)});
+    PPUSH = b >> a;
 }
 void _shl(VM *vm) {
     cell a = PPOP;
     cell b = PPOP;
-    PPUSH = ((cell) {.i = (b.i << a.i)});
+    PPUSH = b << a;
 }
 void _tru(VM *vm) {
-    PPUSH = ((cell) {.i = TRUE});
+    PPUSH = TRUE;
 }
 void _fls(VM *vm) {
-    PPUSH = ((cell) {.i = FALSE});
+    PPUSH = FALSE;
 }
 void _add(VM *vm) {
     cell a = PPOP;
     cell b = PPOP;
-    PPUSH = ((cell) {.i = (b.i + a.i)});
+    PPUSH = b + a;
 }
 void _sub(VM *vm) {
     cell a = PPOP;
     cell b = PPOP;
-    PPUSH = ((cell) {.i = (b.i - a.i)});
+    PPUSH = b - a;
 }
 void _mul(VM *vm) {
     cell a = PPOP;
     cell b = PPOP;
-    PPUSH = ((cell) {.i = (b.i * a.i)});
+    PPUSH = b * a;
 }
 void _div(VM *vm) {
     cell a = PPOP;
     cell b = PPOP;
-    PPUSH = ((cell) {.i = (b.i / a.i)});
+    PPUSH = b / a;
 }
 void _mod(VM *vm) {
     cell a = PPOP;
     cell b = PPOP;
-    PPUSH = ((cell) {.i = (b.i % a.i)});
+    PPUSH = b % a;
 }
 void _ldc(VM *vm) {
     cell addr = PPOP;
-    cell val = *(addr.cp);
+    cell val = *((cell *) addr);
     PPUSH = val;
 }
 void _strc(VM *vm) {
     cell addr = PPOP;
     cell val = PPOP;
-    *(addr.cp) = val;
+    *((cell *) addr) = val;
 }
 void _ldb(VM *vm) {
     cell addr = PPOP;
-    byte val = *(addr.bp);
-    PPUSH = ((cell) {.i = val});
+    byte val = *((byte *) addr);
+    PPUSH = val;
 }
 void _strb(VM *vm) {
     cell addr = PPOP;
-    cell val = PPOP;
-    *(addr.bp) = val.i;
+    byte val = PPOP;
+    *((byte *) addr) = val;
 }
 void _cell(VM *vm) {
-    PPUSH = sizeof(cell);
+    PPUSH = CELL_SIZE;
 }
 void _byte(VM *vm) {
-    PPUSH = sizeof(byte);
+    PPUSH = BYTE_SIZE;
 }
 void _mem(VM *vm) {
-    PPUSH = ((cell) {.i = MEM_SIZE});
+    PPUSH = MEM_SIZE;
 }
 void _key(VM *vm) {
     byte c = getchar();

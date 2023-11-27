@@ -5,40 +5,48 @@
 #define pint(X) printf("%li\n", X)
 
 #include "csrc/next.h"
-#include "csrc/init.h"
+//#include "csrc/init.h"
 
+
+void stacks(VM *vm) {
+    printf("P<%i> ", vm->spu.psp);
+    for(int i = 0; i < vm->spu.psp; ++i)
+        printf("%lli ", vm->spu.ps[i]);
+    puts("");
+
+    printf("R<%i> ", vm->spu.rsp);
+    for(int i = 0; i < vm->spu.rsp; ++i)
+        printf("%llx ", vm->spu.rs[i]);
+    puts("");
+}
 
 int main(/*int argc, char *argv[]*/) {
 
     VM x;
-    x.spu.psp = 0;
-    x.spu.rsp = 0;
-    byte mem[] = {
-        NEST, 11, 0, 5, 0,
-        HALT,//5
-        UNNEST,//6
-        LIT, NEXT,//7
-        ADD, NEXT,//9
-        NEST,
-            7, 0, 3, 0,
-            7, 0, 1, 0,
-            9, 0,
-        6, 0,
+    VM *vm = &x;
+    byte mem[1024] = {0};
+    x.ram = mem;
+    init(vm);
 
-        TRU, FLS, MEM, HALT,
-        NEST, 8, 24, 40,
-        TRU, TRU, NOP, NEXT,
-        HALT, NOP, NOP, NOP,
-        TRU, NEST, 8, 32,
-        UNNEST, NOP, NOP , NOP,
-        TRU, TRU, HALT,
-    };
-    x.ram = (byte *) mem;
-    run(&x);
+    stacks(vm);
 
-    int arr[32] = {[12] = 123,};
+    cell UNNEST = HEADER(""); TOKENS((cell)_unnest);
+    cell HALT = HEADER("");  TOKENS((cell)_halt);
+    cell LIT = HEADER(""); TOKENS((cell)_lit, (cell)_next);
+    cell EXE = HEADER(""); TOKENS((cell)_exe);
 
-    pint(sizeof(LUT)/sizeof(fun));
+    cell t1 = HEADER("");  TOKENS((cell)_tru, (cell)_tru, (cell)_next);
+    cell t2 = HEADER("");  TOKENS((cell)_nest, t1, t1, UNNEST);
+
+    cell m = HEADER("");  TOKENS((cell)_nest, t2, LIT, 123, LIT, t1, EXE, t1, HALT);
+    vm->dtc.fp = m;
+
+    for(unsigned long int i = 0; i < sizeof(mem)/sizeof(cell); ++i)
+        printf("0x%016llx\n", ((cell *) RAM)[i]);
+
+    runc(&vm->dtc, vm);
+    stacks(vm);
+
     return 0;
 }
 

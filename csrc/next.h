@@ -3,154 +3,91 @@
 #ifndef _NEXT_H
 #define _NEXT_H
 
-#define MEM_SIZE (0x8000)
-#define CELL_TYPE signed short
-#define BYTE_TYPE unsigned char
+#include "fth.h"
 
 
-typedef enum power power;
-typedef CELL_TYPE cell;
-typedef BYTE_TYPE byte;
-typedef struct SPU SPU;
-typedef byte *RAM;
-typedef struct VM VM;
-
-typedef enum prim prim;
-typedef void (*fun) (VM *vm);
+#define MASK_VIS (1<<7)
+#define MASK_IMM (1<<6)
+#define WORD_LEN (31)
 
 
-#define FALSE (0)
-#define TRUE (-1)
+//#define LIT(NUM) LLIT, NUM
 
-enum power {
-    OFF = FALSE,
-    ON = TRUE,
-};
-
-struct SPU {
-    power p;
-
-    cell ip;
-    cell wp;
-
-    cell ps[0x100];
-    byte psp;
-
-    cell rs[0x100];
-    byte rsp;
-};
-
-struct VM {
-    SPU spu;
-    RAM ram;
-};
-
-#define ENUM(E, F)  E,
-#define FUN(E, F)   F,
-#define ENAME(E, F) #E,
-#define FSIG(E, F) void F (VM *vm);
-#define FTAB(E, F) [E] = F,
-#define TABLE(APPLY) \
-    APPLY(NOP,  _nop) \
-    APPLY(HALT, _halt) \
-    APPLY(LIT,  _lit) \
-    APPLY(NEXT, _next) \
-    APPLY(NEST, _nest) \
-    APPLY(UNNEST, _unnest) \
-    APPLY(JMP,  _jmp) \
-    APPLY(JZ,   _jz) \
-    APPLY(EXE,  _exe) \
-    APPLY(DUP,  _dup) \
-    APPLY(DROP, _drop) \
-    APPLY(SWAP, _swap) \
-    APPLY(PUSH, _push) \
-    APPLY(POP,  _pop) \
-    APPLY(PICK, _pick) \
-    APPLY(RICK, _rick) \
-    APPLY(LDP,  _ldp) \
-    APPLY(LDR,  _ldr) \
-    APPLY(EQ,   _eq) \
-    APPLY(NEQ,  _neq) \
-    APPLY(GT,   _gt) \
-    APPLY(LT,   _lt) \
-    APPLY(AND,  _and) \
-    APPLY(OR,   _or) \
-    APPLY(XOR,  _xor) \
-    APPLY(SHR,  _shr) \
-    APPLY(SHL,  _shl) \
-    APPLY(TRU,  _tru) \
-    APPLY(FLS,  _fls) \
-    APPLY(ADD,  _add) \
-    APPLY(SUB,  _sub) \
-    APPLY(MUL,  _mul) \
-    APPLY(DIV,  _div) \
-    APPLY(MOD,  _mod) \
-    APPLY(LDC,  _ldc) \
-    APPLY(STRC, _strc) \
-    APPLY(LDB,  _ldb) \
-    APPLY(STRB, _strb) \
-    APPLY(CELL, _cell) \
-    APPLY(BYTE, _byte) \
-    APPLY(MEM,  _mem) \
-    APPLY(KEY,  _key) \
-    APPLY(EMIT, _emit)
-
-enum prim {
-    TABLE(ENUM)
-};
-
-#define LUT ((fun[]) { TABLE(FUN) })
+#define BRANCH(ADDR)    LIT(ADDR), JMP
+#define BRANCH0(ADDR)   LIT(ADDR), JZ
 
 
-byte fetch(VM *vm);
-void exec(VM *vm, byte opcode);
-void tick(VM *vm);
-void run(VM *vm);
-
-TABLE(FSIG)
+//printf("%i\n", (sizeof((int[]){1,2,(3,x(),4),5,6})/sizeof(int)));
+// When jumping back first one just marks the spot jump
+// pushes the here but then how to handle the first words?
 
 
-#define CELL_SIZE (sizeof(cell))
-#define BYTE_SIZE (sizeof(byte))
-
-#define CELLS(N) (CELL_SIZE*(N))
-#define BYTES(N) (BYTE_SIZE*(N))
+#define HEADER(NAME)    header(vm, NAME, (sizeof(NAME)-1))
+#define TOKENS(...)     tokens(vm, (sizeof((cell[]){__VA_ARGS__})/sizeof(cell)), __VA_ARGS__)
 
 
-#define P   (vm->spu.p)
-#define IP  (vm->spu.ip)
-#define WP  (vm->spu.wp)
-#define PSP (vm->spu.psp)
-#define RSP (vm->spu.rsp)
-#define PS  (vm->spu.ps)
-#define RS  (vm->spu.rs)
-#define RAM (vm->ram)
+#define CF(...)         cf(vm, (sizeof((int[]){__VA_ARGS__})/sizeof(int)), __VA_ARGS__)
+#define PF(...)         pf(vm, (sizeof((int[]){__VA_ARGS__})/sizeof(int)), __VA_ARGS__)
 
-#define PPOP    (PS[--PSP])
-#define PPUSH   (PS[PSP++])
-#define RPOP    (RS[--RSP])
-#define RPUSH   (RS[RSP++])
-
-#define READAS(TYPE, VAR)   (*((TYPE *) &(VAR)))
-#define READAS_CELL(VAR)    (READAS(cell, VAR))
-#define READAS_BYTE(VAR)    (READAS(byte, VAR))
-
-#define CELL_VAL(ADDR) (READAS_CELL(RAM[(ADDR)]))
-#define BYTE_VAL(ADDR) (READAS_BYTE(RAM[(ADDR)]))
+#define CODE(...)   CF(__VA_ARGS__)
+#define COLON(...)  CF(NEXT); PF(__VA_ARGS__)
+#define IMMEDIATE   BYTE_VAL(lp+CELL_SIZE) |= MASK_IMM;
 
 
-#define MEXT(IADDR) \
-    cell iaddr = (IADDR); \
-    cell addr = CELL_VAL(iaddr); \
-    WP += CELL_SIZE; \
-    IP = addr;
+#define SELF    BRANCH((lp+CELL_SIZE+BYTE_SIZE+(BYTE_VAL(lp+CELL_SIZE)&WORD_LEN)))
+#define RECURSE (lp+CELL_SIZE+BYTE_SIZE+(BYTE_VAL(lp+CELL_SIZE)&WORD_LEN))
 
-#define INCIP (IP += BYTE_SIZE)
-#define INCWP (WP += CELL_SIZE)
+#define IF(...)     PPUSH = hp+CELL_SIZE;   PF(BRANCH0(0), __VA_ARGS__)
+#define THEN(...)   CELL_VAL(PPOP) = hp;    PF(__VA_ARGS__)
+#define ELSE(...)   CELL_VAL(PPOP) = hp+CELLS(3); \
+                    PPUSH = hp+CELL_SIZE; \
+                    PF(BRANCH(0), __VA_ARGS__)
 
-#define LOGICAL(FLAG) (FLAG ? TRUE : FALSE)
+#define BEGIN(...)  PPUSH = hp; PF(__VA_ARGS__)
+#define AGAIN(...)  PF(BRANCH(PPOP), __VA_ARGS__)
+#define UNTIL(...)  PF(BRANCH0(PPOP), __VA_ARGS__)
+#define WHILE(...)  PPUSH = hp+CELL_SIZE; PF(BRANCH0(0), __VA_ARGS__)
+#define REPEAT(...) CELL_VAL(PPOP) = hp+CELLS(3); \
+                    PF(BRANCH(PPOP), __VA_ARGS__)
+
+#define DO(...)     PPUSH = hp+CELL_SIZE; PPUSH = hp+CELLS(3); PF(LIT(0), DOI, __VA_ARGS__) // first one is leave , the second one is jumpback
+#define LOOP(...)   _swap(vm); CELL_VAL(PPOP) = hp+CELLS(3); PF(LIT(PPOP), LOOPI, __VA_ARGS__)
+#define PLOOP(...)  _swap(vm); CELL_VAL(PPOP) = hp+CELLS(3); PF(LIT(PPOP), PLOOPI, __VA_ARGS__)
+#define UNLOOP // Not immediate
+#define LEAVE  // Can be implemented as a regular word since the immediate version just compiles itself
+
+
+#define INIT(VM) init(vm)
+
+
+cell header(VM *vm, const char *name, int len);
+void tokens(VM *vm, int len, ...);
+
+
+
+void cf(VM *vm, int len, ...);
+void pf(VM *vm, int len, ...);
+/*
+void nif(VM *vm, cell lit_addr, cell jmp_addr, cell jz);
+void nelse(VM *vm);
+void nthen(VM *vm);
+
+void nbegin(VM *vm);
+void nagin(VM *vm);
+void nuntil(VM *vm);
+void nwhile(VM *vm);
+void nrepeat(VM *vm);
+
+void ndo(VM *vm);
+void nloop(VM *vm);
+void nploop(VM *vm);
+*/
+void init(VM *vm);
 
 #endif
+
+
+
 
 
 
