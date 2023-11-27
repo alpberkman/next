@@ -3,64 +3,63 @@
 #ifndef _DTC_H
 #define _DTC_H
 
-#define FALSE   (0)
-#define TRUE    (-1)
+#define FALSE           (0)
+#define TRUE            (-1)
+#define LOGICAL(FLAG)   ((FLAG) ? TRUE : FALSE)
 
 
-typedef enum power power;
-typedef void (*func) (void *arg);
-typedef void (*ptr);
+#define CELL_TYPE cell
+#define BYTE_TYPE byte
+
+#define CELL_SIZE (sizeof(cell))
+#define BYTE_SIZE (sizeof(byte))
+
+#define CELLS(N) (CELL_SIZE*(N))
+#define BYTES(N) (BYTE_SIZE*(N))
+
+
+typedef enum pwr pwr;
+typedef void (*fun) (void *arg);
 typedef long long int i64;
 typedef unsigned char byte;
 typedef union cell cell;
+typedef cell (*reg);
 
 typedef struct DTC DTC;
-typedef struct SPU SPU;
-typedef byte *RAM;
-typedef struct VM VM;
 
 
-enum power {
+enum pwr {
     OFF = FALSE,
     ON = TRUE,
 };
-
+/*
+union ptr {
+    void *v;
+    func *f;
+    cell *c;
+    byte *b;
+};
+*/
 union cell {
+    cell *cp;
+    byte *bp;
     i64 i;
-    ptr p;
+    fun f;
 };
 
 struct DTC {
-    power p;
-    func *fp;
-    cell *tp;
-};
-
-struct SPU {
-    cell ps[0x100];
-    byte psp;
-
-    cell rs[0x100];
-    byte rsp;
-};
-
-struct VM {
-    DTC dtc;
-    SPU spu;
-    RAM ram;
+    pwr p;
+    reg fp;
+    reg tp;
 };
 
 
-#define P   (dtc->p)
-#define FP  (dtc->fp)
-#define TP  (dtc->tp)
-
-func fetch(DTC *dtc);
-void exec(func f, void *arg);
+fun fetch(DTC *dtc);
+void exec(fun f, void *arg);
 void tick(DTC *dtc, void *arg);
 void runc(DTC *dtc, void *arg);
 
-#define MEXT(DTC) ((DTC).fp = *((DTC).tp++))
+#define MEXT(DTC) ((DTC).fp = (*((DTC).tp++)).cp)
 
 
 /*
@@ -75,33 +74,6 @@ void runc(DTC *dtc, void *arg);
 */
 
 #endif
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
