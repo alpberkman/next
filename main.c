@@ -39,12 +39,11 @@ int main(/*int argc, char *argv[]*/) {
     cell t2 = HEADER("");  TOKENS((cell)_nest, t1, t1, UNNEST);
 
     cell m = HEADER("");  TOKENS((cell)_nest, t2, LIT, 123, LIT, t1, EXE, t1, HALT);
-    vm->dtc.fp = m;
 
     for(unsigned long int i = 0; i < sizeof(mem)/sizeof(cell); ++i)
         printf("0x%016llx\n", ((cell *) RAM)[i]);
 
-    runc(&vm->dtc, vm);
+    runc(&vm->dtc, m, vm);
     stacks(vm);
 
     return 0;

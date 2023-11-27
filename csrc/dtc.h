@@ -31,7 +31,7 @@ struct DTC {
 fun fetch(DTC *dtc);
 void exec(fun f, void *arg);
 void tick(DTC *dtc, void *arg);
-void runc(DTC *dtc, void *arg);
+void runc(DTC *dtc, cell fp, void *arg);
 
 #define MEXT(DTC) ((DTC).fp = (reg) (*((DTC).tp++)))
 
