@@ -8,7 +8,7 @@
 
 
 typedef enum pwr pwr;
-typedef void (*fun) (void *arg);
+typedef void (*func) (void *arg);
 typedef long long int cell;
 typedef unsigned char byte;
 typedef cell (*reg);
@@ -28,8 +28,8 @@ struct DTC {
 };
 
 
-fun fetch(DTC *dtc);
-void exec(fun f, void *arg);
+func fetch(DTC *dtc);
+void exec(func cmd, void *arg);
 void tick(DTC *dtc, void *arg);
 void runc(DTC *dtc, cell fp, void *arg);
 
