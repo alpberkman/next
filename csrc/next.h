@@ -25,14 +25,21 @@
 
 
 #define HEADER(NAME)    header(vm, NAME, (sizeof(NAME)-1))
-#define TOKENS(...)     tokens(vm, (sizeof((cell[]){__VA_ARGS__})/sizeof(cell)), __VA_ARGS__)
+#define CF(...)         cf(vm, (sizeof((func[]){__VA_ARGS__})/sizeof(func)), __VA_ARGS__)
+#define PF(...)         pf(vm, (sizeof((cell[]){__VA_ARGS__})/sizeof(cell)), __VA_ARGS__)
+
+#define PRIMS(NAME, ...)    HEADER(NAME); CF(__VA_ARGS__)
+#define COLON(NAME, ...)    HEADER(NAME); CF(_nest); PF(__VA_ARGS__)
+
+#define XPRIMS(NAME, ...)   cell NAME = PRIMS(#NAME, __VA_ARGS__)
+#define XCOLON(NAME, ...)   cell NAME = COLON(#NAME, __VA_ARGS__)
+
+//#define TOKENS(...)     tokens(vm, (sizeof((cell[]){__VA_ARGS__})/sizeof(cell)), __VA_ARGS__)
 
 
-#define CF(...)         cf(vm, (sizeof((int[]){__VA_ARGS__})/sizeof(int)), __VA_ARGS__)
-#define PF(...)         pf(vm, (sizeof((int[]){__VA_ARGS__})/sizeof(int)), __VA_ARGS__)
 
-#define CODE(...)   CF(__VA_ARGS__)
-#define COLON(...)  CF(NEXT); PF(__VA_ARGS__)
+//#define CODE(...)   CF(__VA_ARGS__)
+//#define COLON(...)  CF(NEXT); PF(__VA_ARGS__)
 #define IMMEDIATE   BYTE_VAL(lp+CELL_SIZE) |= MASK_IMM;
 
 
@@ -63,12 +70,10 @@
 
 
 cell header(VM *vm, const char *name, int len);
-void tokens(VM *vm, int len, ...);
-
-
-
 void cf(VM *vm, int len, ...);
 void pf(VM *vm, int len, ...);
+
+
 /*
 void nif(VM *vm, cell lit_addr, cell jmp_addr, cell jz);
 void nelse(VM *vm);
@@ -85,6 +90,7 @@ void nloop(VM *vm);
 void nploop(VM *vm);
 */
 void init(VM *vm);
+void runf(VM *vm, func *fp);
 
 #endif
 

@@ -23,22 +23,22 @@ void _nest(VM *vm) {
     MEXT(DTC);
 }
 void _unnest(VM *vm) {
-    TP = (reg) RPOP;
+    TP = (cell *) RPOP;
     MEXT(DTC);
 }
 void _jmp(VM *vm) {
     cell addr = PPOP;
-    TP = (reg) addr;
+    TP = (cell *) addr;
 }
 void _jz(VM *vm) {
     cell addr = PPOP;
     cell flag = PPOP;
     if(flag == FALSE)
-        TP = (reg) addr;
+        TP = (cell *) addr;
 }
 void _exe(VM *vm) {
     cell addr = PPOP;
-    FP = (reg) addr;
+    FP = (func *) addr;
 }
 
 void _dup(VM *vm) {

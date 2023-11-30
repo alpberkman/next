@@ -7,8 +7,6 @@
 
 
 #define MEM_SIZE (0x8000)
-#define CELL_SIZE (sizeof(cell))
-#define BYTE_SIZE (sizeof(byte))
 
 
 typedef struct SPU SPU;
@@ -49,7 +47,7 @@ struct VM {
 #define RPOP    (RS[--RSP])
 #define RPUSH   (RS[RSP++])
 
-#define LOGICAL(FLAG)   ((FLAG) ? TRUE : FALSE)
+#define LOGICAL(FLAG) ((FLAG) ? TRUE : FALSE)
 
 
 void _nop(VM *vm);

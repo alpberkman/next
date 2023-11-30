@@ -26,8 +26,19 @@ cell header(VM *vm, const char *name, int len) {
 
     return (cell) hp;
 }
+void cf(VM *vm, int len, ...) {
+    (void) vm;
 
-void tokens(VM *vm, int len, ...) {
+    va_list l;
+    va_start(l, len);
+
+    for(int i = 0; i < len; ++i)
+        ((func *) hp)[i] = va_arg(l, func);
+    hp += len*FUNC_SIZE;
+
+    va_end(l);
+}
+void pf(VM *vm, int len, ...) {
     (void) vm;
 
     va_list l;
@@ -47,13 +58,15 @@ void tokens(VM *vm, int len, ...) {
 
 
 
+
+
 void init(VM *vm) {
 
     hp = RAM;
     lp = 0;
 
-    FP = (reg) RAM;
-    TP = (reg) RAM;
+    FP = (func *) RAM;
+    TP = (cell *) RAM;
 
     PSP = 0;
     RSP = 0;
@@ -61,7 +74,9 @@ void init(VM *vm) {
 }
 
 
-
+void runf(VM *vm, func *fp) {
+    runc(&DTC, fp, vm);
+}
 
 
 

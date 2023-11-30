@@ -30,20 +30,19 @@ int main(/*int argc, char *argv[]*/) {
 
     stacks(vm);
 
-    cell UNNEST = HEADER(""); TOKENS((cell)_unnest);
-    cell HALT = HEADER("");  TOKENS((cell)_halt);
-    cell LIT = HEADER(""); TOKENS((cell)_lit, (cell)_next);
-    cell EXE = HEADER(""); TOKENS((cell)_exe);
+    XPRIMS(UNNEST, _unnest);
+    XPRIMS(HALT, _halt);
+    XPRIMS(LIT, _lit, _next);
+    XPRIMS(EXE, _exe);
+    XPRIMS(t1, (cell)_tru, (cell)_tru, (cell)_next);
 
-    cell t1 = HEADER("");  TOKENS((cell)_tru, (cell)_tru, (cell)_next);
-    cell t2 = HEADER("");  TOKENS((cell)_nest, t1, t1, UNNEST);
-
-    cell m = HEADER("");  TOKENS((cell)_nest, t2, LIT, 123, LIT, t1, EXE, t1, HALT);
+    XCOLON(t2, t1, t1, UNNEST);
+    XCOLON(m, t2, LIT, 123, LIT, t1, EXE, t1, HALT);
 
     for(unsigned long int i = 0; i < sizeof(mem)/sizeof(cell); ++i)
         printf("0x%016llx\n", ((cell *) RAM)[i]);
 
-    runc(&vm->dtc, m, vm);
+    runf(vm, (func *)m);
     stacks(vm);
 
     return 0;
