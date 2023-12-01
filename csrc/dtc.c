@@ -1,20 +1,21 @@
 
 
 #include "dtc.h"
-#include <stdio.h>
 
-func fetch(DTC *dtc) {
-    return *((dtc->fp)++);
+
+func fetch(DTC *dtc, byte *mem) {
+    func f = *((func *) &(mem[dtc->fp]));
+    dtc->fp += FUNC_SIZE;
+    return f;
 }
-void exec(func cmd, void *arg) {
-    cmd(arg);
+void exec(func f, void *arg) {
+    f(arg);
 }
-void tick(DTC *dtc, void *arg) {
-    exec(fetch(dtc), arg);
+void tick(DTC *dtc, byte *mem, void *arg) {
+    exec(fetch(dtc, mem), arg);
 }
-void runc(DTC *dtc, func *fp, void *arg) {
-    dtc->fp = fp;
-    for(dtc->p = ON; dtc->p == ON; tick(dtc, arg))
-        printf("0x%016llx\t0x%016llx\n", (cell) dtc->fp, (cell) dtc->tp);
+void runc(DTC *dtc, byte *mem, void *arg, cell addr) {
+    dtc->fp = addr;
+    for(dtc->p = ON; dtc->p == ON; tick(dtc, mem, arg));
 }
 

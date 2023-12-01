@@ -7,13 +7,13 @@
 #define TRUE    (-1)
 
 
-typedef enum power power;
 typedef void (*func) (void *arg);
 typedef long long int cell;
 typedef unsigned char byte;
-//typedef cell (*reg);
 
 typedef struct DTC DTC;
+typedef enum power power;
+typedef cell REG;
 
 
 enum power {
@@ -23,25 +23,45 @@ enum power {
 
 struct DTC {
     power p;
-    func  *fp;
-    func **tp;
+    REG fp;
+    REG tp;
 };
 
 
-func fetch(DTC *dtc);
-void exec(func cmd, void *arg);
-void tick(DTC *dtc, void *arg);
-void runc(DTC *dtc, func *fp, void *arg);
-
-#define MEXT(DTC) ((DTC).fp = (func *) (*((DTC).tp++)))
-
+#define FUNC_SIZE (sizeof(func))
 #define CELL_SIZE (sizeof(cell))
 #define BYTE_SIZE (sizeof(byte))
-#define FUNC_SIZE (sizeof(func))
+
+
+func fetch(DTC *dtc, byte *mem);
+void exec(func f, void *arg);
+void tick(DTC *dtc, byte *mem, void *arg);
+void runc(DTC *dtc, byte *mem, void *arg, cell addr);
+
+
+#define MEXT(DTC, MEM) \
+    (DTC).fp = *((cell *) &((MEM)[(DTC).tp])); \
+    (DTC).tp += CELL_SIZE;
+
+#define MOFF(DTC, MEM) \
+    (DTC).p = OFF
+
+#define MLIT(DTC, MEM) \
+    *((cell *) &((MEM)[(DTC).tp])); \
+    (DTC).tp += CELL_SIZE
+
+#define MNEST(DTC, MEM) \
+    (DTC).tp; \
+    (DTC).tp = (DTC).fp
+
+#define MUNNEST(DTC, MEM) \
+    (DTC).tp
+
+#define MJMP(DTC, MEM) \
+    (DTC).tp
+
+#define MEXE(DTC, MEM) \
+    (DTC).fp
 
 #endif
-
-
-
-
 

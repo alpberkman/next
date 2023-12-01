@@ -1,7 +1,7 @@
 
 
-#ifndef _FTH_H
-#define _FTH_H
+#ifndef _H
+#define _H
 
 #include "dtc.h"
 
@@ -9,9 +9,9 @@
 #define MEM_SIZE (0x8000)
 
 
-typedef struct SPU SPU;
-typedef byte *RAM;
 typedef struct VM VM;
+typedef struct SPU SPU;
+typedef byte *MEM;
 
 
 struct SPU {
@@ -25,7 +25,7 @@ struct SPU {
 struct VM {
     DTC dtc;
     SPU spu;
-    RAM ram;
+    MEM mem;
 };
 
 
@@ -40,7 +40,8 @@ struct VM {
 #define PS  (vm->spu.ps)
 #define RS  (vm->spu.rs)
 
-#define RAM (vm->ram)
+#define MEM (vm->mem)
+
 
 #define PPOP    (PS[--PSP])
 #define PPUSH   (PS[PSP++])
@@ -50,48 +51,60 @@ struct VM {
 #define LOGICAL(FLAG) ((FLAG) ? TRUE : FALSE)
 
 
-void _nop(VM *vm);
-void _halt(VM *vm);
-void _lit(VM *vm);
-void _next(VM *vm);
-void _nest(VM *vm);
-void _unnest(VM *vm);
-void _jmp(VM *vm);
-void _jz(VM *vm);
-void _exe(VM *vm);
-void _dup(VM *vm);
-void _drop(VM *vm);
-void _swap(VM *vm);
-void _push(VM *vm);
-void _pop(VM *vm);
-void _pick(VM *vm);
-void _rick(VM *vm);
-void _ldp(VM *vm);
-void _ldr(VM *vm);
-void _eq(VM *vm);
-void _neq(VM *vm);
-void _gt(VM *vm);
-void _lt(VM *vm);
-void _and(VM *vm);
-void _or(VM *vm);
-void _xor(VM *vm);
-void _shr(VM *vm);
-void _shl(VM *vm);
-void _tru(VM *vm);
-void _fls(VM *vm);
-void _add(VM *vm);
-void _sub(VM *vm);
-void _mul(VM *vm);
-void _div(VM *vm);
-void _mod(VM *vm);
-void _ldc(VM *vm);
-void _strc(VM *vm);
-void _ldb(VM *vm);
-void _strb(VM *vm);
-void _cell(VM *vm);
-void _byte(VM *vm);
-void _mem(VM *vm);
-void _key(VM *vm);
-void _emit(VM *vm);
+#define FTH(NAME) \
+    void NAME(void *arg)
+
+#define BEGIN \
+    { \
+        VM *vm = (VM *) arg;
+
+#define END \
+    }
+
+
+FTH(_nop);
+FTH(_halt);
+FTH(_lit);
+FTH(_next);
+FTH(_nest);
+FTH(_unnest);
+FTH(_jmp);
+FTH(_jz);
+FTH(_exe);
+FTH(_dup);
+FTH(_drop);
+FTH(_swap);
+FTH(_push);
+FTH(_pop);
+FTH(_pick);
+FTH(_rick);
+FTH(_ldp);
+FTH(_ldr);
+FTH(_eq);
+FTH(_neq);
+FTH(_gt);
+FTH(_lt);
+FTH(_and);
+FTH(_or);
+FTH(_xor);
+FTH(_shr);
+FTH(_shl);
+FTH(_tru);
+FTH(_fls);
+FTH(_add);
+FTH(_sub);
+FTH(_mul);
+FTH(_div);
+FTH(_mod);
+FTH(_ldc);
+FTH(_strc);
+FTH(_ldb);
+FTH(_strb);
+FTH(_cell);
+FTH(_byte);
+FTH(_mem);
+FTH(_key);
+FTH(_emit);
 
 #endif
+

@@ -5,191 +5,237 @@
 #include <stdio.h>
 
 
-void _nop(VM *vm) {
-    (void) vm;
-}
-void _halt(VM *vm) {
-    P = OFF;
-}
-void _lit(VM *vm) {
-    PPUSH = *(TP++);
-}
-void _next(VM *vm) {
-    MEXT(DTC);
-}
-void _nest(VM *vm) {
-    RPUSH = (cell) TP;
-    TP = FP;
-    MEXT(DTC);
-}
-void _unnest(VM *vm) {
-    TP = (cell *) RPOP;
-    MEXT(DTC);
-}
-void _jmp(VM *vm) {
+FTH(_nop) BEGIN
+END
+
+FTH(_halt) BEGIN
+    MOFF(DTC, MEM);
+END
+
+FTH(_lit) BEGIN
+    PPUSH = MLIT(DTC, MEM);
+END
+
+FTH(_next) BEGIN
+    MEXT(DTC, MEM);
+END
+
+FTH(_nest) BEGIN
+    RPUSH = MNEST(DTC, MEM);
+    MEXT(DTC, MEM);
+END
+
+FTH(_unnest) BEGIN
+    MUNNEST(DTC, MEM) = RPOP;
+    MEXT(DTC, MEM);
+END
+
+FTH(_jmp) BEGIN
     cell addr = PPOP;
-    TP = (cell *) addr;
-}
-void _jz(VM *vm) {
+    MJMP(DTC, MEM) = addr;
+END
+
+FTH(_jz) BEGIN
     cell addr = PPOP;
     cell flag = PPOP;
     if(flag == FALSE)
-        TP = (cell *) addr;
-}
-void _exe(VM *vm) {
-    cell addr = PPOP;
-    FP = (func *) addr;
-}
+        MJMP(DTC, MEM) = addr;
+END
 
-void _dup(VM *vm) {
+FTH(_exe) BEGIN
+    cell addr = PPOP;
+    MEXE(DTC, MEM) = addr;
+END
+
+
+FTH(_dup) BEGIN
     cell val = PPOP;
     PPUSH = val;
     PPUSH = val;
-}
-void _drop(VM *vm) {
+END
+
+FTH(_drop) BEGIN
     (void) PPOP;
-}
-void _swap(VM *vm) {
+END
+
+FTH(_swap) BEGIN
     cell a = PPOP;
     cell b = PPOP;
     PPUSH = a;
     PPUSH = b;
-}
-void _push(VM *vm) {
+END
+
+FTH(_push) BEGIN
     RPUSH = PPOP;
-}
-void _pop(VM *vm) {
+END
+
+FTH(_pop) BEGIN
     PPUSH = RPOP;
-}
-void _pick(VM *vm) {
+END
+
+FTH(_pick) BEGIN
     byte n = PPOP + 1;
     n = PSP - n;
     PPUSH = PS[n];
-}
-void _rick(VM *vm) {
+END
+
+FTH(_rick) BEGIN
     byte n = PPOP + 1;
     n = RSP - n;
     PPUSH = RS[n];
-}
-void _ldp(VM *vm) {
+END
+
+FTH(_ldp) BEGIN
     byte val = PSP;
     PPUSH = val;
-}
-void _ldr(VM *vm) {
+END
+
+FTH(_ldr) BEGIN
     byte val = RSP;
     PPUSH = val;
-}
-void _eq(VM *vm) {
+END
+
+FTH(_eq) BEGIN
     cell a = PPOP;
     cell b = PPOP;
     PPUSH = LOGICAL(b == a);
-}
-void _neq(VM *vm) {
+END
+
+FTH(_neq) BEGIN
     cell a = PPOP;
     cell b = PPOP;
     PPUSH = LOGICAL(b != a);
-}
-void _gt(VM *vm) {
+END
+
+FTH(_gt) BEGIN
     cell a = PPOP;
     cell b = PPOP;
     PPUSH = LOGICAL(b > a);
-}
-void _lt(VM *vm) {
+END
+
+FTH(_lt) BEGIN
     cell a = PPOP;
     cell b = PPOP;
     PPUSH = LOGICAL(b < a);
-}
-void _and(VM *vm) {
+END
+
+FTH(_and) BEGIN
     cell a = PPOP;
     cell b = PPOP;
     PPUSH = b & a;
-}
-void _or(VM *vm) {
+END
+
+FTH(_or) BEGIN
     cell a = PPOP;
     cell b = PPOP;
     PPUSH = b | a;
-}
-void _xor(VM *vm) {
+END
+
+FTH(_xor) BEGIN
     cell a = PPOP;
     cell b = PPOP;
     PPUSH = b ^ a;
-}
-void _shr(VM *vm) {
+END
+
+FTH(_shr) BEGIN
     cell a = PPOP;
     cell b = PPOP;
     PPUSH = b >> a;
-}
-void _shl(VM *vm) {
+END
+
+FTH(_shl) BEGIN
     cell a = PPOP;
     cell b = PPOP;
     PPUSH = b << a;
-}
-void _tru(VM *vm) {
+END
+
+FTH(_tru) BEGIN
     PPUSH = TRUE;
-}
-void _fls(VM *vm) {
+END
+
+FTH(_fls) BEGIN
     PPUSH = FALSE;
-}
-void _add(VM *vm) {
+END
+
+FTH(_add) BEGIN
     cell a = PPOP;
     cell b = PPOP;
     PPUSH = b + a;
-}
-void _sub(VM *vm) {
+END
+
+FTH(_sub) BEGIN
     cell a = PPOP;
     cell b = PPOP;
     PPUSH = b - a;
-}
-void _mul(VM *vm) {
+END
+
+FTH(_mul) BEGIN
     cell a = PPOP;
     cell b = PPOP;
     PPUSH = b * a;
-}
-void _div(VM *vm) {
+END
+
+FTH(_div) BEGIN
     cell a = PPOP;
     cell b = PPOP;
     PPUSH = b / a;
-}
-void _mod(VM *vm) {
+END
+
+FTH(_mod) BEGIN
     cell a = PPOP;
     cell b = PPOP;
     PPUSH = b % a;
-}
-void _ldc(VM *vm) {
+END
+
+FTH(_ldc) BEGIN
     cell addr = PPOP;
-    cell val = *((cell *) addr);
+    cell val = *((cell *) &(MEM[addr]));
     PPUSH = val;
-}
-void _strc(VM *vm) {
+END
+
+FTH(_strc) BEGIN
     cell addr = PPOP;
     cell val = PPOP;
-    *((cell *) addr) = val;
-}
-void _ldb(VM *vm) {
+    *((cell *) &(MEM[addr])) = val;
+END
+
+FTH(_ldb) BEGIN
     cell addr = PPOP;
-    byte val = *((byte *) addr);
+    byte val = *((byte *) &(MEM[addr]));
     PPUSH = val;
-}
-void _strb(VM *vm) {
+END
+
+FTH(_strb) BEGIN
     cell addr = PPOP;
     byte val = PPOP;
-    *((byte *) addr) = val;
-}
-void _cell(VM *vm) {
+    *((byte *) &(MEM[addr])) = val;
+END
+
+FTH(_func) BEGIN
+    PPUSH = FUNC_SIZE;
+END
+
+FTH(_cell) BEGIN
     PPUSH = CELL_SIZE;
-}
-void _byte(VM *vm) {
+END
+
+FTH(_byte) BEGIN
     PPUSH = BYTE_SIZE;
-}
-void _mem(VM *vm) {
+END
+
+FTH(_mem) BEGIN
     PPUSH = MEM_SIZE;
-}
-void _key(VM *vm) {
+END
+
+FTH(_key) BEGIN
     byte c = getchar();
     PPUSH = c;
-}
-void _emit(VM *vm) {
+END
+
+FTH(_emit) BEGIN
     byte c = PPOP;
     putchar(c);
-}
+END
+
+
 
