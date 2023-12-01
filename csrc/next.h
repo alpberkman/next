@@ -11,17 +11,9 @@
 #define WORD_LEN (31)
 
 
-#define MACRO(M)    NOP); M(vm); PF
-#define IF          MACRO(nif)
-#define THEN        MACRO(nthen)
-#define ELSE        MACRO(nelse)
-
-#define OPEN_PAREN  (
-
-#define HEADER(NAME)    header(vm, NAME, (sizeof(NAME)-1))
-#define XCF(...)        cf(vm, (sizeof((func[]){__VA_ARGS__})/sizeof(func)), __VA_ARGS__)
-#define XPF(...)        pf(vm, (sizeof((cell[]){__VA_ARGS__})/sizeof(cell)), __VA_ARGS__)
-
+#define HEADER(NAME)        header(vm, NAME, (sizeof(NAME)-1))
+#define CF(...)             cf(vm, (sizeof((func[]){__VA_ARGS__})/sizeof(func)), __VA_ARGS__)
+#define PF(...)             pf(vm, (sizeof((cell[]){__VA_ARGS__})/sizeof(cell)), __VA_ARGS__)
 
 #define PRIMS(NAME, ...)    HEADER(NAME); CF(__VA_ARGS__)
 #define COLON(NAME, ...)    HEADER(NAME); CF(_nest); PF(__VA_ARGS__)
@@ -30,10 +22,20 @@
 #define XCOLON(NAME, ...)   cell NAME = COLON(#NAME, __VA_ARGS__)
 #define IMMEDIATE           *((byte *) &(MEM[lp+CELL_SIZE])) |= MASK_IMM
 
+
+
+/*
+#define MACRO(M)    NOP); M(vm); PF
+#define IF          MACRO(nif)
+#define THEN        MACRO(nthen)
+#define ELSE        MACRO(nelse)
+
+
+
 #define CF(...)         XCF(__VA_ARGS__)
 #define YPF(...)         XPF(__VA_ARGS__)
 #define PF(...)         YPF(__VA_ARGS__)
-
+*/
 
 //#define LIT(NUM) LLIT, NUM
 

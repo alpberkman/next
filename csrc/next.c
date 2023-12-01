@@ -45,11 +45,12 @@ void init(VM *vm) {
 
 
 
-    PF(LIT, IF ( HALT);
+    //PF(LIT, IF ( HALT);
 
 }
 
 cell header(VM *vm, const char *name, int len) {
+    hp += hp % CELL_SIZE ? CELL_SIZE - (hp % CELL_SIZE) : 0;
     *((cell *) &(MEM[hp])) = lp;
     lp = hp;
     hp += CELL_SIZE;
@@ -61,9 +62,11 @@ cell header(VM *vm, const char *name, int len) {
         ((byte *) &(MEM[hp]))[i] = (byte) toupper(name[i]);
     hp += len*BYTE_SIZE;
 
+    hp += hp % FUNC_SIZE ? FUNC_SIZE - (hp % FUNC_SIZE) : 0;
     return hp;
 }
 void cf(VM *vm, int len, ...) {
+    hp += hp % FUNC_SIZE ? FUNC_SIZE - (hp % FUNC_SIZE) : 0;
     va_list l;
     va_start(l, len);
 
@@ -72,8 +75,10 @@ void cf(VM *vm, int len, ...) {
     hp += len*FUNC_SIZE;
 
     va_end(l);
+    hp += hp % CELL_SIZE ? CELL_SIZE - (hp % CELL_SIZE) : 0;
 }
 void pf(VM *vm, int len, ...) {
+    hp += hp % CELL_SIZE ? CELL_SIZE - (hp % CELL_SIZE) : 0;
     va_list l;
     va_start(l, len);
 
@@ -82,6 +87,7 @@ void pf(VM *vm, int len, ...) {
     hp += len*CELL_SIZE;
 
     va_end(l);
+    hp += hp % CELL_SIZE ? CELL_SIZE - (hp % CELL_SIZE) : 0;
 }
 
 void debug(VM *vm) {
@@ -93,11 +99,14 @@ void debug(VM *vm) {
         byte vis = *((byte *) &(MEM[addr + CELL_SIZE])) & MASK_VIS;
         byte imm = *((byte *) &(MEM[addr + CELL_SIZE])) & MASK_IMM;
         byte *name = ((byte *) &(MEM[addr + CELL_SIZE + BYTE_SIZE]));
+        cell cfa = addr + CELL_SIZE + BYTE_SIZE + len;
+        cfa += cfa % FUNC_SIZE ? FUNC_SIZE - (cfa % FUNC_SIZE) : 0;
 
-        printf("0x%08llx %.*s %02i   %c   %c\n",
+        printf("0x%08llx %.*s %02i   %c   %c   0x%08llx\n",
                link, len, name, len,
                vis ? '+' : '-',
-               imm ? '+' : '-');
+               imm ? '+' : '-',
+               cfa);
     }
 }
 

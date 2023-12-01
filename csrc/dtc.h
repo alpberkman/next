@@ -52,7 +52,7 @@ void runc(DTC *dtc, byte *mem, void *arg, cell addr);
 
 #define MNEST(DTC, MEM) \
     (DTC).tp; \
-    (DTC).tp = (DTC).fp
+    (DTC).tp = (DTC).fp + ((DTC).fp % CELL_SIZE ? CELL_SIZE - ((DTC).fp % CELL_SIZE) : 0)
 
 #define MUNNEST(DTC, MEM) \
     (DTC).tp
