@@ -20,7 +20,7 @@
 
 #define XPRIMS(NAME, ...)   cell NAME = PRIMS(#NAME, __VA_ARGS__)
 #define XCOLON(NAME, ...)   cell NAME = COLON(#NAME, __VA_ARGS__)
-#define IMMEDIATE           *((byte *) &(MEM[lp+CELL_SIZE])) |= MASK_IMM
+#define IMMEDIATE           BYTE_FETCH(MEM, lp+CELL_SIZE) |= MASK_IMM
 
 
 
@@ -39,8 +39,8 @@
 
 //#define LIT(NUM) LLIT, NUM
 
-#define BRANCH(ADDR)    LIT(ADDR), JMP
-#define BRANCH0(ADDR)   LIT(ADDR), JZ
+//#define BRANCH(ADDR)    LIT(ADDR), JMP
+//#define BRANCH0(ADDR)   LIT(ADDR), JZ
 
 /*
 #define SELF    BRANCH((lp+CELL_SIZE+BYTE_SIZE+(BYTE_VAL(lp+CELL_SIZE)&WORD_LEN)))

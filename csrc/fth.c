@@ -9,42 +9,42 @@ FTH(_nop) BEGIN
 END
 
 FTH(_halt) BEGIN
-    MOFF(DTC, MEM);
+    MOFF(&ITC, MEM);
 END
 
 FTH(_lit) BEGIN
-    PPUSH = MLIT(DTC, MEM);
+    PPUSH = MLIT(&ITC, MEM);
 END
 
 FTH(_next) BEGIN
-    MEXT(DTC, MEM);
+    MEXT(&ITC, MEM);
 END
 
 FTH(_nest) BEGIN
-    RPUSH = MNEST(DTC, MEM);
-    MEXT(DTC, MEM);
+    RPUSH = MNEST(&ITC, MEM);
+    MEXT(&ITC, MEM);
 END
 
 FTH(_unnest) BEGIN
-    MUNNEST(DTC, MEM) = RPOP;
-    MEXT(DTC, MEM);
+    MUNNEST(&ITC, MEM) = RPOP;
+    MEXT(&ITC, MEM);
 END
 
 FTH(_jmp) BEGIN
     cell addr = PPOP;
-    MJMP(DTC, MEM) = addr;
+    MJMP(&ITC, MEM) = addr;
 END
 
 FTH(_jz) BEGIN
     cell addr = PPOP;
     cell flag = PPOP;
     if(flag == FALSE)
-        MJMP(DTC, MEM) = addr;
+        MJMP(&ITC, MEM) = addr;
 END
 
 FTH(_exe) BEGIN
     cell addr = PPOP;
-    MEXE(DTC, MEM) = addr;
+    MEXE(&ITC, MEM) = addr;
 END
 
 
@@ -189,26 +189,26 @@ END
 
 FTH(_ldc) BEGIN
     cell addr = PPOP;
-    cell val = *((cell *) &(MEM[addr]));
+    cell val = CELL_FETCH(MEM, addr);
     PPUSH = val;
 END
 
 FTH(_strc) BEGIN
     cell addr = PPOP;
     cell val = PPOP;
-    *((cell *) &(MEM[addr])) = val;
+    CELL_FETCH(MEM, addr) = val;
 END
 
 FTH(_ldb) BEGIN
     cell addr = PPOP;
-    byte val = *((byte *) &(MEM[addr]));
+    byte val = BYTE_FETCH(MEM, addr);
     PPUSH = val;
 END
 
 FTH(_strb) BEGIN
     cell addr = PPOP;
     byte val = PPOP;
-    *((byte *) &(MEM[addr])) = val;
+    BYTE_FETCH(MEM, addr) = val;
 END
 
 FTH(_func) BEGIN

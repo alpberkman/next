@@ -1,9 +1,9 @@
 
 
-#ifndef _H
-#define _H
+#ifndef _FTH_H
+#define _FTH_H
 
-#include "dtc.h"
+#include "itc.h"
 
 
 #define MEM_SIZE (0x8000)
@@ -23,16 +23,16 @@ struct SPU {
 };
 
 struct VM {
-    DTC dtc;
+    ITC itc;
     SPU spu;
     MEM mem;
 };
 
 
-#define DTC (vm->dtc)
-#define P   (vm->dtc.p)
-#define FP  (vm->dtc.fp)
-#define TP  (vm->dtc.tp)
+#define ITC (vm->itc)
+#define P   (vm->itc.p)
+#define IP  (vm->itc.ip)
+#define WP  (vm->itc.wp)
 
 #define SPU (vm->spu)
 #define PSP (vm->spu.psp)
@@ -100,6 +100,7 @@ FTH(_ldc);
 FTH(_strc);
 FTH(_ldb);
 FTH(_strb);
+FTH(_func);
 FTH(_cell);
 FTH(_byte);
 FTH(_mem);
