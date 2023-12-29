@@ -1,16 +1,14 @@
 
-
 #include "next.h"
 
 #include <ctype.h>
 #include <stdarg.h>
 #include <stdio.h>
 #include <stdlib.h>
-
+#include <string.h>
 
 cell hp;
 cell lp;
-
 
 void runf(VM *vm, cell addr) {
     runc(&ITC, MEM, vm, addr);
@@ -29,7 +27,6 @@ void init(VM *vm) {
     MEM = malloc(MEM_SIZE);
     if(MEM == NULL)
         return;
-
 
     XPRIMS(NOP, _nop, _next);
     XPRIMS(HALT, _halt, _next);
@@ -77,26 +74,34 @@ void init(VM *vm) {
     XPRIMS(KEY, _key, _next);
     XPRIMS(EMIT, _emit, _next);
 
-    //XPRIMS(XXX, _next);
-/*
-    XPRIMS(NOP, _next);
-    XPRIMS(UNNEST, _unnest);
-    XPRIMS(HALT, _halt);
-    //IMMEDIATE;
-    XPRIMS(LIT, _lit, _next);
-    XPRIMS(EXE, _exe);
-    */
-
-
-
     XPRIMS(t1, _tru, _tru, _next);
 
     XCOLON(t2, t1, t1, UNNEST);
     XCOLON(m, t2, LIT, 123, LIT, t1, EXE, t1, HALT);
     XCOLON(m2, LIT, 123, DUP, ADD, TRU, MUL, FLS, m);
+    XCOLON(m3, NOP);
+    BEGIN(KEY, DUP, LIT, 65, EQ);
+    IF(HALT);
+    ELSE(FLS);
+    THEN(LIT, 777);
+    AGAIN(HALT);
+
+    XCOLON(echo, NOP);
+    BEGIN(KEY, DUP, EMIT, LIT, 'q', EQ);
+    UNTIL(HALT);
+
+    XCOLON(e2, NOP);
+    BEGIN(KEY, DUP, LIT, 'q', NEQ);
+    WHILE(DUP, EMIT);
+    REPEAT(LIT, 1234, HALT);
+
+    CONST(X1, 123);
+    VAR(Z1);
+    VAR(Z2);
+    XCOLON(t3, Z1, LDB, X1, Z1, STRB, TRU, Z1, LDB, HALT);
 
     debug(vm);
-    runf(vm, m2);
+    runf(vm, t3);
 }
 
 cell header(VM *vm, const char *name, int len) {
@@ -135,47 +140,108 @@ void pf(VM *vm, int len, ...) {
 }
 
 void debug(VM *vm) {
-    printf("LP: 0x%06x  HP: 0x%08x  MEM_SIZE: 0x%08x\n", lp, hp, MEM_SIZE);
+    printf("LP: 0x%06x  HP: 0x%06x  MEM_SIZE: 0x%06x\n", lp, hp, MEM_SIZE);
     printf("NAME\t\t\tLEN VIS IMM  CFA\n");
     printf("-----------------------------------------------\n");
-    for(cell addr = lp; addr != 0; addr = *((cell *) &(MEM[addr]))) {
+    for(cell addr = lp, end = hp; addr != 0; end = addr, addr = *((cell *) &(MEM[addr]))) {
         cell link = CELL_FETCH(MEM, addr);
         byte len = BYTE_FETCH(MEM, addr + CELL_SIZE) & WORD_LEN;
         byte vis = BYTE_FETCH(MEM, addr + CELL_SIZE) & MASK_VIS;
         byte imm = BYTE_FETCH(MEM, addr + CELL_SIZE) & MASK_IMM;
         byte *name = &(MEM[addr + CELL_SIZE + BYTE_SIZE]);
         cell cfa = addr + CELL_SIZE + BYTE_SIZE + len;
-        //cfa += cfa % FUNC_SIZE ? FUNC_SIZE - (cfa % FUNC_SIZE) : 0;
 
-        printf("0x%06x %.*s\t\t%02i   %c   %c   0x%06x\n",
+        printf("0x%06x %.*s\t\t%02i   %c   %c   0x%06x | ",
                link, len, name, len,
                vis ? '+' : '-',
                imm ? '+' : '-',
                cfa);
+
+        cell head = cfa;
+        for(;; head += FUNC_SIZE) {
+            printf("%p ", FUNC_FETCH(MEM, head));
+            //byte len = BYTE_FETCH(MEM, head + CELL_SIZE) & WORD_LEN;
+            //byte *name = &(MEM[head + CELL_SIZE + BYTE_SIZE]);
+            //printf("%.*s ", len, name);
+            if(FUNC_FETCH(MEM, head) == _next || FUNC_FETCH(MEM, head) == _nest) {
+                head += FUNC_SIZE;
+                break;
+            }
+        }
+        printf("-- ");
+        for(; head < end; head += CELL_SIZE) {
+            printf("0x%06x ", CELL_FETCH(MEM, head));
+            //byte len = BYTE_FETCH(MEM, head + CELL_SIZE) & WORD_LEN;
+            //byte *name = &(MEM[head + CELL_SIZE + BYTE_SIZE]);
+            //printf("%.*s ", len, name);
+        }/**/
+
+        printf("\n");
     }
 }
+cell find_word(VM *vm, char *c) {
+    for(cell addr = lp; addr != 0; addr = CELL_FETCH(MEM, addr)) {
+        byte len = BYTE_FETCH(MEM, addr + CELL_SIZE) & WORD_LEN;
+        byte vis = BYTE_FETCH(MEM, addr + CELL_SIZE) & MASK_VIS;
+        if(vis && (len == strlen(c)))
+            if(strncmp(c, (void *) &BYTE_FETCH(MEM, addr + CELL_SIZE + BYTE_SIZE), len) == 0)
+                return addr + CELL_SIZE + BYTE_SIZE + len;
+    }
 
-void nif(VM *vm){(void) vm;}
-void nelse(VM *vm){(void) vm;}
-void nthen(VM *vm){(void) vm;}
+    return 0;
+}
 
-void nbegin(VM *vm){(void) vm;}
-void nagin(VM *vm){(void) vm;}
-void nuntil(VM *vm){(void) vm;}
-void nwhile(VM *vm){(void) vm;}
-void nrepeat(VM *vm){(void) vm;}
+void next_str(VM *vm, char *c) {
+    strcpy((void *) &BYTE_FETCH(MEM, hp), c);
+    hp += strlen(c);
+}
 
-void ndo(VM *vm){(void) vm;}
-void nloop(VM *vm){(void) vm;}
-void nploop(VM *vm){(void) vm;}
+void next_if(VM *vm) {
+    PF(FW(LIT));
+    PPUSH = hp;
+    hp += CELL_SIZE;
+    PF(FW(JZ));
+}
+void next_then(VM *vm) {
+    CELL_FETCH(MEM, PPOP) = hp;
+}
+void next_else(VM *vm) {
+    PF(FW(LIT));
+    PPUSH = hp;
+    hp += CELL_SIZE;
+    _swap(vm);
+    PF(FW(JMP));
+    CELL_FETCH(MEM, PPOP) = hp;
+}
 
+void next_begin(VM *vm) {
+    PPUSH = hp;
+}
+void next_agin(VM *vm) {
+    PF(FW(LIT), PPOP, FW(JMP));
+}
+void next_until(VM *vm) {
+    PF(FW(LIT), PPOP, FW(JZ));
+}
+void next_while(VM *vm) {
+    PF(FW(LIT));
+    PPUSH = hp;
+    hp += CELL_SIZE;
+    PF(FW(JZ));
+}
+void next_repeat(VM *vm) {
+    PF(FW(LIT));
+    _swap(vm);
+    PF(PPOP, FW(JMP));
+    CELL_FETCH(MEM, PPOP) = hp;
+}
 
-
-
-
-
-
-
-
-
-
+void next_do(VM *vm) {
+    (void) vm;
+}
+void next_loop(VM *vm) {
+    (void) vm;
+}
+void next_ploop(VM *vm) {
+    (void) vm;
+}

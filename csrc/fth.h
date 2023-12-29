@@ -54,7 +54,7 @@ struct VM {
 #define FTH(NAME) \
     void NAME(void *arg)
 
-#define BEGIN \
+#define IS \
     { \
         VM *vm = (VM *) arg;
 

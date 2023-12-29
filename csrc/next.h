@@ -11,60 +11,40 @@
 #define WORD_LEN (31)
 
 
-#define HEADER(NAME)        header(vm, NAME, (sizeof(NAME)-1))
+#define HEADER(NAME)        header(vm, #NAME, (sizeof(#NAME)-1))
 #define CF(...)             cf(vm, (sizeof((func[]){__VA_ARGS__})/sizeof(func)), __VA_ARGS__)
 #define PF(...)             pf(vm, (sizeof((cell[]){__VA_ARGS__})/sizeof(cell)), __VA_ARGS__)
 
 #define PRIMS(NAME, ...)    HEADER(NAME); CF(__VA_ARGS__)
 #define COLON(NAME, ...)    HEADER(NAME); CF(_nest); PF(__VA_ARGS__)
 
-#define XPRIMS(NAME, ...)   cell NAME = PRIMS(#NAME, __VA_ARGS__)
-#define XCOLON(NAME, ...)   cell NAME = COLON(#NAME, __VA_ARGS__)
+#define XPRIMS(NAME, ...)   cell NAME = PRIMS(NAME, __VA_ARGS__)
+#define XCOLON(NAME, ...)   cell NAME = COLON(NAME, __VA_ARGS__)
 #define IMMEDIATE           BYTE_FETCH(MEM, lp+CELL_SIZE) |= MASK_IMM
 
 
-
-/*
-#define MACRO(M)    NOP); M(vm); PF
-#define IF          MACRO(nif)
-#define THEN        MACRO(nthen)
-#define ELSE        MACRO(nelse)
+#define DEB()               debug(vm)
+#define FW(W)               find_word(vm, #W)
 
 
+#define CONST(NAME, X)      XCOLON(NAME, LIT, X, UNNEST)
+#define VAR(NAME)           XCOLON(NAME, LIT, hp+CELLS(3), UNNEST, 0)
+#define STR(S)              PF(asdf);           next_str(vm, s)
 
-#define CF(...)         XCF(__VA_ARGS__)
-#define YPF(...)         XPF(__VA_ARGS__)
-#define PF(...)         YPF(__VA_ARGS__)
-*/
+#define IF(...)             next_if(vm);        PF(__VA_ARGS__)
+#define THEN(...)           next_then(vm);      PF(__VA_ARGS__)
+#define ELSE(...)           next_else(vm);      PF(__VA_ARGS__)
 
-//#define LIT(NUM) LLIT, NUM
+#define BEGIN(...)          next_begin(vm);     PF(__VA_ARGS__)
+#define AGAIN(...)          next_agin(vm);      PF(__VA_ARGS__)
+#define UNTIL(...)          next_until(vm);     PF(__VA_ARGS__)
+#define WHILE(...)          next_while(vm);     PF(__VA_ARGS__)
+#define REPEAT(...)         next_repeat(vm);    PF(__VA_ARGS__)
 
-//#define BRANCH(ADDR)    LIT(ADDR), JMP
-//#define BRANCH0(ADDR)   LIT(ADDR), JZ
+#define DO(...)             next_do(vm);        PF(__VA_ARGS__)
+#define LOOP(...)           next_loop(vm);      PF(__VA_ARGS__)
+#define PLOOP(...)          next_ploop(vm);     PF(__VA_ARGS__)
 
-/*
-#define SELF    BRANCH((lp+CELL_SIZE+BYTE_SIZE+(BYTE_VAL(lp+CELL_SIZE)&WORD_LEN)))
-#define RECURSE (lp+CELL_SIZE+BYTE_SIZE+(BYTE_VAL(lp+CELL_SIZE)&WORD_LEN))
-
-#define IF(...)     PPUSH = hp+CELL_SIZE;   PF(BRANCH0(0), __VA_ARGS__)
-#define THEN(...)   CELL_VAL(PPOP) = hp;    PF(__VA_ARGS__)
-#define ELSE(...)   CELL_VAL(PPOP) = hp+CELLS(3); \
-                    PPUSH = hp+CELL_SIZE; \
-                    PF(BRANCH(0), __VA_ARGS__)
-
-#define BEGIN(...)  PPUSH = hp; PF(__VA_ARGS__)
-#define AGAIN(...)  PF(BRANCH(PPOP), __VA_ARGS__)
-#define UNTIL(...)  PF(BRANCH0(PPOP), __VA_ARGS__)
-#define WHILE(...)  PPUSH = hp+CELL_SIZE; PF(BRANCH0(0), __VA_ARGS__)
-#define REPEAT(...) CELL_VAL(PPOP) = hp+CELLS(3); \
-                    PF(BRANCH(PPOP), __VA_ARGS__)
-
-#define DO(...)     PPUSH = hp+CELL_SIZE; PPUSH = hp+CELLS(3); PF(LIT(0), DOI, __VA_ARGS__) // first one is leave , the second one is jumpback
-#define LOOP(...)   _swap(vm); CELL_VAL(PPOP) = hp+CELLS(3); PF(LIT(PPOP), LOOPI, __VA_ARGS__)
-#define PLOOP(...)  _swap(vm); CELL_VAL(PPOP) = hp+CELLS(3); PF(LIT(PPOP), PLOOPI, __VA_ARGS__)
-#define UNLOOP // Not immediate
-#define LEAVE  // Can be implemented as a regular word since the immediate version just compiles itself
-*/
 
 void runf(VM *vm, cell addr);
 void init(VM *vm);
@@ -74,20 +54,25 @@ void cf(VM *vm, int len, ...);
 void pf(VM *vm, int len, ...);
 
 void debug(VM *vm);
+cell find_word(VM *vm, char *c);
 
-void nif(VM *vm);
-void nelse(VM *vm);
-void nthen(VM *vm);
+//void next_constant(VM *vm, cell c);
+//void next_variable(VM *vm);
+void next_str(VM *vm, char *c);
 
-void nbegin(VM *vm);
-void nagin(VM *vm);
-void nuntil(VM *vm);
-void nwhile(VM *vm);
-void nrepeat(VM *vm);
+void next_if(VM *vm);
+void next_then(VM *vm);
+void next_else(VM *vm);
 
-void ndo(VM *vm);
-void nloop(VM *vm);
-void nploop(VM *vm);
+void next_begin(VM *vm);
+void next_agin(VM *vm);
+void next_until(VM *vm);
+void next_while(VM *vm);
+void next_repeat(VM *vm);
+
+void next_do(VM *vm);
+void next_loop(VM *vm);
+void next_ploop(VM *vm);
 
 #endif
 

@@ -7,7 +7,6 @@
 #include "csrc/next.h"
 //#include "csrc/init.h"
 
-
 void stacks(VM *vm) {
     printf("P<%i> ", vm->spu.psp);
     for(int i = 0; i < vm->spu.psp; ++i)
@@ -22,10 +21,11 @@ void stacks(VM *vm) {
 
 int main(/*int argc, char *argv[]*/) {
 
+    setvbuf(stdout, NULL, _IONBF, 0);
+
     VM vm;
     init(&vm);
     stacks(&vm);
 
     return 0;
 }
-
