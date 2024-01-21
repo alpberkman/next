@@ -1,6 +1,7 @@
 
 #include "itc.h"
 
+
 func fetch(ITC *itc, byte *mem) {
     func f = FUNC_FETCH(mem, itc->ip);
     itc->ip += FUNC_SIZE;
