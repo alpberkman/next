@@ -1,5 +1,5 @@
 
-#include "next.h"
+#include "imm.h"
 
 #include <ctype.h>
 #include <stdarg.h>
@@ -45,78 +45,6 @@ void pf(VM *vm, int len, ...) {
     va_end(l);
 }
 
-void debug(VM *vm) {
-    printf("LP: 0x%06x  HP: 0x%06x  MEM_SIZE: 0x%06x\n", lp, hp, MEM_SIZE);
-    printf("NAME\t\t\tLEN VIS IMM  CFA\n");
-    printf("-----------------------------------------------\n");
-    for(cell addr = lp, end = hp; addr != 0; end = addr, addr = *((cell *) &(MEM[addr]))) {
-        cell link = CELL_FETCH(MEM, addr);
-        byte len = BYTE_FETCH(MEM, addr + CELL_SIZE) & WORD_LEN;
-        byte vis = BYTE_FETCH(MEM, addr + CELL_SIZE) & MASK_VIS;
-        byte imm = BYTE_FETCH(MEM, addr + CELL_SIZE) & MASK_IMM;
-        byte *name = &(MEM[addr + CELL_SIZE + BYTE_SIZE]);
-        cell cfa = addr + CELL_SIZE + BYTE_SIZE + len;
-
-        printf("0x%06x %.*s\t\t%02i   %c   %c   0x%06x | ",
-               link, len, name, len,
-               vis ? '+' : '-',
-               imm ? '+' : '-',
-               cfa);
-
-        cell head = cfa;
-
-        for(;; head += FUNC_SIZE) {
-            printf("%p ", FUNC_FETCH(MEM, head));
-            if(FUNC_FETCH(MEM, head) == _next || FUNC_FETCH(MEM, head) == _nest) {
-                head += FUNC_SIZE;
-                break;
-            }
-        }
-        printf("-- ");
-
-        for(; head < end; head += CELL_SIZE) {
-            if(PW(FA(CELL_FETCH(MEM, head))) != 0) {
-                head += CELL_SIZE;
-                printf("%i ", CELL_FETCH(MEM, head));
-            }
-        }
-        printf("\n");
-    }
-}
-cell find_word(VM *vm, char *c) {
-    for(cell addr = lp; addr != 0; addr = CELL_FETCH(MEM, addr)) {
-        byte len = BYTE_FETCH(MEM, addr + CELL_SIZE) & WORD_LEN;
-        byte vis = BYTE_FETCH(MEM, addr + CELL_SIZE) & MASK_VIS;
-        if(vis && (len == strlen(c)))
-            if(strncmp(c, (void *) &BYTE_FETCH(MEM, addr + CELL_SIZE + BYTE_SIZE), len) == 0)
-                return addr + CELL_SIZE + BYTE_SIZE + len;
-    }
-
-    return 0;
-}
-cell find_addr(VM *vm, cell cfa) {
-    cell addr = lp;
-    while(addr > cfa)
-        addr = CELL_FETCH(MEM, addr);
-
-    return addr;
-}
-cell print_word(VM *vm, cell addr) {
-    cell link = CELL_FETCH(MEM, addr);
-    byte len = BYTE_FETCH(MEM, addr + CELL_SIZE) & WORD_LEN;
-    byte vis = BYTE_FETCH(MEM, addr + CELL_SIZE) & MASK_VIS;
-    byte imm = BYTE_FETCH(MEM, addr + CELL_SIZE) & MASK_IMM;
-    byte *name = &(MEM[addr + CELL_SIZE + BYTE_SIZE]);
-    cell cfa = addr + CELL_SIZE + BYTE_SIZE + len;
-
-    printf("%.*s ", len, name);
-
-    if(len == 3 && strncmp(name, "LIT", 3) == 0)
-        return addr;
-    else
-        return 0;
-
-}
 
 void next_str(VM *vm, char *c) {
     strcpy((void *) &BYTE_FETCH(MEM, hp), c);
@@ -172,3 +100,40 @@ void next_loop(VM *vm) {
 void next_ploop(VM *vm) {
     (void) vm;
 }
+
+
+cell find_word(VM *vm, char *c) {
+    for(cell addr = lp; addr != 0; addr = CELL_FETCH(MEM, addr)) {
+        byte len = BYTE_FETCH(MEM, addr + CELL_SIZE) & WORD_LEN;
+        byte vis = BYTE_FETCH(MEM, addr + CELL_SIZE) & MASK_VIS;
+        if(vis && (len == strlen(c)))
+            if(strncmp(c, (void *) &BYTE_FETCH(MEM, addr + CELL_SIZE + BYTE_SIZE), len) == 0)
+                return addr + CELL_SIZE + BYTE_SIZE + len;
+    }
+
+    return 0;
+}
+cell find_addr(VM *vm, cell cfa) {
+    cell addr = lp;
+    while(addr > cfa)
+        addr = CELL_FETCH(MEM, addr);
+
+    return addr;
+}
+cell print_word(VM *vm, cell addr) {
+    cell link = CELL_FETCH(MEM, addr);
+    byte len = BYTE_FETCH(MEM, addr + CELL_SIZE) & WORD_LEN;
+    byte vis = BYTE_FETCH(MEM, addr + CELL_SIZE) & MASK_VIS;
+    byte imm = BYTE_FETCH(MEM, addr + CELL_SIZE) & MASK_IMM;
+    byte *name = &(MEM[addr + CELL_SIZE + BYTE_SIZE]);
+    cell cfa = addr + CELL_SIZE + BYTE_SIZE + len;
+
+    printf("%.*s ", len, name);
+
+    if(len == 3 && strncmp((char *) name, "LIT", 3) == 0)
+        return addr;
+    else
+        return 0;
+
+}
+

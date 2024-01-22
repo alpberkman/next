@@ -28,11 +28,6 @@ extern cell lp;
 #define IMMEDIATE                   BYTE_FETCH(MEM, lp+CELL_SIZE) |= MASK_IMM
 
 
-#define DEB()                       debug(vm)
-#define FW(W)                       find_word(vm, #W)
-#define FA(ADDR)                    find_addr(vm, ADDR)
-#define PW(ADDR)                    print_word(vm, ADDR)
-
 #define XCONST(NAME, X)             XCOLON(NAME, LIT, X, UNNEST)
 #define XVAR(NAME)                  XCOLON(NAME, LIT, hp+CELLS(3), UNNEST, 0)
 #define YCONST(NAME, ENTRY, X)      YCOLON(NAME, ENTRY, LIT, X, UNNEST)
@@ -55,14 +50,15 @@ extern cell lp;
 #define PLOOP(...)          next_ploop(vm);     PF(__VA_ARGS__)
 
 
+#define FW(W)                       find_word(vm, #W)
+#define FA(ADDR)                    find_addr(vm, ADDR)
+#define PW(ADDR)                    print_word(vm, ADDR)
+
+
 cell header(VM *vm, const char *name, int len);
 void cf(VM *vm, int len, ...);
 void pf(VM *vm, int len, ...);
 
-void debug(VM *vm);
-cell find_word(VM *vm, char *c);
-cell find_addr(VM *vm, cell cfa);
-cell print_word(VM *vm, cell addr);
 
 //void next_constant(VM *vm, cell c);
 //void next_variable(VM *vm);
@@ -81,6 +77,11 @@ void next_repeat(VM *vm);
 void next_do(VM *vm);
 void next_loop(VM *vm);
 void next_ploop(VM *vm);
+
+
+cell find_word(VM *vm, char *c);
+cell find_addr(VM *vm, cell cfa);
+cell print_word(VM *vm, cell addr);
 
 #endif
 

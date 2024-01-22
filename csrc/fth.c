@@ -3,6 +3,32 @@
 #include "fth.h"
 
 #include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
+
+
+void init(VM *vm, byte *mem) {
+    // Setup ITC
+    IP = 0;
+    WP = 0;
+
+    // Setup SPU
+    PSP = 0;
+    RSP = 0;
+
+    // Setup RAM
+    MEM = malloc(MEM_SIZE);
+    if(MEM == NULL)
+        return;
+
+    // Setup dictionary
+    if(mem != NULL)
+        memcpy(MEM, mem, MEM_SIZE);
+}
+void runf(VM *vm, cell addr) {
+    runc(&ITC, MEM, vm, addr);
+}
 
 
 FTH(_nop) IS

@@ -62,6 +62,10 @@ struct VM {
     }
 
 
+void init(VM *vm, byte *mem);
+void runf(VM *vm, cell addr);
+
+
 FTH(_nop);
 FTH(_halt);
 FTH(_lit);

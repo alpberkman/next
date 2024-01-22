@@ -1,26 +1,14 @@
 
 #include "next.h"
+#include "imm.h"
 
-#include <stdlib.h>
+#include <stdio.h>
+#include <string.h>
 
 
-void runf(VM *vm, cell addr) {
-    runc(&ITC, MEM, vm, addr);
-}
-void init(VM *vm) {
+void dict(VM *vm) {
     hp = 0;
     lp = 0;
-
-    // Setup ITC
-    IP = 0;
-    WP = 0;
-    // Setup SPU
-    PSP = 0;
-    RSP = 0;
-    //Setup RAM
-    MEM = malloc(MEM_SIZE);
-    if(MEM == NULL)
-        return;
 
     XPRIMS(NOP, _nop, _next);
     XPRIMS(HALT, _halt, _next);
@@ -73,11 +61,11 @@ void init(VM *vm) {
     XVAR(LP);
 
 
+    // COLD: resets the dictionary
     cell _hp = hp;
     cell _lp = lp;
-    XCOLON(X, LIT, _hp, HP, STRC, LIT, _lp, LP, STRC, HALT);
-    runf(vm, X);
-    debug(vm);
+    XCOLON(COLD, LIT, _hp, HP, STRC, LIT, _lp, LP, STRC, HALT);
+    runf(vm, COLD);
 
     /*
 
@@ -110,3 +98,54 @@ void init(VM *vm) {
         runf(vm, t3);
         */
 }
+
+void debug(VM *vm) {
+    printf("LP: 0x%06x  HP: 0x%06x  MEM_SIZE: 0x%06x\n", lp, hp, MEM_SIZE);
+    printf("NAME\t\t\tLEN VIS IMM  CFA\n");
+    printf("-----------------------------------------------\n");
+    for(cell addr = lp, end = hp; addr != 0; end = addr, addr = *((cell *) &(MEM[addr]))) {
+        cell link = CELL_FETCH(MEM, addr);
+        byte len = BYTE_FETCH(MEM, addr + CELL_SIZE) & WORD_LEN;
+        byte vis = BYTE_FETCH(MEM, addr + CELL_SIZE) & MASK_VIS;
+        byte imm = BYTE_FETCH(MEM, addr + CELL_SIZE) & MASK_IMM;
+        byte *name = &(MEM[addr + CELL_SIZE + BYTE_SIZE]);
+        cell cfa = addr + CELL_SIZE + BYTE_SIZE + len;
+
+        printf("0x%06x %.*s\t\t%02i   %c   %c   0x%06x | ",
+               link, len, name, len,
+               vis ? '+' : '-',
+               imm ? '+' : '-',
+               cfa);
+
+        cell head = cfa;
+
+        for(;; head += FUNC_SIZE) {
+            printf("%p ", FUNC_FETCH(MEM, head));
+            if(FUNC_FETCH(MEM, head) == _next || FUNC_FETCH(MEM, head) == _nest) {
+                head += FUNC_SIZE;
+                break;
+            }
+        }
+        printf("-- ");
+
+        for(; head < end; head += CELL_SIZE) {
+            if(PW(FA(CELL_FETCH(MEM, head))) != 0) {
+                head += CELL_SIZE;
+                printf("%i ", CELL_FETCH(MEM, head));
+            }
+        }
+        printf("\n");
+    }
+}
+void stacks(VM *vm) {
+    printf("P<%i> ", vm->spu.psp);
+    for(int i = 0; i < vm->spu.psp; ++i)
+        printf("%i ", vm->spu.ps[i]);
+    puts("");
+
+    printf("R<%i> ", vm->spu.rsp);
+    for(int i = 0; i < vm->spu.rsp; ++i)
+        printf("%x ", vm->spu.rs[i]);
+    puts("");
+}
+
