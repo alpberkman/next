@@ -1,7 +1,7 @@
 
+#ifndef _MACRO_H
+#define _MACRO_H
 
-#ifndef _VM_H
-#define _VM_H
 
 #define MEM_SIZE (0x8000)
 
@@ -9,56 +9,7 @@
 #define FALSE   (0)
 #define TRUE    (-1)
 
-
-typedef struct VM VM;
-
-typedef int cell;
-typedef unsigned char byte;
-typedef void (*func) (VM *vm);
-
-typedef enum power power;
-typedef struct stack stack;
-
-typedef struct ITC ITC;
-typedef struct SPU SPU;
-typedef byte *MEM;
-
-
-enum power {
-    OFF = FALSE,
-    ON = TRUE,
-};
-
-struct stack {
-    cell s[0x100];
-    byte sp;
-};
-
-struct ITC {
-    power p;
-    cell ip;
-    cell wp;
-};
-
-struct SPU {
-    stack p;
-    stack r;
-};
-
-struct VM {
-    ITC itc;
-    SPU spu;
-    MEM mem;
-};
-
-
-byte fetch(VM *vm);
-func decode(byte op);
-void execute(VM *vm, byte op);
-void tick(VM *vm);
-void runc(VM *vm, cell addr);
-
-void init(VM *vm, byte *mem);
+#define LOGICAL(FLAG) ((FLAG) ? TRUE : FALSE)
 
 
 #define FUNC_SIZE (sizeof(func))
@@ -89,8 +40,6 @@ void init(VM *vm, byte *mem);
 #define XMEM (vm->mem)
 
 
-#define LOGICAL(FLAG) ((FLAG) ? TRUE : FALSE)
-
 #define PPOP    (XPS[--XPSP])
 #define PPUSH   (XPS[XPSP++])
 #define RPOP    (XRS[--XRSP])
@@ -119,4 +68,3 @@ void init(VM *vm, byte *mem);
     (XVM)->itc.ip
 
 #endif
-

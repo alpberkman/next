@@ -1,26 +1,25 @@
 
-
-#ifndef _ITC_H
-#define _ITC_H
+#ifndef _FE_H
+#define _FE_H
 
 
 #define FALSE   (0)
 #define TRUE    (-1)
 
 
+
+typedef struct VM VM;
+
 typedef int cell;
 typedef unsigned char byte;
-typedef void (*func) (void *arg);
+typedef void (*func) (VM *vm);
 
 typedef enum power power;
 typedef struct stack stack;
 
-typedef struct VM VM;
 typedef struct ITC ITC;
 typedef struct SPU SPU;
 typedef byte *MEM;
-
-typedef enum OP OP;
 
 
 enum power {
@@ -30,7 +29,7 @@ enum power {
 
 struct stack {
     cell s[0x100];
-    byte p;
+    byte sp;
 };
 
 struct ITC {
@@ -50,34 +49,7 @@ struct VM {
     MEM mem;
 };
 
-enum OP {
-    NOP, HALT, LIT, 
 
-    NEXT, NEST, UNNEST, 
-
-    JMP, JZ, EXE, 
-
-    DUP, DROP, SWAP, 
-    PUSH, POP, 
-
-    PICK, RICK, 
-    LDP, LDR, 
-    
-    EQ, NEQ, GT, LT, 
-    AND, OR, XOR, 
-    SHR, SHL, 
-    TRU, FLS, 
-    
-    ADD, SUB, MUL, 
-    DIV, MOD, 
-    
-    LDC, STRC, 
-    LDB, STRB, 
-    
-    FUNC, CELL, BYTE, 
-    MEM, 
-    KEY, EMIT,
-};
 
 
 #define FUNC_SIZE (sizeof(func))
@@ -92,60 +64,6 @@ enum OP {
 #define FUNC_FETCH(MEM, ADDR) (TYPE_FETCH(func, MEM, ADDR))
 #define CELL_FETCH(MEM, ADDR) (TYPE_FETCH(cell, MEM, ADDR))
 #define BYTE_FETCH(MEM, ADDR) (TYPE_FETCH(byte, MEM, ADDR))
-
-
-byte fetch(VM *vm);
-void tick(VM *vm);
-void runc(VM *vm);
-
-
-#define FTH(NAME) \
-    void NAME(VM *vm)
-
-FTH(_nop);
-FTH(_halt);
-FTH(_lit);
-FTH(_next);
-FTH(_nest);
-FTH(_unnest);
-FTH(_jmp);
-FTH(_jz);
-FTH(_exe);
-FTH(_dup);
-FTH(_drop);
-FTH(_swap);
-FTH(_push);
-FTH(_pop);
-FTH(_pick);
-FTH(_rick);
-FTH(_ldp);
-FTH(_ldr);
-FTH(_eq);
-FTH(_neq);
-FTH(_gt);
-FTH(_lt);
-FTH(_and);
-FTH(_or);
-FTH(_xor);
-FTH(_shr);
-FTH(_shl);
-FTH(_tru);
-FTH(_fls);
-FTH(_add);
-FTH(_sub);
-FTH(_mul);
-FTH(_div);
-FTH(_mod);
-FTH(_ldc);
-FTH(_strc);
-FTH(_ldb);
-FTH(_strb);
-FTH(_func);
-FTH(_cell);
-FTH(_byte);
-FTH(_mem);
-FTH(_key);
-FTH(_emit);
 
 
 
@@ -174,5 +92,5 @@ FTH(_emit);
 #define MEXE(ITC, MEM) \
     (ITC)->ip
 
-#endif
 
+#endif

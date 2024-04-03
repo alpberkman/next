@@ -1,5 +1,25 @@
 
-#include "vm.h"
+#include "itc.h"
+
+
+func fetch(VM *vm) {
+    func f = FUNC_FETCH(mem, itc->ip);
+    vm->itc.ip += BYTE_SIZE;
+    return f;
+}
+void execute(VM *vm, func f) {
+    f(vm);
+}
+void tick(VM *vm) {
+    func f = fetch(vm);
+    execute(vm, f);
+}
+void runc(VM *vm, cell addr) {
+    vm->itc.ip = addr;
+    for(vm->itc.p = ON; vm->itc.p == ON; tick(vm));
+}
+
+
 
 
 byte fetch(VM *vm) {
@@ -7,8 +27,12 @@ byte fetch(VM *vm) {
     vm->itc.ip += BYTE_SIZE;
     return op;
 }
+func decode(byte op) {
+    func prims[256] = { TABLE(XFUNCTAB) };
+    return prims[op];
+}
 void execute(VM *vm, byte op) {
-    func f = decode(op);
+    func f = decode(op)
     f(vm);
 }
 void tick(VM *vm) {
@@ -33,5 +57,3 @@ void init(VM *vm, byte *mem) {
     // Setup MEM
     vm->mem = mem;
 }
-
-
