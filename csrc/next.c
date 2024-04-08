@@ -1,16 +1,45 @@
 
 #include "next.h"
 #include "imm.h"
+#include "prims.h"
 
 #include <stdio.h>
+#include <stdlib.h>
 #include <string.h>
 
-/*
+
+byte *falloc(void) {
+    return malloc(MEM_SIZE);
+}
+
+byte *setup(VM *vm) {
+    byte *mem = falloc();
+    if(mem != NULL) {
+        init(vm, mem);
+        dict(vm);
+    }
+        
+    return mem;
+}
+
+
 void dict(VM *vm) {
+    (void) vm;
     hp = 0;
     lp = 0;
 
-    XPRIMS(NOP, _nop, _next);
+    YPRIMS(XNOP, "NOP", NOP, NEXT);
+    YPRIMS(XHALT, "HALT", HALT, NEXT);
+    YPRIMS(XLIT, "LIT", LIT, NEXT);
+    /*YPRIMS(XNEXT, "NEXT", _next);
+    YPRIMS(XNEST, "NEST", _nest);
+    YPRIMS(XUNNEST, "UNNEST", _unnest, _next);
+    YPRIMS(XJMP, "JMP", _jmp, _next);
+    YPRIMS(XJZ, "JZ", _jz, _next);
+    YPRIMS(XEXE, "EXE", _exe, _next);
+
+
+/*    XPRIMS(NOP, _nop, _next);
     XPRIMS(HALT, _halt, _next);
     XPRIMS(LIT, _lit, _next);
     XPRIMS(NEXT, _next);
@@ -66,6 +95,7 @@ void dict(VM *vm) {
     cell _lp = lp;
     XCOLON(COLD, LIT, _hp, HP, STRC, LIT, _lp, LP, STRC, HALT);
     runf(vm, COLD);
+    */
 
     /*
 
@@ -96,62 +126,6 @@ void dict(VM *vm) {
         XCOLON(t3, Z1, LDB, X1, Z1, STRB, TRU, Z1, LDB, HALT);
 
         runf(vm, t3);
-        *//*
+        */
 }
 
-cell print_word(VM *vm, cell addr) {
-    cell link = CELL_FETCH(MEM, addr);
-    byte len = BYTE_FETCH(MEM, addr + CELL_SIZE) & WORD_LEN;
-    byte vis = BYTE_FETCH(MEM, addr + CELL_SIZE) & MASK_VIS;
-    byte imm = BYTE_FETCH(MEM, addr + CELL_SIZE) & MASK_IMM;
-    byte *name = &(MEM[addr + CELL_SIZE + BYTE_SIZE]);
-    cell cfa = addr + CELL_SIZE + BYTE_SIZE + len;
-
-    printf("%.*s ", len, name);
-
-    if(len == 3 && strncmp((char *) name, "LIT", 3) == 0)
-        return addr;
-    else
-        return 0;
-
-}
-void debug(VM *vm) {
-    printf("LP: 0x%06x  HP: 0x%06x  MEM_SIZE: 0x%06x\n", lp, hp, MEM_SIZE);
-    printf("NAME\t\t\tLEN VIS IMM  CFA\n");
-    printf("-----------------------------------------------\n");
-    for(cell addr = lp, end = hp; addr != 0; end = addr, addr = *((cell *) &(MEM[addr]))) {
-        cell link = CELL_FETCH(MEM, addr);
-        byte len = BYTE_FETCH(MEM, addr + CELL_SIZE) & WORD_LEN;
-        byte vis = BYTE_FETCH(MEM, addr + CELL_SIZE) & MASK_VIS;
-        byte imm = BYTE_FETCH(MEM, addr + CELL_SIZE) & MASK_IMM;
-        byte *name = &(MEM[addr + CELL_SIZE + BYTE_SIZE]);
-        cell cfa = addr + CELL_SIZE + BYTE_SIZE + len;
-
-        printf("0x%06x %.*s\t\t%02i   %c   %c   0x%06x | ",
-               link, len, name, len,
-               vis ? '+' : '-',
-               imm ? '+' : '-',
-               cfa);
-
-        cell head = cfa;
-
-        for(;; head += FUNC_SIZE) {
-            printf("%p ", FUNC_FETCH(MEM, head));
-            if(FUNC_FETCH(MEM, head) == _next || FUNC_FETCH(MEM, head) == _nest) {
-                head += FUNC_SIZE;
-                break;
-            }
-        }
-        printf("-- ");
-
-        for(; head < end; head += CELL_SIZE) {
-            if(PW(FA(CELL_FETCH(MEM, head))) != 0) {
-                head += CELL_SIZE;
-                printf("%i ", CELL_FETCH(MEM, head));
-            }
-        }
-        printf("\n");
-    }
-}
-
-*/

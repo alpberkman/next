@@ -5,15 +5,13 @@
 
 #include "vm.h"
 
+
 extern cell hp;
 extern cell lp;
 
 
-
-
-
 #define HEADER(NAME)        header(vm, NAME, (sizeof(NAME)-1))
-#define CF(...)             cf(vm, (sizeof((func[]){__VA_ARGS__})/sizeof(func)), __VA_ARGS__)
+#define CF(...)             cf(vm, (sizeof((byte[]){__VA_ARGS__})/sizeof(byte)), __VA_ARGS__)
 #define PF(...)             pf(vm, (sizeof((cell[]){__VA_ARGS__})/sizeof(cell)), __VA_ARGS__)
 
 #define PRIMS(NAME, ...)    HEADER(NAME); CF(__VA_ARGS__)

@@ -2,8 +2,8 @@
 #include "debug.h"
 #include "prims.h"
 
-#include <stdio.h>
 #include <ctype.h>
+#include <stdio.h>
 
 
 
@@ -78,8 +78,9 @@ void penum2func(void) {
 
 void hexdump(VM *vm, int rlen, int clen) {
     for(int i = 0; i < clen; ++i) {
+        printf("0x%04x: ", i*rlen);
         for(int j = 0; j < rlen; ++j)
-            printf("0x%02x ", BYTE_FETCH(XMEM, i*rlen + j));
+            printf("%02x ", BYTE_FETCH(XMEM, i*rlen + j));
         for(int j = 0; j < rlen; ++j) {
             char c = BYTE_FETCH(XMEM, i*rlen + j);
             printf("%c", isprint(c) ? c : '.');
@@ -109,10 +110,10 @@ void pheader(VM *vm, cell addr) {
     byte *name = &(BYTE_FETCH(XMEM, addr + CELL_SIZE + BYTE_SIZE));
     cell cfa = addr + CELL_SIZE + BYTE_SIZE + len;
 
-    printf("0x%06x %.*s%.*s %02i   %c   %c   0x%06x | ",
+    printf("0x%06x %.*s%*s %02i   %c   %c   0x%06x | ",
                link, 
                len, name, 
-               16-len, "                ",
+               16-len, "",
                len,
                vis ? '+' : '-',
                imm ? '+' : '-',

@@ -6,14 +6,9 @@
 #include "vm.h"
 
 
-#define PW(ADDR)                    print_word(vm, ADDR)
-#define DEB()                       debug(vm)
-
-
+byte *falloc(void);
 void dict(VM *vm);
-
-void debug(VM *vm);
-void stacks(VM *vm);
+byte *setup(VM *vm);
 
 #endif
 

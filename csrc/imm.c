@@ -5,20 +5,21 @@
 #include <stdarg.h>
 #include <string.h>
 
-/*
+
 cell hp;
 cell lp;
 
+
 cell header(VM *vm, const char *name, int len) {
-    CELL_FETCH(MEM, hp) = lp;
+    CELL_FETCH(XMEM, hp) = lp;
     lp = hp;
     hp += CELL_SIZE;
 
-    BYTE_FETCH(MEM, hp) = MASK_VIS | len;
+    BYTE_FETCH(XMEM, hp) = MASK_VIS | len;
     hp += BYTE_SIZE;
 
     for(int i = 0; i < len; ++i)
-        BYTE_FETCH(MEM, hp+BYTES(i)) = (byte) toupper(name[i]);
+        BYTE_FETCH(XMEM, hp+BYTES(i)) = (byte) toupper(name[i]);
     hp += BYTES(len);
 
     return hp;
@@ -28,8 +29,8 @@ void cf(VM *vm, int len, ...) {
     va_start(l, len);
 
     for(int i = 0; i < len; ++i)
-        FUNC_FETCH(MEM, hp+FUNCS(i)) = (func) va_arg(l, func);
-    hp += FUNCS(len);
+        BYTE_FETCH(XMEM, hp+BYTES(i)) = (byte) va_arg(l, int);
+    hp += BYTES(len);
 
     va_end(l);
 }
@@ -38,13 +39,13 @@ void pf(VM *vm, int len, ...) {
     va_start(l, len);
 
     for(int i = 0; i < len; ++i)
-        CELL_FETCH(MEM, hp+CELLS(i)) = (cell) va_arg(l, cell);
+        CELL_FETCH(XMEM, hp+CELLS(i)) = (cell) va_arg(l, cell);
     hp += CELLS(len);
 
     va_end(l);
 }
 
-
+/*
 void next_str(VM *vm, char *c) {
     strcpy((void *) &BYTE_FETCH(MEM, hp), c);
     hp += strlen(c);

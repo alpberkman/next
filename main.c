@@ -12,8 +12,7 @@ int main(/*int argc, char *argv[]*/) {
     setvbuf(stdout, NULL, _IONBF, 0);
 
     VM vm;
-    byte mem[MEM_SIZE];
-    init(&vm, mem);
+    setup(&vm);
 
     info(&vm);
     puts("");
