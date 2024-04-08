@@ -9,9 +9,7 @@ extern cell hp;
 extern cell lp;
 
 
-#define MASK_VIS (1<<7)
-#define MASK_IMM (1<<6)
-#define WORD_LEN (31)
+
 
 
 #define HEADER(NAME)        header(vm, NAME, (sizeof(NAME)-1))

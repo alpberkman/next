@@ -3,7 +3,7 @@
 #include "prims.h"
 
 #include <stdio.h>
-
+#include <ctype.h>
 
 
 
@@ -17,6 +17,7 @@ void stacks(VM *vm) {
     pstack(XPS, XPSP, "PS", "%i ");
     puts("");
     pstack(XRS, XRSP, "RS", "%i ");
+    puts("");
 }
 
 void info(VM *vm) {
@@ -30,6 +31,7 @@ void info(VM *vm) {
     puts("");
 
     stacks(vm);
+    puts("");
 }
 
 void stat(VM *vm) {
@@ -74,3 +76,45 @@ void penum2func(void) {
         printf("0x%02x: %-6s <---> %7s\n", keys[i], enames[i], fnames[i]);
 }
 
+void hexdump(VM *vm, int rlen, int clen) {
+    for(int i = 0; i < clen; ++i) {
+        for(int j = 0; j < rlen; ++j)
+            printf("0x%02x ", BYTE_FETCH(XMEM, i*rlen + j));
+        for(int j = 0; j < rlen; ++j) {
+            char c = BYTE_FETCH(XMEM, i*rlen + j);
+            printf("%c", isprint(c) ? c : '.');
+        }
+        puts("");
+    
+    }
+}
+
+void pword(VM *vm, cell addr) {
+    cell link = CELL_FETCH(XMEM, addr);
+    byte len = BYTE_FETCH(XMEM, addr + CELL_SIZE) & WORD_LEN;
+    byte vis = BYTE_FETCH(XMEM, addr + CELL_SIZE) & MASK_VIS;
+    byte imm = BYTE_FETCH(XMEM, addr + CELL_SIZE) & MASK_IMM;
+    byte *name = &(BYTE_FETCH(XMEM, addr + CELL_SIZE + BYTE_SIZE));
+    cell cfa = addr + CELL_SIZE + BYTE_SIZE + len;
+
+    printf("%.*s ", len, name);
+
+}
+
+void pheader(VM *vm, cell addr) {
+    cell link = CELL_FETCH(XMEM, addr);
+    byte len = BYTE_FETCH(XMEM, addr + CELL_SIZE) & WORD_LEN;
+    byte vis = BYTE_FETCH(XMEM, addr + CELL_SIZE) & MASK_VIS;
+    byte imm = BYTE_FETCH(XMEM, addr + CELL_SIZE) & MASK_IMM;
+    byte *name = &(BYTE_FETCH(XMEM, addr + CELL_SIZE + BYTE_SIZE));
+    cell cfa = addr + CELL_SIZE + BYTE_SIZE + len;
+
+    printf("0x%06x %.*s%.*s %02i   %c   %c   0x%06x | ",
+               link, 
+               len, name, 
+               16-len, "                ",
+               len,
+               vis ? '+' : '-',
+               imm ? '+' : '-',
+               cfa);
+}

@@ -15,5 +15,10 @@ char *func2s(func f);
 
 void penum2func(void);
 
+void hexdump(VM *vm, int rlen, int clen);
+
+void pword(VM *vm, cell addr);
+void pheader(VM *vm, cell addr);
+
 #endif
 

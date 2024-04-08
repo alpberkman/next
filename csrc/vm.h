@@ -4,6 +4,9 @@
 #define _VM_H
 
 #define MEM_SIZE (0x8000)
+#define MASK_VIS (1<<7)
+#define MASK_IMM (1<<6)
+#define WORD_LEN (31)
 
 
 #define FALSE   (0)
