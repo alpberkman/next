@@ -3,7 +3,7 @@
 #ifndef _NEXT_H
 #define _NEXT_H
 
-#include "fth.h"
+#include "vm.h"
 
 
 #define PW(ADDR)                    print_word(vm, ADDR)

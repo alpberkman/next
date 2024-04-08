@@ -5,7 +5,7 @@
 #include <stdio.h>
 #include <string.h>
 
-
+/*
 void dict(VM *vm) {
     hp = 0;
     lp = 0;
@@ -96,7 +96,7 @@ void dict(VM *vm) {
         XCOLON(t3, Z1, LDB, X1, Z1, STRB, TRU, Z1, LDB, HALT);
 
         runf(vm, t3);
-        */
+        *//*
 }
 
 cell print_word(VM *vm, cell addr) {
@@ -153,15 +153,5 @@ void debug(VM *vm) {
         printf("\n");
     }
 }
-void stacks(VM *vm) {
-    printf("P<%i> ", vm->spu.psp);
-    for(int i = 0; i < vm->spu.psp; ++i)
-        printf("%i ", vm->spu.ps[i]);
-    puts("");
 
-    printf("R<%i> ", vm->spu.rsp);
-    for(int i = 0; i < vm->spu.rsp; ++i)
-        printf("%x ", vm->spu.rs[i]);
-    puts("");
-}
-
+*/

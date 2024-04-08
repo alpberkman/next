@@ -3,8 +3,8 @@
 
 
 byte fetch(VM *vm) {
-    byte op = BYTE_FETCH(vm->mem, vm->itc.ip);
-    vm->itc.ip += BYTE_SIZE;
+    byte op = BYTE_FETCH(XMEM, XIP);
+    XIP += BYTE_SIZE;
     return op;
 }
 void execute(VM *vm, byte op) {
@@ -16,22 +16,22 @@ void tick(VM *vm) {
     execute(vm, op);
 }
 void runc(VM *vm, cell addr) {
-    vm->itc.ip = addr;
-    for(vm->itc.p = ON; vm->itc.p == ON; tick(vm));
+    XIP = addr;
+    for(XP = ON; XP == ON; tick(vm));
 }
 
 void init(VM *vm, byte *mem) {
     // Setup ITC
-    vm->itc.p = OFF;
-    vm->itc.ip = 0;
-    vm->itc.wp = 0;
+    XP = OFF;
+    XIP = 0;
+    XWP = 0;
 
     // Setup SPU
-    vm->spu.p.sp = 0;
-    vm->spu.r.sp = 0;
+    XPSP = 0;
+    XRSP = 0;
 
     // Setup MEM
-    vm->mem = mem;
+    XMEM = mem;
 }
 
 

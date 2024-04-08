@@ -16,32 +16,32 @@ FTH(_halt) {
     XP = OFF;
 }
 FTH(_lit) {
-    PPUSH = MLIT(vm);
+    PPUSH = MLIT;
 }
 FTH(_next) {
-    MEXT(vm);
+    MEXT;
 }
 FTH(_nest) {
-    RPUSH = MNEST(vm);
-    MEXT(vm);
+    RPUSH = MNEST;
+    MEXT;
 }
 FTH(_unnest) {
-    MUNNEST(vm) = RPOP;
-    MEXT(vm);
+    MUNNEST = RPOP;
+    MEXT;
 }
 FTH(_jmp) {
     cell addr = PPOP;
-    MJMP(vm) = addr;
+    MJMP = addr;
 }
 FTH(_jz) {
     cell addr = PPOP;
     cell flag = PPOP;
     if(flag == FALSE)
-        MJMP(vm) = addr;
+        MJMP = addr;
 }
 FTH(_exe) {
     cell addr = PPOP;
-    MEXE(vm) = addr;
+    MEXE = addr;
 }
 FTH(_dup) {
     cell val = PPOP;

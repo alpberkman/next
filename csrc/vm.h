@@ -97,26 +97,26 @@ void init(VM *vm, byte *mem);
 #define RPUSH   (XRS[XRSP++])
 
 
-#define MEXT(XVM) \
-    (XVM)->itc.ip = CELL_FETCH((XVM)->mem, (XVM)->itc.wp); \
-    (XVM)->itc.wp += CELL_SIZE
+#define MEXT \
+    XIP = CELL_FETCH(XMEM, XWP); \
+    XWP += CELL_SIZE
 
-#define MLIT(XVM) \
-    CELL_FETCH((XVM)->mem, (XVM)->itc.wp); \
-    (XVM)->itc.wp += CELL_SIZE
+#define MLIT \
+    CELL_FETCH(XMEM, XWP); \
+    XWP += CELL_SIZE
 
-#define MNEST(XVM) \
-    (XVM)->itc.wp; \
-    (XVM)->itc.wp = (XVM)->itc.ip
+#define MNEST \
+    XWP; \
+    XWP = XIP
 
-#define MUNNEST(XVM) \
-    (XVM)->itc.wp
+#define MUNNEST \
+    XWP
 
-#define MJMP(XVM) \
-    (XVM)->itc.wp
+#define MJMP \
+    XWP
 
-#define MEXE(XVM) \
-    (XVM)->itc.ip
+#define MEXE \
+    XIP
 
 #endif
 

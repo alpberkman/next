@@ -3,7 +3,7 @@
 #ifndef _IMM_H
 #define _IMM_H
 
-#include "fth.h"
+#include "vm.h"
 
 extern cell hp;
 extern cell lp;

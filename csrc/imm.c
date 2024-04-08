@@ -5,7 +5,7 @@
 #include <stdarg.h>
 #include <string.h>
 
-
+/*
 cell hp;
 cell lp;
 
@@ -121,3 +121,4 @@ cell find_addr(VM *vm, cell cfa) {
 }
 
 
+*/

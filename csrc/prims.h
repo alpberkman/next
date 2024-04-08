@@ -10,8 +10,9 @@
 
 #define XENUM(E, F)  E,
 #define XFUNC(E, F)   F,
-#define XNENUMAME(E, F) #E,
+#define XENUMNAME(E, F) #E,
 #define XFUNCNAME(E, F) #F,
+#define XENUM2FUNC(E, F) #E, #F
 #define XFUNCSIG(E, F) void F (VM *vm);
 #define XFUNCTAB(E, F) [E] = F,
 
