@@ -42,35 +42,28 @@ void dict(VM *vm) {
     
     ZPRIMS(DUP,     DUP, NEXT);
     ZPRIMS(DROP,    DROP, NEXT);
-    ZPRIMS(XSWAP,   SWAP, NEXT);
+    ZPRIMS(SWAP,    SWAP, NEXT);
     YPRIMS(XPUSH,   ">R",   PUSH, NEXT);
     YPRIMS(XPOP,    "R>",   POP, NEXT);
     ZPRIMS(PICK,    PICK, NEXT);
     ZPRIMS(RICK,    RICK, NEXT);
     XPRIMS(DEPTH,   LDP, NEXT);
     XPRIMS(RDEPTH,  LDR, NEXT);
-/*
-    YPRIMS(EQ,      "=",    EQ, NEXT);
-    YPRIMS(NEQ,     "<>",   NEQ, NEXT);
-    YPRIMS(GT,      ">",    GT, NEXT);
-    YPRIMS(LT,      "<",    LT, NEXT);
-*/    
+ 
+    YPRIMS(XEQ,      "=",    EQ, NEXT);
+    YPRIMS(XNEQ,     "<>",   NEQ, NEXT);
+    YPRIMS(XGT,      ">",    GT, NEXT);
+    YPRIMS(XLT,      "<",    LT, NEXT);
+   
     ZPRIMS(AND,     AND, NEXT);
-    ZPRIMS(OR,      OR, NEXT);
+    YPRIMS(YOR,     "OR",   OR, NEXT);
     ZPRIMS(XOR,     XOR, NEXT);
     XPRIMS(RSHIFT,  SHR, NEXT);
     XPRIMS(LSHIFT,  SHL, NEXT);
-    YPRIMS(XTRU,    "TRUE",     TRU, NEXT);
-    YPRIMS(XFLS,    "FALSE",    FLS, NEXT);
-    /*
-    0x0000f9: 0x0000f0 XOR              03   +   -   0x000101 | from 0x0000f9 to 0x000103 (null) NEXT 
-0x0000f0: 0x0000e6 OR               02   +   -   0x0000f7 | from 0x0000f0 to 0x0000f9 OR NEXT 
-0x0000e6: 0x0000de AND              03   +   -   0x0000ee | from 0x0000e6 to 0x0000f0 AND NEXT 
-0x0000de: 0x0000d6 <                01   +   -   0x0000e4 | from 0x0000de to 0x0000e6 (null) NEXT 
-0x0000d6: 0x0000cd >                01   +   -   0x0000dc | from 0x0000d6 to 0x0000de (null) NEXT 
-0x0000cd: 0x0000c5 <>               02   +   -   0x0000d4 | from 0x0000cd to 0x0000d6 (null) NEXT 
-0x0000c5: 0x0000b8 =                01   +   -   0x0000cb | from 0x0000c5 to 0x0000cd (null) NEXT 
-    */
+    YPRIMS(XTRUE,   "TRUE",     TRU, NEXT);
+    YPRIMS(XFALSE,  "FALSE",    FLS, NEXT);
+
+    XCOLON(ASDF, XTRUE, XDUP, XSWAP, XUNNEST);
 
 /*
 

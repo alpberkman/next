@@ -17,13 +17,11 @@ int main(/*int argc, char *argv[]*/) {
     info(&vm);
     puts("");
 
-    hexdump(&vm, 8, 32);
+    hexdump(&vm, 16, 32);
     puts("");
     puts("");
     puts("");
 
-
-    pheader(&vm, 0);
 
     return 0;
 }

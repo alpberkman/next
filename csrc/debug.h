@@ -30,7 +30,7 @@ void hexdump(VM *vm, int rlen, int clen);
 void pword(VM *vm, cell addr);
 void pheader(VM *vm, cell addr);
 void pwords(VM *vm);
-void disasm(VM *vm, cell addr);
+void disasm(VM *vm, cell addr, cell limit);
 
 #endif
 

@@ -69,7 +69,6 @@ char *func2s(func f) {
             return names[i];
     return NULL;
 }
-
 void penum2func(void) {
     char *enames[] = {TABLE(XENUMNAME)};
     char *fnames[] = {TABLE(XFUNCNAME)};
@@ -82,26 +81,30 @@ void penum2func(void) {
 void hexdump(VM *vm, int rlen, int clen) {
     for(int i = 0; i < clen; ++i) {
         printf("0x%04x: ", i*rlen);
-        for(int j = 0; j < rlen; ++j)
+        for(int j = 0; j < rlen; ++j) {
+            if(j%8 == 0 && j != 0)
+                printf(" ");
             printf("%02x ", BYTE_FETCH(XMEM, i*rlen + j));
+        }
         for(int j = 0; j < rlen; ++j) {
             char c = BYTE_FETCH(XMEM, i*rlen + j);
+            if(j%8 == 0 && j != 0)
+                printf(" ");
             printf("%c", isprint(c) ? c : '.');
         }
         puts("");
-    
     }
 }
 
 void pword(VM *vm, cell addr) {
     WORD_DISASM(addr);
-    printf("%.*s ", len, name);
+    printf("%.*s", len, name);
 
 }
 
 void pheader(VM *vm, cell addr) {
     WORD_DISASM(addr);
-    printf("0x%06x: 0x%06x %.*s%*s %02i   %c   %c   0x%06x | ",
+    printf("0x%06x: 0x%06x %.*s%*s %2i   %c   %c  0x%06x ",
         addr,
         link, 
         len, name, 
@@ -113,12 +116,24 @@ void pheader(VM *vm, cell addr) {
 }
 
 void pwords(VM *vm) {
+    printf("%-10s%-9s%-17s%-4s%-4s%-4s%-9s%-24s%-19s%s\n",
+        "addr",
+        "link",
+        "name",
+        "len",
+        "vis",
+        "imm",
+        "cfa",
+        "space",
+        "cf",
+        "pf"
+    );
     cell start = lp;
     cell end = hp;
     for(;;) {
         pheader(vm, start);
-        printf("from 0x%06x to 0x%06x ", start, end);
-        disasm(vm, start);
+        printf("[ 0x%06x - 0x%06x ] ", start, end);
+        disasm(vm, start, end);
         puts("");
         if(start == 0)
             break;
@@ -127,12 +142,26 @@ void pwords(VM *vm) {
     }
 }
 
-void disasm(VM *vm, cell addr) {
+void disasm(VM *vm, cell addr, cell limit) {
     WORD_DISASM(addr);
+    int ctr = 0;
     for(;;) {
-        printf("%s ", enum2s(BYTE_FETCH(XMEM, cfa)));
+        printf("%-7s", enum2s(BYTE_FETCH(XMEM, cfa)));
+        ctr += 1;
         if(BYTE_FETCH(XMEM, cfa) == NEXT || BYTE_FETCH(XMEM, cfa) == NEST)
             break;
         cfa += BYTE_SIZE;
+    }
+    for(; ctr < 2; ++ctr)
+        printf("%7s", "");
+    printf(" <|> ");
+    cfa += BYTE_SIZE;
+    while(cfa < limit) {
+        cell waddr = lp;
+        while(waddr > CELL_FETCH(XMEM, cfa))
+            waddr = CELL_FETCH(XMEM, waddr);
+        pword(vm, waddr);
+        printf(" ");
+        cfa += CELL_SIZE;
     }
 }
