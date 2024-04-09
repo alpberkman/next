@@ -24,51 +24,56 @@ byte *setup(VM *vm) {
 
 
 void dict(VM *vm) {
-    (void) vm;
+    //(void) vm;
     hp = 0;
     lp = 0;
 
-    YPRIMS(XNOP, "NOP", NOP, NEXT);
-    YPRIMS(XHALT, "HALT", HALT, NEXT);
-    YPRIMS(XLIT, "LIT", LIT, NEXT);
-    /*YPRIMS(XNEXT, "NEXT", _next);
-    YPRIMS(XNEST, "NEST", _nest);
-    YPRIMS(XUNNEST, "UNNEST", _unnest, _next);
-    YPRIMS(XJMP, "JMP", _jmp, _next);
-    YPRIMS(XJZ, "JZ", _jz, _next);
-    YPRIMS(XEXE, "EXE", _exe, _next);
+    PRIMS("", NEXT);
 
+    ZPRIMS(NOP,     NOP, NEXT);
+    ZPRIMS(HALT,    HALT, NEXT);
+    ZPRIMS(LIT,     LIT, NEXT);
+    ZPRIMS(NEXT,    NEXT);
+    ZPRIMS(NEST,    NEST);
+    ZPRIMS(UNNEST,  UNNEST, NEXT);
+    ZPRIMS(JMP,     JMP, NEXT);
+    ZPRIMS(JZ,      JZ, NEXT);
+    ZPRIMS(EXE,     EXE, NEXT);
+    
+    ZPRIMS(DUP,     DUP, NEXT);
+    ZPRIMS(DROP,    DROP, NEXT);
+    ZPRIMS(XSWAP,   SWAP, NEXT);
+    YPRIMS(XPUSH,   ">R",   PUSH, NEXT);
+    YPRIMS(XPOP,    "R>",   POP, NEXT);
+    ZPRIMS(PICK,    PICK, NEXT);
+    ZPRIMS(RICK,    RICK, NEXT);
+    XPRIMS(DEPTH,   LDP, NEXT);
+    XPRIMS(RDEPTH,  LDR, NEXT);
+/*
+    YPRIMS(EQ,      "=",    EQ, NEXT);
+    YPRIMS(NEQ,     "<>",   NEQ, NEXT);
+    YPRIMS(GT,      ">",    GT, NEXT);
+    YPRIMS(LT,      "<",    LT, NEXT);
+*/    
+    ZPRIMS(AND,     AND, NEXT);
+    ZPRIMS(OR,      OR, NEXT);
+    ZPRIMS(XOR,     XOR, NEXT);
+    XPRIMS(RSHIFT,  SHR, NEXT);
+    XPRIMS(LSHIFT,  SHL, NEXT);
+    YPRIMS(XTRU,    "TRUE",     TRU, NEXT);
+    YPRIMS(XFLS,    "FALSE",    FLS, NEXT);
+    /*
+    0x0000f9: 0x0000f0 XOR              03   +   -   0x000101 | from 0x0000f9 to 0x000103 (null) NEXT 
+0x0000f0: 0x0000e6 OR               02   +   -   0x0000f7 | from 0x0000f0 to 0x0000f9 OR NEXT 
+0x0000e6: 0x0000de AND              03   +   -   0x0000ee | from 0x0000e6 to 0x0000f0 AND NEXT 
+0x0000de: 0x0000d6 <                01   +   -   0x0000e4 | from 0x0000de to 0x0000e6 (null) NEXT 
+0x0000d6: 0x0000cd >                01   +   -   0x0000dc | from 0x0000d6 to 0x0000de (null) NEXT 
+0x0000cd: 0x0000c5 <>               02   +   -   0x0000d4 | from 0x0000cd to 0x0000d6 (null) NEXT 
+0x0000c5: 0x0000b8 =                01   +   -   0x0000cb | from 0x0000c5 to 0x0000cd (null) NEXT 
+    */
 
-/*    XPRIMS(NOP, _nop, _next);
-    XPRIMS(HALT, _halt, _next);
-    XPRIMS(LIT, _lit, _next);
-    XPRIMS(NEXT, _next);
-    XPRIMS(NEST, _nest);
-    XPRIMS(UNNEST, _unnest, _next);
-    XPRIMS(JMP, _jmp, _next);
-    XPRIMS(JZ, _jz, _next);
-    XPRIMS(EXE, _exe, _next);
+/*
 
-    XPRIMS(DUP, _dup, _next);
-    XPRIMS(DROP, _drop, _next);
-    XPRIMS(SWAP, _swap, _next);
-    YPRIMS(PUSH, ">R", _push, _next);
-    YPRIMS(POP, "R>", _pop, _next);
-    XPRIMS(PICK, _pick, _next);
-    XPRIMS(RICK, _rick, _next);
-    YPRIMS(LDP, "DEPTH", _ldp, _next);
-    YPRIMS(LDR, "RDEPTH", _ldr, _next);
-    YPRIMS(EQ, "=",_eq, _next);
-    YPRIMS(NEQ, "<>", _neq, _next);
-    YPRIMS(GT, ">", _gt, _next);
-    YPRIMS(LT, "<", _lt, _next);
-    XPRIMS(AND, _and, _next);
-    XPRIMS(OR, _or, _next);
-    XPRIMS(XOR, _xor, _next);
-    YPRIMS(SHR, "RSHIFT", _shr, _next);
-    YPRIMS(SHL, "LSHIFT", _shl, _next);
-    YPRIMS(TRU, "TRUE", _tru, _next);
-    YPRIMS(FLS, "FALSE", _fls, _next);
     YPRIMS(ADD, "+", _add, _next);
     YPRIMS(SUB, "-", _sub, _next);
     YPRIMS(MUL, "*", _mul, _next);

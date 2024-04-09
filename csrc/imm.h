@@ -15,13 +15,15 @@ extern cell lp;
 #define PF(...)             pf(vm, (sizeof((cell[]){__VA_ARGS__})/sizeof(cell)), __VA_ARGS__)
 
 #define PRIMS(NAME, ...)    HEADER(NAME); CF(__VA_ARGS__)
-#define COLON(NAME, ...)    HEADER(NAME); CF(_nest); PF(__VA_ARGS__)
+#define COLON(NAME, ...)    HEADER(NAME); CF(NEST); PF(__VA_ARGS__)
 
 #define XPRIMS(NAME, ...)           cell NAME = PRIMS(#NAME, __VA_ARGS__)
 #define XCOLON(NAME, ...)           cell NAME = COLON(#NAME, __VA_ARGS__)
 #define YPRIMS(NAME, ENTRY, ...)    cell NAME = PRIMS(ENTRY, __VA_ARGS__)
 #define YCOLON(NAME, ENTRY, ...)    cell NAME = COLON(ENTRY, __VA_ARGS__)
-#define IMMEDIATE                   BYTE_FETCH(MEM, lp+CELL_SIZE) |= MASK_IMM
+#define ZPRIMS(NAME, ...)           cell X##NAME = PRIMS(#NAME, __VA_ARGS__)
+#define ZCOLON(NAME, ...)           cell X##NAME = COLON(#NAME, __VA_ARGS__)
+#define IMMEDIATE                   BYTE_FETCH(XMEM, lp+CELL_SIZE) |= MASK_IMM
 
 
 #define XCONST(NAME, X)             XCOLON(NAME, LIT, X, UNNEST)

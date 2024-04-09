@@ -17,7 +17,7 @@ int main(/*int argc, char *argv[]*/) {
     info(&vm);
     puts("");
 
-    hexdump(&vm, 8, 16);
+    hexdump(&vm, 8, 32);
     puts("");
     puts("");
     puts("");

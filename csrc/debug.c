@@ -30,6 +30,9 @@ void info(VM *vm) {
     stat(vm);
     puts("");
 
+    pwords(vm);
+    puts("");
+
     stacks(vm);
     puts("");
 }
@@ -91,31 +94,45 @@ void hexdump(VM *vm, int rlen, int clen) {
 }
 
 void pword(VM *vm, cell addr) {
-    cell link = CELL_FETCH(XMEM, addr);
-    byte len = BYTE_FETCH(XMEM, addr + CELL_SIZE) & WORD_LEN;
-    byte vis = BYTE_FETCH(XMEM, addr + CELL_SIZE) & MASK_VIS;
-    byte imm = BYTE_FETCH(XMEM, addr + CELL_SIZE) & MASK_IMM;
-    byte *name = &(BYTE_FETCH(XMEM, addr + CELL_SIZE + BYTE_SIZE));
-    cell cfa = addr + CELL_SIZE + BYTE_SIZE + len;
-
+    WORD_DISASM(addr);
     printf("%.*s ", len, name);
 
 }
 
 void pheader(VM *vm, cell addr) {
-    cell link = CELL_FETCH(XMEM, addr);
-    byte len = BYTE_FETCH(XMEM, addr + CELL_SIZE) & WORD_LEN;
-    byte vis = BYTE_FETCH(XMEM, addr + CELL_SIZE) & MASK_VIS;
-    byte imm = BYTE_FETCH(XMEM, addr + CELL_SIZE) & MASK_IMM;
-    byte *name = &(BYTE_FETCH(XMEM, addr + CELL_SIZE + BYTE_SIZE));
-    cell cfa = addr + CELL_SIZE + BYTE_SIZE + len;
+    WORD_DISASM(addr);
+    printf("0x%06x: 0x%06x %.*s%*s %02i   %c   %c   0x%06x | ",
+        addr,
+        link, 
+        len, name, 
+        16-len, "",
+        len,
+        vis ? '+' : '-',
+        imm ? '+' : '-',
+        cfa);
+}
 
-    printf("0x%06x %.*s%*s %02i   %c   %c   0x%06x | ",
-               link, 
-               len, name, 
-               16-len, "",
-               len,
-               vis ? '+' : '-',
-               imm ? '+' : '-',
-               cfa);
+void pwords(VM *vm) {
+    cell start = lp;
+    cell end = hp;
+    for(;;) {
+        pheader(vm, start);
+        printf("from 0x%06x to 0x%06x ", start, end);
+        disasm(vm, start);
+        puts("");
+        if(start == 0)
+            break;
+        end = start;
+        start = CELL_FETCH(XMEM, start);
+    }
+}
+
+void disasm(VM *vm, cell addr) {
+    WORD_DISASM(addr);
+    for(;;) {
+        printf("%s ", enum2s(BYTE_FETCH(XMEM, cfa)));
+        if(BYTE_FETCH(XMEM, cfa) == NEXT || BYTE_FETCH(XMEM, cfa) == NEST)
+            break;
+        cfa += BYTE_SIZE;
+    }
 }
