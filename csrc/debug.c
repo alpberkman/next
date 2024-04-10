@@ -30,6 +30,9 @@ void info(VM *vm) {
     stat(vm);
     puts("");
 
+    hexdump(vm, 16, 32);
+    puts("");
+
     pwords(vm);
     puts("");
 
@@ -104,7 +107,7 @@ void pword(VM *vm, cell addr) {
 
 void pheader(VM *vm, cell addr) {
     WORD_DISASM(addr);
-    printf("0x%06x: 0x%06x %.*s%*s %2i   %c   %c  0x%06x ",
+    printf("0x%06x: 0x%08x %.*s%*s %2i   %c   %c  0x%06x ",
         addr,
         link, 
         len, name, 
@@ -116,7 +119,7 @@ void pheader(VM *vm, cell addr) {
 }
 
 void pwords(VM *vm) {
-    printf("%-10s%-9s%-17s%-4s%-4s%-4s%-9s%-24s%-19s%s\n",
+    printf("%-10s%-11s%-17s%-4s%-4s%-4s%-9s%-24s%-19s%s\n",
         "addr",
         "link",
         "name",
@@ -135,10 +138,10 @@ void pwords(VM *vm) {
         printf("[ 0x%06x - 0x%06x ] ", start, end);
         disasm(vm, start, end);
         puts("");
-        if(start == 0)
-            break;
         end = start;
         start = CELL_FETCH(XMEM, start);
+        if(start == -1)
+            break;
     }
 }
 

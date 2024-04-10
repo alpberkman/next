@@ -21,8 +21,8 @@ extern cell lp;
 #define XCOLON(NAME, ...)           cell NAME = COLON(#NAME, __VA_ARGS__)
 #define YPRIMS(NAME, ENTRY, ...)    cell NAME = PRIMS(ENTRY, __VA_ARGS__)
 #define YCOLON(NAME, ENTRY, ...)    cell NAME = COLON(ENTRY, __VA_ARGS__)
-#define ZPRIMS(NAME, ...)           cell X##NAME = PRIMS(#NAME, __VA_ARGS__)
-#define ZCOLON(NAME, ...)           cell X##NAME = COLON(#NAME, __VA_ARGS__)
+#define ZPRIMS(NAME, ...)           cell P_##NAME = PRIMS(#NAME, __VA_ARGS__)
+#define ZCOLON(NAME, ...)           cell P_##NAME = COLON(#NAME, __VA_ARGS__)
 #define IMMEDIATE                   BYTE_FETCH(XMEM, lp+CELL_SIZE) |= MASK_IMM
 
 
