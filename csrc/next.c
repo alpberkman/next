@@ -74,14 +74,14 @@ void dict(VM *vm) {
     YPRIMS(div,     "/", DIV, NEXT);
     XPRIMS(mod,     MOD, NEXT);
 
-    YPRIMS(ldc,     "@", ldc, next);
-    YPRIMS(strc,    "!", strc, next);
-    YPRIMS(ldb,     "C@", ldb, next);
-    YPRIMS(strb,    "C!", strb, next);
+    YPRIMS(ldc,     "@", LDC, NEXT);
+    YPRIMS(strc,    "!", STRC, NEXT);
+    YPRIMS(ldb,     "C@", LDB, NEXT);
+    YPRIMS(strb,    "C!", STRB, NEXT);
 
-    YPRIMS(xfunc,    "func", FUNC, NEXT);
-    YPRIMS(xcell,    "cell", CELL, NEXT);
-    YPRIMS(xbyte,    "byte", BYTE, NEXT);
+    YPRIMS(xfunc,   "func", FUNC, NEXT);
+    YPRIMS(xcell,   "cell", CELL, NEXT);
+    YPRIMS(xbyte,   "byte", BYTE, NEXT);
     XPRIMS(mems,    MEMS, NEXT);
     XPRIMS(key,     KEY, NEXT);
     XPRIMS(emit,    EMIT, NEXT);
