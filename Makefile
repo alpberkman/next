@@ -1,35 +1,50 @@
 
-TARGET := next
-
 CC ?= gcc
 CFLAGS ?= -Wall -Wextra -O2 -Wno-unused-variable
 
+BASE_DIR := $(CURDIR)
+CSRC_DIR := $(BASE_DIR)/csrc
+BUILD_DIR := $(BASE_DIR)/build
+BIN_DIR := $(BASE_DIR)/bin
 
-MAIN ?= main.c
-CSRC_DIRS := ./csrc
-BUILD_DIR := ./build
+TARGET := next
+MAIN ?= $(BASE_DIR)/main.c
 
-CSRC := $(shell find $(CSRC_DIRS) -name '*.c')
-OBJS := $(CSRC:%=$(BUILD_DIR)/%.o)
+export CC
+export CFLAGS
+
+export BASE_DIR
+export CSRC_DIR
+export BUILD_DIR
+export BIN_DIR
+
+export TARGET
+export MAIN
 
 
-.PHONY: clean run
+
+.PHONY: clean binary run
 
 all: run
 
-run: $(BUILD_DIR)/$(TARGET)
+#run: $(BUILD_DIR)/$(TARGET)
+#	clear
+#	./$<
+
+#run2: $(BUILD_DIR)/$(TARGET)
+#	clear
+#	cat - | $<
+
+run: binary
 	clear
-	cat - | $<
+	bin/led
+#	$(BIN_DIR)/led $(BIN_DIR)/next
 
-$(BUILD_DIR)/$(TARGET): $(BUILD_DIR)/$(TARGET).o $(MAIN)
-	$(CC) $(CFLAGS) -o $@ $^
-
-$(BUILD_DIR)/$(TARGET).o: $(OBJS)
-	$(LD) -r -o $@ $^
-
-$(BUILD_DIR)/%.c.o: %.c
-	mkdir -p $(dir $@)
-	$(CC) $(CFLAGS) -o $@ $^ -c
+binary:
+	mkdir -p $(BUILD_DIR)
+	mkdir -p $(BIN_DIR)
+	$(MAKE) -C $(CSRC_DIR)
 
 clean:
-	rm -r $(BUILD_DIR)
+#	-$(MAKE) -C $(CSRC_DIR) clean
+	-rm -r $(BUILD_DIR)

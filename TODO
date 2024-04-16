@@ -1,0 +1,22 @@
+When implementing the outer interpreter have a mechaism for catching sigkill (Ctrl+C).
+
+Consider adding linenoise or editline or
+write your own that can also traverse the 'last'
+the lp pointer already points to the variable that holds the last word,
+use it to traverse and find the matching words, find the longest matching part
+use to array
+stub[32] -> what is typed so far
+found[32] -> longest matching prefix
+if word is immediate make it red?
+
+
+use cpp for words you dont want in the dictionary
+#define on true, strc
+#define off false, strc
+...
+
+NEST and NEXT colon words are never used
+maybe special colon words to push them to the stack
+or
+when preparing eval
+here, NEST, strc
