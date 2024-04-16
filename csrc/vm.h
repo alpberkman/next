@@ -3,6 +3,8 @@
 #ifndef _VM_H
 #define _VM_H
 
+#define CELL_TYPE int
+
 #define MEM_SIZE (0x8000)
 #define MASK_VIS (1<<7)
 #define MASK_IMM (1<<6)
@@ -15,7 +17,8 @@
 
 typedef struct VM VM;
 
-typedef int cell;
+typedef CELL_TYPE cell;
+typedef unsigned CELL_TYPE ucell;
 typedef unsigned char byte;
 typedef void (*func) (VM *vm);
 
