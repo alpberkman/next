@@ -20,3 +20,13 @@ maybe special colon words to push them to the stack
 or
 when preparing eval
 here, NEST, strc
+
+
+https://viewsourcecode.org/snaptoken/kilo/03.rawInputAndOutput.html
+
+mmap shmget shmat
+
+
+led can also open, read and write files to next
+-> even though the interpreter only has getchar() in the start
+you can use a file to start it without cat

@@ -1,4 +1,11 @@
 
+TARGET := next
+MAIN ?= $(CURDIR)/main.c
+
+export TARGET
+export MAIN
+
+
 CC ?= gcc
 CFLAGS ?= -Wall -Wextra -O2 -Wno-unused-variable
 
@@ -7,9 +14,6 @@ CSRC_DIR := $(BASE_DIR)/csrc
 BUILD_DIR := $(BASE_DIR)/build
 BIN_DIR := $(BASE_DIR)/bin
 
-TARGET := next
-MAIN ?= $(BASE_DIR)/main.c
-
 export CC
 export CFLAGS
 
@@ -17,9 +21,6 @@ export BASE_DIR
 export CSRC_DIR
 export BUILD_DIR
 export BIN_DIR
-
-export TARGET
-export MAIN
 
 
 
@@ -36,8 +37,8 @@ all: run
 #	cat - | $<
 
 run: binary
-	clear
-	bin/led
+#	clear
+	$(BIN_DIR)/led
 #	$(BIN_DIR)/led $(BIN_DIR)/next
 
 binary:

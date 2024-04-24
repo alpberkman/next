@@ -2,8 +2,12 @@
 
 #include "led.h"
 
-int main(/*int argc, char *argv[]*/) {
+int main(int argc, char *argv[]) {
+    if(argc < 2)
+        return 1;
+    
     led_init();
+    led_slave(argv[1], &argv[1], NULL);
+
     return 0;
-    led_slave(NULL, NULL, NULL);
 }
