@@ -12,7 +12,10 @@ SUBDIRS := $(shell find $(CURDIR) -mindepth 1 -maxdepth 1 -type d)
 
 .PHONY: clean
 
-all: sub 
+all: sub copy
+
+copy:
+	$(shell cp */bin/* $(BIN_DIR)/)
 
 sub: $(SUBDIRS)
 	$(MAKE) -C $^
