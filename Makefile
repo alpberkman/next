@@ -26,7 +26,7 @@ export EXTERNALS_DIR
 
 
 
-.PHONY: clean binary run
+.PHONY: clean run
 
 all: binary run
 
@@ -35,6 +35,7 @@ run: binary
 #	$(BIN_DIR)/led $(BIN_DIR)/next
 
 binary:
+	git submodule update --recursive --remote
 	mkdir -p $(BUILD_DIR)
 	mkdir -p $(BIN_DIR)
 	$(MAKE) -C $(CSRC_DIR)
