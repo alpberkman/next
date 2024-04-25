@@ -1,0 +1,29 @@
+: CONSTANT
+  CREATE ,
+  DOES> @
+;
+
+: VARIABLE
+  CREATE 0,
+  DOES>
+;
+
+
+: ENUM ( -- )
+  CREATE 0 ,
+  DOES> DUP @ DUP 1+ ROT ! CONSTANT
+;
+
+: ARRAY ( n -- )
+  CREATE CELLS ALLOT
+  DOES> SWAP CELLS +
+;
+
+: COUNTED-ARRAY ( n -- )
+  CREATE DUP , CELLS ALLOT
+  DOES> CELL+ SWAP CELLS +
+;
+
+: SIZEOF -1 ;
+
+

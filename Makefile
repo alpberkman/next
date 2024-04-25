@@ -31,11 +31,12 @@ export EXTERNALS_DIR
 all: binary run
 
 run: binary
-	$(BIN_DIR)/led $(shell whereis cat | cut -d' ' -f2 )
-#	$(BIN_DIR)/led $(BIN_DIR)/next
+#	$(BIN_DIR)/led $(shell whereis cat | cut -d' ' -f2 )
+#	$(BIN_DIR)/led $(BIN_DIR)/$(TARGET)
+	$(BIN_DIR)/$(TARGET)
 
 binary:
-	git submodule update --recursive --remote
+#	git submodule update --recursive --remote
 	mkdir -p $(BUILD_DIR)
 	mkdir -p $(BIN_DIR)
 	$(MAKE) -C $(CSRC_DIR)

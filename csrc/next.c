@@ -87,6 +87,10 @@ void dict(VM *vm) {
     XPRIMS(emit,    EMIT, NEXT);
 
     XCOLON(ASDF,true, dup, swap, add, halt, unnest);
+    XCOLON(qwer,ASDF, dup, swap, add, halt, unnest); IMMEDIATE;
+    XCOLON(test, lit, 1, false, dup, xfunc, unnest);
+    XCOLON(test2, lit, 2, test, lit, 22, halt);
+    runc(vm, test2);
 /**/
 /*
 
