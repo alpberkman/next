@@ -4,7 +4,7 @@
 
 #include <ctype.h>
 #include <stdio.h>
-
+#include <string.h>
 
 
 void pstack(cell *s, cell p, char *sname, char *fstr) {
@@ -17,26 +17,6 @@ void stacks(VM *vm) {
     pstack(XPS, XPSP, "PS", "%i ");
     puts("");
     pstack(XRS, XRSP, "RS", "%i ");
-    puts("");
-}
-
-void info(VM *vm) {
-    printf("VM info: 0x%p\n", vm);
-    puts("");
-
-    penum2func();
-    puts("");
-
-    stat(vm);
-    puts("");
-
-    hexdump(vm, 16, 32);
-    puts("");
-
-    pwords(vm);
-    puts("");
-
-    stacks(vm);
     puts("");
 }
 
@@ -53,6 +33,26 @@ void stat(VM *vm) {
         printf("mem: NULL\n");
     else
         printf("mem: 0x%p\n", XMEM);
+}
+
+void info(VM *vm) {
+    printf("VM info: 0x%p\n", vm);
+    puts("");
+
+    penum2func();
+    puts("");
+
+    stat(vm);
+    puts("");
+
+    hexdump(vm, 16, 64);
+    puts("");
+
+    pwords(vm);
+    puts("");
+
+    stacks(vm);
+    puts("");
 }
 
 
@@ -108,29 +108,29 @@ void pword(VM *vm, cell addr) {
 void pheader(VM *vm, cell addr) {
     WORD_DISASM(addr);
     printf("0x%06x: 0x%08x %.*s%*s %2i   %c   %c  0x%06x ",
-        addr,
-        link, 
-        len, name, 
-        16-len, "",
-        len,
-        vis ? '+' : '-',
-        imm ? '+' : '-',
-        cfa);
+           addr,
+           link,
+           len, name,
+           16-len, "",
+           len,
+           vis ? '+' : '-',
+           imm ? '+' : '-',
+           cfa);
 }
 
 void pwords(VM *vm) {
     printf("%-10s%-11s%-17s%-4s%-4s%-4s%-9s%-24s%-19s%s\n",
-        "addr",
-        "link",
-        "name",
-        "len",
-        "vis",
-        "imm",
-        "cfa",
-        "space",
-        "cf",
-        "pf"
-    );
+           "addr",
+           "link",
+           "name",
+           "len",
+           "vis",
+           "imm",
+           "cfa",
+           "space",
+           "cf",
+           "pf"
+          );
     cell start = lp;
     cell end = hp;
     for(;;) {
@@ -165,6 +165,83 @@ void disasm(VM *vm, cell addr, cell limit) {
             waddr = CELL_FETCH(XMEM, waddr);
         pword(vm, waddr);
         printf(" ");
+        if(wname(vm, waddr, "LIT")) {
+            cfa += CELL_SIZE;
+            printf(" (0x%x | %i) ", CELL_FETCH(XMEM, cfa), CELL_FETCH(XMEM, cfa));
+        }
         cfa += CELL_SIZE;
+    }
+}
+
+int locate(VM *vm, cell addr) {
+    cell llp = lp;
+    while(llp > addr && llp != -1)
+        llp = CELL_FETCH(XMEM, llp);
+
+    return llp;
+}
+
+int wname(VM *vm, cell addr, char *target) {
+    WORD_DISASM(addr);
+    if(strlen(target) != len)
+        return 0;
+    return 0 == strncmp((char *) name, target, len);
+}
+
+void disasm_instr(VM *vm) {
+    cell addr;
+    if(DEBUG_ENABLE(2, DEBUG_ENABLE(1, XWP != 0) && BYTE_FETCH(XMEM, XIP) != NEXT)) {
+        printf("%4x %4x | %-7s: ", XIP, XWP, enum2s(BYTE_FETCH(XMEM, XIP)));
+
+        for(int i = 0; i < XRSP-1; ++i)
+            printf("  ");
+
+        addr = locate(vm, XWP);
+        pword(vm, addr);
+        printf(": ");
+
+        addr = locate(vm, XIP);
+        pword(vm, addr);
+        if(BYTE_FETCH(XMEM, XIP) == LIT) {
+            printf(" (0x%x | %i)", CELL_FETCH(XMEM, XWP), CELL_FETCH(XMEM, XWP));
+        }
+        puts("");
+        if(DEBUG_ENABLE(4, 0)) {
+            for(int i = 0; i < XRSP*2-1+20; ++i)
+                printf(" ");
+            pstack(XPS, XPSP, "P-Stack", "%i ");
+            puts("");
+            for(int i = 0; i < XRSP*2-1+20; ++i)
+                printf(" ");
+            pstack(XRS, XRSP, "R-Stack", "%i ");
+            puts("");
+        }
+    }
+}
+
+void rund(VM *vm, cell addr) {
+    XIP = addr;
+
+    printf("Tracing: ");
+    pword(vm, locate(vm, XIP));
+    puts("");
+
+    if(DEBUG_ENABLE(1, 0)) {
+        pstack(XPS, XPSP, "P-Stack", "%i ");
+        puts("");
+        pstack(XRS, XRSP, "R-Stack", "%i ");
+        puts("");
+    }
+
+    printf("%4s %4s | %-7s: %s\n", "IP", "WP", "Prims", "Instructions");
+    for(XP = ON; XP == ON; tick(vm))
+        disasm_instr(vm);
+    XRSP -= 1;
+
+    if(DEBUG_ENABLE(1, 0)) {
+        pstack(XPS, XPSP, "P-Stack", "%i ");
+        puts("");
+        pstack(XRS, XRSP, "R-Stack", "%i ");
+        puts("");
     }
 }

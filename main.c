@@ -13,13 +13,13 @@ int main(/*int argc, char *argv[]*/) {
         VM vm;
         setup(&vm);
 
-        info(&vm);
-        puts("");
+        //info(&vm);
+        //puts("");
 
-        hexdump(&vm, 16, 32);
-        puts("");
-        puts("");
-        puts("");
+        //hexdump(&vm, 16, 32);
+        //puts("");
+        //puts("");
+        //puts("");
 
     return 0;
 }

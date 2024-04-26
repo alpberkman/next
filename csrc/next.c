@@ -3,6 +3,8 @@
 #include "imm.h"
 #include "prims.h"
 
+#include "debug.h"
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -28,7 +30,7 @@ void dict(VM *vm) {
     hp =  0;
     lp = -1;
 
-    PRIMS("", NEXT);
+    PRIMS("NEXT", NEXT);
 
     // X -> unique name
     // Y -> manual
@@ -42,7 +44,7 @@ void dict(VM *vm) {
     XPRIMS(unnest,  UNNEST, NEXT);
     XPRIMS(jmp,     JMP, NEXT);
     XPRIMS(jz,      JZ, NEXT);
-    XPRIMS(exe,     EXE, NEXT);
+    XPRIMS(execute, EXE, NEXT);
     
     XPRIMS(dup,     DUP, NEXT);
     XPRIMS(drop,    DROP, NEXT);
@@ -88,9 +90,21 @@ void dict(VM *vm) {
 
     XCOLON(ASDF,true, dup, swap, add, halt, unnest);
     XCOLON(qwer,ASDF, dup, swap, add, halt, unnest); IMMEDIATE;
-    XCOLON(test, lit, 1, false, dup, xfunc, unnest);
-    XCOLON(test2, lit, 2, test, lit, 22, halt);
-    runc(vm, test2);
+    XCOLON(test1, lit, 1, false, dup, xfunc, unnest);
+    XCOLON(test2, lit, 2, test1, lit, 22, halt);
+    XCOLON(test3, lit, test1, execute, halt);
+
+    pwords(vm);
+    puts("");
+
+    hexdump(vm, 16, 64);
+    puts("");
+
+    rund(vm, test3);
+    puts("");
+
+    rund(vm, test3);
+    puts("");
 /**/
 /*
 

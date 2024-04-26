@@ -7,7 +7,7 @@ export MAIN
 
 
 CC ?= gcc
-CFLAGS ?= -Wall -Wextra -O2 -Wno-unused-variable
+CFLAGS ?= -Wall -Wextra -O2 -Wno-unused-variable -D DEBUG_LEVEL=1
 
 BASE_DIR := $(CURDIR)
 CSRC_DIR := $(BASE_DIR)/csrc
