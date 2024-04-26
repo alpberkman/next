@@ -97,7 +97,7 @@ void dict(VM *vm) {
     pwords(vm);
     puts("");
 
-    hexdump(vm, 16, 64);
+    hexdump(vm, 16, (hp | 0xf)/16 + 1);
     puts("");
 
     rund(vm, test3);

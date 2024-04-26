@@ -45,7 +45,7 @@ void info(VM *vm) {
     stat(vm);
     puts("");
 
-    hexdump(vm, 16, 64);
+    hexdump(vm, 16, (hp | 0xf)/16 + 1);
     puts("");
 
     pwords(vm);

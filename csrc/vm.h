@@ -64,6 +64,7 @@ void execute(VM *vm, byte op);
 void tick(VM *vm);
 void runc(VM *vm, cell addr);
 
+void reset(VM *vm);
 void init(VM *vm, byte *mem);
 
 

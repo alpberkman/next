@@ -20,7 +20,7 @@ void runc(VM *vm, cell addr) {
     for(XP = ON; XP == ON; tick(vm));
 }
 
-void init(VM *vm, byte *mem) {
+void reset(VM *vm) {
     // Setup ITC
     XP = OFF;
     XIP = 0;
@@ -29,6 +29,10 @@ void init(VM *vm, byte *mem) {
     // Setup SPU
     XPSP = 0;
     XRSP = 0;
+}
+void init(VM *vm, byte *mem) {
+
+    reset(vm);
 
     // Setup MEM
     XMEM = mem;
