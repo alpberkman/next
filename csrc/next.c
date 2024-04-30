@@ -45,6 +45,8 @@ void dict(VM *vm) {
     XPRIMS(jmp,     JMP, NEXT);
     XPRIMS(jz,      JZ, NEXT);
     XPRIMS(execute, EXE, NEXT);
+    XPRIMS(rjmp,     RJMP, NEXT);
+    XPRIMS(rjz,      RJZ, NEXT);
     
     XPRIMS(dup,     DUP, NEXT);
     XPRIMS(drop,    DROP, NEXT);
@@ -81,18 +83,35 @@ void dict(VM *vm) {
     YPRIMS(ldb,     "C@", LDB, NEXT);
     YPRIMS(strb,    "C!", STRB, NEXT);
 
-    YPRIMS(xfunc,   "func", FUNC, NEXT);
-    YPRIMS(xcell,   "cell", CELL, NEXT);
-    YPRIMS(xbyte,   "byte", BYTE, NEXT);
+    YPRIMS(xfunc,   "FUNC", FUNC, NEXT);
+    YPRIMS(xcell,   "CELL", CELL, NEXT);
+    YPRIMS(xbyte,   "BYTE", BYTE, NEXT);
     XPRIMS(mems,    MEMS, NEXT);
     XPRIMS(key,     KEY, NEXT);
     XPRIMS(emit,    EMIT, NEXT);
+
+
+    XPRIMS(ijmp,     LIT, JMP, NEXT);
+    XPRIMS(ijz,      LIT, JZ, NEXT);
+    XPRIMS(iexecute, LIT, EXE, NEXT);
+    XPRIMS(irjmp,    LIT, RJMP, NEXT);
+    XPRIMS(irjz,     LIT, RJZ, NEXT);
+
 
     XCOLON(ASDF,true, dup, swap, add, halt, unnest);
     XCOLON(qwer,ASDF, dup, swap, add, halt, unnest); IMMEDIATE;
     XCOLON(test1, lit, 1, false, dup, xfunc, unnest);
     XCOLON(test2, lit, 2, test1, lit, 22, halt);
     XCOLON(test3, lit, test1, execute, halt);
+
+
+    XCOLON(r1, lit, 1, unnest);
+    XCOLON(r2, r1, dup, lit, 1, add, unnest);
+    XCOLON(r3, r2, dup, lit, 1, add, unnest);
+    XCOLON(test4, r3, r3, iexecute, r2, dup, add, halt, halt);
+
+    XCOLON(test5, r3, r3, irjmp, 8, xbyte, xcell, xfunc, lit, 0, halt);
+    XCOLON(test6, r3, r3, ijmp, test2+1, halt);
 
     pwords(vm);
     puts("");
@@ -104,6 +123,16 @@ void dict(VM *vm) {
     puts("");
 
     rund(vm, test3);
+    puts("");
+
+    rund(vm, test4);
+    puts("");
+
+    rund(vm, test5);
+    puts("");
+
+    XCOLON(test7, lit, 1, add, dup, lit, 5, sub, irjz, CELL_SIZE, test7, halt, halt);
+    rund(vm, test7);
     puts("");
 /**/
 /*

@@ -34,3 +34,20 @@ you can use a file to start it without cat
 \ Need EVAL POSTPONE COMPILE [COMPILE] ' ['] EXECUTE strings [CHAR] CREATE DOES> CONSTANT VARIABLE
 
 miniMAL word set += ALLOT POSTPONE  ." TYPE EXPECT [CHAR] [']
+
+relative jumps
+over sub swap !
+
+lit, jmp, next -> ijmp
+lit, rjmp, next -> irjmp
+
+FTH(_rjmp) {
+    cell addr = PPOP;
+    MJMP += addr;
+}
+FTH(_rjz) {
+    cell addr = PPOP;
+    cell flag = PPOP;
+    if(flag == FALSE)
+        MJMP += addr;
+}

@@ -26,6 +26,8 @@
     APPLY(JMP,  _jmp) \
     APPLY(JZ,   _jz) \
     APPLY(EXE,  _exe) \
+    APPLY(RJMP,  _rjmp) \
+    APPLY(RJZ,   _rjz) \
     APPLY(DUP,  _dup) \
     APPLY(DROP, _drop) \
     APPLY(SWAP, _swap) \

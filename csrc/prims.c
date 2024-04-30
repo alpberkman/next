@@ -43,6 +43,16 @@ FTH(_exe) {
     cell addr = PPOP;
     MEXE = addr;
 }
+FTH(_rjmp) {
+    cell addr = PPOP;
+    MJMP += addr;
+}
+FTH(_rjz) {
+    cell addr = PPOP;
+    cell flag = PPOP;
+    if(flag == FALSE)
+        MJMP += addr;
+}
 FTH(_dup) {
     cell val = PPOP;
     PPUSH = val;
