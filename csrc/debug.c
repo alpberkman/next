@@ -226,22 +226,8 @@ void rund(VM *vm, cell addr) {
     pword(vm, locate(vm, XIP));
     puts("");
 
-    if(DEBUG_ENABLE(1, 0)) {
-        pstack(XPS, XPSP, "P-Stack", "%i ");
-        puts("");
-        pstack(XRS, XRSP, "R-Stack", "%i ");
-        puts("");
-    }
-
     printf("%4s %4s | %-7s: %s\n", "IP", "WP", "Prims", "Instructions");
     for(XP = ON; XP == ON; tick(vm))
         disasm_instr(vm);
     XRSP -= 1;
-
-    if(DEBUG_ENABLE(1, 0)) {
-        pstack(XPS, XPSP, "P-Stack", "%i ");
-        puts("");
-        pstack(XRS, XRSP, "R-Stack", "%i ");
-        puts("");
-    }
 }

@@ -136,12 +136,6 @@ FTH(_shl) {
     cell b = PPOP;
     PPUSH = b << a;
 }
-FTH(_tru) {
-    PPUSH = TRUE;
-}
-FTH(_fls) {
-    PPUSH = FALSE;
-}
 FTH(_add) {
     cell a = PPOP;
     cell b = PPOP;
@@ -186,18 +180,6 @@ FTH(_strb) {
     cell addr = PPOP;
     byte val = PPOP;
     BYTE_FETCH(XMEM, addr) = val;
-}
-FTH(_func) {
-    PPUSH = FUNC_SIZE;
-}
-FTH(_cell) {
-    PPUSH = CELL_SIZE;
-}
-FTH(_byte) {
-    PPUSH = BYTE_SIZE;
-}
-FTH(_mems) {
-    PPUSH = MEM_SIZE;
 }
 FTH(_key) {
     byte c = getchar();

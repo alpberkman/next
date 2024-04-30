@@ -4,6 +4,10 @@
 
 #include "vm.h"
 
+#include <stdio.h>
+#include <string.h>
+
+
 extern cell hp;
 extern cell lp;
 
@@ -17,6 +21,8 @@ extern cell lp;
     cell cfa = ADDR + CELL_SIZE + BYTE_SIZE + len;
 // Given the address of a link field, disassembles a words's fields
 
+#define DR(X) reset(vm); rund(vm, (X)); stacks(vm); puts("")
+// Wrapper for debug runs 
 
 #define DEBUG_ENABLE(A, B) ((DEBUG_LEVEL >= (A)) || (B))  
 // If debug level is high enough then true else whatever B is

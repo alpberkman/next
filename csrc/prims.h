@@ -46,8 +46,6 @@
     APPLY(XOR,  _xor) \
     APPLY(SHR,  _shr) \
     APPLY(SHL,  _shl) \
-    APPLY(TRU,  _tru) \
-    APPLY(FLS,  _fls) \
     APPLY(ADD,  _add) \
     APPLY(SUB,  _sub) \
     APPLY(MUL,  _mul) \
@@ -57,10 +55,6 @@
     APPLY(STRC, _strc) \
     APPLY(LDB,  _ldb) \
     APPLY(STRB, _strb) \
-    APPLY(FUNC, _func) \
-    APPLY(CELL, _cell) \
-    APPLY(BYTE, _byte) \
-    APPLY(MEMS,  _mems) \
     APPLY(KEY,  _key) \
     APPLY(EMIT, _emit)
 

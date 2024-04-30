@@ -25,6 +25,7 @@ extern cell lp;
 #define ZCOLON(NAME, ...)           cell P_##NAME = COLON(#NAME, __VA_ARGS__)
 #define IMMEDIATE                   BYTE_FETCH(XMEM, lp+CELL_SIZE) |= MASK_IMM
 
+// Not yet implemented
 
 #define XCONST(NAME, X)             XCOLON(NAME, LIT, X, UNNEST)
 #define XVAR(NAME)                  XCOLON(NAME, LIT, hp+CELLS(3), UNNEST, 0)

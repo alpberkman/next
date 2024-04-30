@@ -23,8 +23,6 @@ byte *setup(VM *vm) {
         
     return mem;
 }
-
-
 void dict(VM *vm) {
     //(void) vm;
     hp =  0;
@@ -36,11 +34,13 @@ void dict(VM *vm) {
     // Y -> manual
     // Z -> add P_
 
+    // Begining of primitives words
+    // ITC words
     XPRIMS(nop,     NOP, NEXT);
     XPRIMS(halt,    HALT, NEXT);
     XPRIMS(lit,     LIT, NEXT);
-    XPRIMS(next,    NEXT);
-    XPRIMS(nest,    NEST);
+    //XPRIMS(next,    NEXT);
+    //XPRIMS(nest,    NEST);
     XPRIMS(unnest,  UNNEST, NEXT);
     XPRIMS(jmp,     JMP, NEXT);
     XPRIMS(jz,      JZ, NEXT);
@@ -48,6 +48,7 @@ void dict(VM *vm) {
     XPRIMS(rjmp,     RJMP, NEXT);
     XPRIMS(rjz,      RJZ, NEXT);
     
+    // Stack manipulation and status words
     XPRIMS(dup,     DUP, NEXT);
     XPRIMS(drop,    DROP, NEXT);
     XPRIMS(swap,    SWAP, NEXT);
@@ -58,44 +59,59 @@ void dict(VM *vm) {
     XPRIMS(depth,   LDP, NEXT);
     XPRIMS(rdepth,  LDR, NEXT);
  
+    // Logic operators
     YPRIMS(eq,      "=", EQ, NEXT);
     YPRIMS(neq,     "<>", NEQ, NEXT);
     YPRIMS(gt,      ">", GT, NEXT);
     YPRIMS(lt,      "<", LT, NEXT);
    
+    // Bitweise operators
     XPRIMS(and,     AND, NEXT);
     XPRIMS(or,      OR, NEXT);
     XPRIMS(xor,     XOR, NEXT);
     XPRIMS(rshift,  SHR, NEXT);
     XPRIMS(lshift,  SHL, NEXT);
 
-    XPRIMS(true,    TRU, NEXT);
-    XPRIMS(false,   FLS, NEXT);
-
+    // Math operators
     YPRIMS(add,     "+", ADD, NEXT);
     YPRIMS(sub,     "-", SUB, NEXT);
     YPRIMS(mul,     "*", MUL, NEXT);
     YPRIMS(div,     "/", DIV, NEXT);
     XPRIMS(mod,     MOD, NEXT);
 
+    // Memory read and write operators
     YPRIMS(ldc,     "@", LDC, NEXT);
     YPRIMS(strc,    "!", STRC, NEXT);
     YPRIMS(ldb,     "C@", LDB, NEXT);
     YPRIMS(strb,    "C!", STRB, NEXT);
 
-    YPRIMS(xfunc,   "FUNC", FUNC, NEXT);
-    YPRIMS(xcell,   "CELL", CELL, NEXT);
-    YPRIMS(xbyte,   "BYTE", BYTE, NEXT);
-    XPRIMS(mems,    MEMS, NEXT);
+    // IO operators
     XPRIMS(key,     KEY, NEXT);
     XPRIMS(emit,    EMIT, NEXT);
 
 
+    // Begining of higher primitives words
+    // Flow control
     XPRIMS(ijmp,     LIT, JMP, NEXT);
     XPRIMS(ijz,      LIT, JZ, NEXT);
     XPRIMS(iexecute, LIT, EXE, NEXT);
     XPRIMS(irjmp,    LIT, RJMP, NEXT);
     XPRIMS(irjz,     LIT, RJZ, NEXT);
+
+
+    // Begining of colon words
+    // Logical values
+    XCOLON(true, lit, TRUE, unnest);
+    XCOLON(false, lit, FALSE, unnest);
+
+    // Size values
+    YCOLON(xfunc, "func", lit, FUNC_SIZE, unnest);
+    YCOLON(xcell, "cell", lit, CELL_SIZE, unnest);
+    YCOLON(xbyte, "byte", lit, BYTE_SIZE, unnest);
+    XCOLON(mems, lit, MEM_SIZE, unnest);
+
+
+    // Begining of tests
 
 
     XCOLON(ASDF,true, dup, swap, add, halt, unnest);
@@ -113,33 +129,30 @@ void dict(VM *vm) {
     XCOLON(test5, r3, r3, irjmp, 8, xbyte, xcell, xfunc, lit, 0, halt);
     XCOLON(test6, r3, r3, ijmp, test2+1, halt);
 
+    XCOLON(test8, lit, 1, dup, lit, 5, sub, xbyte, dup, xcell, xfunc, lit, 123, halt);
+    XCOLON(test7, lit, 1, add, dup, lit, 5, sub, irjz, CELL_SIZE, test7, halt, halt);
+
+
+    penum2func();
+    puts("");
     pwords(vm);
     puts("");
-
     hexdump(vm, 16, (hp | 0xf)/16 + 1);
     puts("");
 
-    rund(vm, test3);
-    puts("");
+    DR(test8);
 
-    rund(vm, test3);
-    puts("");
+    DR(test3);
 
-    rund(vm, test4);
-    puts("");
+    DR(test3);
 
-    rund(vm, test5);
-    puts("");
+    DR(test4);
 
-    XCOLON(test7, lit, 1, add, dup, lit, 5, sub, irjz, CELL_SIZE, test7, halt, halt);
-    rund(vm, test7);
-    puts("");
-/**/
+    DR(test5);
+
+   //DR(test7);
+    
 /*
-
-
-
-
     XVAR(HP);
     XVAR(LP);
 
