@@ -53,6 +53,9 @@ FTH(_rjz) {
     if(flag == FALSE)
         MJMP += addr;
 }
+FTH(_ldwp) {
+    PPUSH = XWP;
+}
 FTH(_dup) {
     cell val = PPOP;
     PPUSH = val;

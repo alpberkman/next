@@ -151,12 +151,12 @@ void disasm(VM *vm, cell addr, cell limit) {
     for(;;) {
         printf("%-7s", enum2s(BYTE_FETCH(XMEM, cfa)));
         ctr += 1;
-        if(BYTE_FETCH(XMEM, cfa) == NEXT || BYTE_FETCH(XMEM, cfa) == NEST)
+        if(BYTE_FETCH(XMEM, cfa) == NEXT || BYTE_FETCH(XMEM, cfa) == NEST || BYTE_FETCH(XMEM, cfa) == UNNEST)
             break;
         cfa += BYTE_SIZE;
     }
-    for(; ctr < 2; ++ctr)
-        printf("%7s", "");
+    //for(; ctr < 2; ++ctr)
+    //    printf("%7s", "");
     printf(" <|> ");
     cfa += BYTE_SIZE;
     while(cfa < limit) {
@@ -165,7 +165,7 @@ void disasm(VM *vm, cell addr, cell limit) {
             waddr = CELL_FETCH(XMEM, waddr);
         pword(vm, waddr);
         printf(" ");
-        if(wname(vm, waddr, "LIT")) {
+        if(wname(vm, waddr, "LIT") || wname(vm, waddr, "DOCON") || wname(vm, waddr, "DOVAR")) {
             cfa += CELL_SIZE;
             printf(" (0x%x | %i) ", CELL_FETCH(XMEM, cfa), CELL_FETCH(XMEM, cfa));
         }
@@ -191,6 +191,16 @@ int wname(VM *vm, cell addr, char *target) {
 void disasm_instr(VM *vm) {
     cell addr;
     if(DEBUG_ENABLE(2, DEBUG_ENABLE(1, XWP != 0) && BYTE_FETCH(XMEM, XIP) != NEXT)) {
+        if(DEBUG_ENABLE(4, 0)) {
+            for(int i = 0; i < XRSP*2-1+20; ++i)
+                printf(" ");
+            pstack(XPS, XPSP, "P-Stack", "%i ");
+            puts("");
+            for(int i = 0; i < XRSP*2-1+20; ++i)
+                printf(" ");
+            pstack(XRS, XRSP, "R-Stack", "%i ");
+            puts("");
+        }
         printf("%4x %4x | %-7s: ", XIP, XWP, enum2s(BYTE_FETCH(XMEM, XIP)));
 
         for(int i = 0; i < XRSP-1; ++i)
@@ -202,20 +212,10 @@ void disasm_instr(VM *vm) {
 
         addr = locate(vm, XIP);
         pword(vm, addr);
-        if(BYTE_FETCH(XMEM, XIP) == LIT) {
+        if(BYTE_FETCH(XMEM, XIP) == LIT || wname(vm, locate(vm, XIP), "DOCON") || wname(vm, locate(vm, XIP), "DOVAR")) {
             printf(" (0x%x | %i)", CELL_FETCH(XMEM, XWP), CELL_FETCH(XMEM, XWP));
         }
         puts("");
-        if(DEBUG_ENABLE(4, 0)) {
-            for(int i = 0; i < XRSP*2-1+20; ++i)
-                printf(" ");
-            pstack(XPS, XPSP, "P-Stack", "%i ");
-            puts("");
-            for(int i = 0; i < XRSP*2-1+20; ++i)
-                printf(" ");
-            pstack(XRS, XRSP, "R-Stack", "%i ");
-            puts("");
-        }
     }
 }
 

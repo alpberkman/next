@@ -27,3 +27,6 @@
 : SIZEOF -1 ;
 
 
+: TIMES ' SWAP 0 DO DUP >R EXECUTE R> LOOP DROP ;
+
+3 times .s

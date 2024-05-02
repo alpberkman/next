@@ -10,12 +10,12 @@ extern cell hp;
 extern cell lp;
 
 
-#define HEADER(NAME)        header(vm, NAME, (sizeof(NAME)-1))
-#define CF(...)             cf(vm, (sizeof((byte[]){__VA_ARGS__})/sizeof(byte)), __VA_ARGS__)
-#define PF(...)             pf(vm, (sizeof((cell[]){__VA_ARGS__})/sizeof(cell)), __VA_ARGS__)
+#define HEADER(NAME)                header(vm, NAME, (sizeof(NAME)-1))
+#define CF(...)                     cf(vm, (sizeof((byte[]){__VA_ARGS__})/sizeof(byte)), __VA_ARGS__)
+#define PF(...)                     pf(vm, (sizeof((cell[]){__VA_ARGS__})/sizeof(cell)), __VA_ARGS__)
 
-#define PRIMS(NAME, ...)    HEADER(NAME); CF(__VA_ARGS__)
-#define COLON(NAME, ...)    HEADER(NAME); CF(NEST); PF(__VA_ARGS__)
+#define PRIMS(NAME, ...)            HEADER(NAME); CF(__VA_ARGS__)
+#define COLON(NAME, ...)            HEADER(NAME); CF(NEST); PF(__VA_ARGS__)
 
 #define XPRIMS(NAME, ...)           cell NAME = PRIMS(#NAME, __VA_ARGS__)
 #define XCOLON(NAME, ...)           cell NAME = COLON(#NAME, __VA_ARGS__)
@@ -25,12 +25,41 @@ extern cell lp;
 #define ZCOLON(NAME, ...)           cell P_##NAME = COLON(#NAME, __VA_ARGS__)
 #define IMMEDIATE                   BYTE_FETCH(XMEM, lp+CELL_SIZE) |= MASK_IMM
 
+
+#define XVAR(NAME)                  XCOLON(NAME, dovar, 0)
+#define XCON(NAME, VAL)             XCOLON(NAME, docon, (VAL))
+#define YVAR(NAME, ENTRY)           YCOLON(NAME, ENTRY, dovar, 0)
+#define YCON(NAME, ENTRY, VAL)      YCOLON(NAME, ENTRY, docon, (VAL))
+
+
+#define COLD(...)       \
+    { \
+        int old_hp, old_lp; \
+        int new_hp, new_lp; \
+        new_hp = 0; \
+        new_lp = 0; \
+        old_hp = hp; \
+        old_lp = lp; \
+        XCOLON(c0ld, __VA_ARGS__); \
+        runc(vm, c0ld); \
+        new_hp = hp; \
+        new_lp = lp; \
+        hp = old_hp; \
+        lp = old_lp; \
+        XCOLON(cold, __VA_ARGS__); \
+        runc(vm, cold); \
+    }
+
+
+//#define XCREATE_DOES(NAME, ADDR)    XCOLON(NAME, ldwp, (ADDR), unnest) //wrong
+
+
 // Not yet implemented
 
-#define XCONST(NAME, X)             XCOLON(NAME, LIT, X, UNNEST)
-#define XVAR(NAME)                  XCOLON(NAME, LIT, hp+CELLS(3), UNNEST, 0)
-#define YCONST(NAME, ENTRY, X)      YCOLON(NAME, ENTRY, LIT, X, UNNEST)
-#define YVAR(NAME, ENTRY)           YCOLON(NAME, ENTRY, LIT, hp+CELLS(3), UNNEST, 0)
+//#define XCONST(NAME, X)             XCOLON(NAME, LIT, X, UNNEST)
+//#define XVAR(NAME)                  XCOLON(NAME, LIT, hp+CELLS(3), UNNEST, 0)
+//#define YCONST(NAME, ENTRY, X)      YCOLON(NAME, ENTRY, LIT, X, UNNEST)
+//#define YVAR(NAME, ENTRY)           YCOLON(NAME, ENTRY, LIT, hp+CELLS(3), UNNEST, 0)
 #define STR(S)                      PF(asdf); next_str(vm, s)
 #define ALLOT(N)                    hp+=(N)
 
