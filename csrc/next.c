@@ -46,7 +46,6 @@ void dict(VM *vm) {
     XPRIMS(execute, EXE, NEXT);
     XPRIMS(rjmp,     RJMP, NEXT);
     XPRIMS(rjz,      RJZ, NEXT);
-    XPRIMS(ldwp,     LDWP, NEXT);
     
     // Stack manipulation and status words
     XPRIMS(dup,     DUP, NEXT);
@@ -98,12 +97,12 @@ void dict(VM *vm) {
     XPRIMS(irjmp,    LIT, RJMP, NEXT);
     XPRIMS(irjz,     LIT, RJZ, NEXT);
 
-    // CREATE ... DOES> like words
-    XPRIMS(dovar,    LDWP, UNNEST);
-    XPRIMS(docon,    LDWP, LDC, UNNEST);
-
 
     // Begining of colon words
+    // CREATE ... DOES> like words
+    XCOLON(dovar,    pop, unnest);
+    XCOLON(docon,    pop, ldc, unnest);
+
     // Logical values
     XCON(true, TRUE);
     XCON(false, FALSE);
