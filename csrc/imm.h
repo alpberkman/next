@@ -25,6 +25,7 @@ extern cell lp;
 #define ZCOLON(NAME, ...)           cell P_##NAME = COLON(#NAME, __VA_ARGS__)
 #define IMMEDIATE                   BYTE_FETCH(XMEM, lp+CELL_SIZE) |= MASK_IMM
 
+
 // Variable and constant macros
 #define XVAR(NAME)                  XCOLON(NAME, dovar, 0)
 #define XCON(NAME, VAL)             XCOLON(NAME, docon, (VAL))
@@ -33,7 +34,7 @@ extern cell lp;
 
 
 // Creates a word called cold to reset the vm
-#define COLD(...)       \
+#define COLD(...)   \
     { \
         int old_hp, old_lp; \
         int new_hp, new_lp; \
@@ -53,12 +54,12 @@ extern cell lp;
 
 // Macros for words that might be used in interpreter mode while compiling other words
 #define ALLOT(N)                    hp+=(N)
-//#define STR()                       cf(vm, (sizeof((byte[]){__VA_ARGS__})/sizeof(byte)), (byte[]){__VA_ARGS__})
+//#define STR(X)                      PF(irjmp, sizeof(X)); cf(vm, sizeof(X), X)
 
 // Control flow macros
-#define IF(...)             next_if(vm);        PF(__VA_ARGS__)
-#define THEN(...)           next_then(vm);      PF(__VA_ARGS__)
-#define ELSE(...)           next_else(vm);      PF(__VA_ARGS__)
+#define IF(...)             next_if(vm, irjz);      PF(__VA_ARGS__)
+#define THEN(...)           next_then(vm);          PF(__VA_ARGS__)
+#define ELSE(...)           next_else(vm, irjmp);   PF(__VA_ARGS__)
 
 #define BEGIN(...)          next_begin(vm);     PF(__VA_ARGS__)
 #define AGAIN(...)          next_agin(vm);      PF(__VA_ARGS__)
@@ -69,6 +70,15 @@ extern cell lp;
 #define DO(...)             next_do(vm);        PF(__VA_ARGS__)
 #define LOOP(...)           next_loop(vm);      PF(__VA_ARGS__)
 #define PLOOP(...)          next_ploop(vm);     PF(__VA_ARGS__)
+
+
+#define PSWAP \
+    { \
+        cell tmp1 = PPOP; \
+        cell tmp2 = PPOP; \
+        PPUSH = tmp1; \
+        PPUSH = tmp2; \
+    }
 
 
 //#define FW(W)                       find_word(vm, #W)
@@ -83,9 +93,9 @@ void pf(VM *vm, int len, cell *args);
 void next_str(VM *vm, char *c);
 
 
-void next_if(VM *vm);
+void next_if(VM *vm, cell word);
 void next_then(VM *vm);
-void next_else(VM *vm);
+void next_else(VM *vm, cell word);
 
 void next_begin(VM *vm);
 void next_agin(VM *vm);

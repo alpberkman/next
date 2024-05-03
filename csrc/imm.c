@@ -34,6 +34,22 @@ void pf(VM *vm, int len, cell *args) {
     hp += CELLS(len);
 }
 
+void next_if(VM *vm, cell word) {
+    PF(word);
+    PPUSH = hp;
+    hp += CELL_SIZE;
+}
+void next_then(VM *vm) {
+    cell addr = PPOP;
+    cell offset = hp - addr - CELL_SIZE;
+    CELL_FETCH(XMEM, addr) = offset;
+}
+void next_else(VM *vm, cell word) {
+    next_if(vm, word);
+    PSWAP;
+    next_then(vm);
+}
+
 /*
 void next_str(VM *vm, char *c) {
     strcpy((void *) &BYTE_FETCH(MEM, hp), c);

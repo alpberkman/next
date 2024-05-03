@@ -150,6 +150,22 @@ XCOLON(XXXXX, lit, MEM_SIZE, unnest);
    DR(test5);
 
 
+
+   XCOLON(test6, false);
+   IF(true, true, true, true);
+   ELSE(false, false, false, false);
+   THEN(lit, 134, halt);
+
+    penum2func();
+    puts("");
+    pwords(vm);
+    puts("");
+    hexdump(vm, 16, (hp | 0xf)/16 + 1);
+    puts("");
+
+   DR(test6);
+
+
     pwords(vm);
     puts("");
     hexdump(vm, 16, (hp | 0xf)/16 + 1);

@@ -165,9 +165,9 @@ void disasm(VM *vm, cell addr, cell limit) {
             waddr = CELL_FETCH(XMEM, waddr);
         pword(vm, waddr);
         printf(" ");
-        if(wname(vm, waddr, "LIT") || wname(vm, waddr, "DOCON") || wname(vm, waddr, "DOVAR")) {
+        if(wname(vm, waddr, "LIT") || wname(vm, waddr, "DOCON") || wname(vm, waddr, "DOVAR") || wname(vm, waddr, "IRJMP") || wname(vm, waddr, "IRJZ")) {
             cfa += CELL_SIZE;
-            printf(" (0x%x | %i) ", CELL_FETCH(XMEM, cfa), CELL_FETCH(XMEM, cfa));
+            printf("(0x%x | %i) ", CELL_FETCH(XMEM, cfa), CELL_FETCH(XMEM, cfa));
         }
         cfa += CELL_SIZE;
     }
