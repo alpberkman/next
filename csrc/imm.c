@@ -2,7 +2,6 @@
 #include "imm.h"
 
 #include <ctype.h>
-#include <stdarg.h>
 #include <string.h>
 
 
@@ -24,25 +23,15 @@ cell header(VM *vm, const char *name, int len) {
 
     return hp;
 }
-void cf(VM *vm, int len, ...) {
-    va_list l;
-    va_start(l, len);
-
+void cf(VM *vm, int len, byte *args) {
     for(int i = 0; i < len; ++i)
-        BYTE_FETCH(XMEM, hp+BYTES(i)) = (byte) va_arg(l, int);
+        BYTE_FETCH(XMEM, hp+BYTES(i)) = args[i];
     hp += BYTES(len);
-
-    va_end(l);
 }
-void pf(VM *vm, int len, ...) {
-    va_list l;
-    va_start(l, len);
-
+void pf(VM *vm, int len, cell *args) {
     for(int i = 0; i < len; ++i)
-        CELL_FETCH(XMEM, hp+CELLS(i)) = (cell) va_arg(l, cell);
+        CELL_FETCH(XMEM, hp+CELLS(i)) = args[i];
     hp += CELLS(len);
-
-    va_end(l);
 }
 
 /*

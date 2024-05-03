@@ -9,10 +9,10 @@
 extern cell hp;
 extern cell lp;
 
-
+// Macros to add primitive and colon words 
 #define HEADER(NAME)                header(vm, NAME, (sizeof(NAME)-1))
-#define CF(...)                     cf(vm, (sizeof((byte[]){__VA_ARGS__})/sizeof(byte)), __VA_ARGS__)
-#define PF(...)                     pf(vm, (sizeof((cell[]){__VA_ARGS__})/sizeof(cell)), __VA_ARGS__)
+#define CF(...)                     cf(vm, (sizeof((byte[]){__VA_ARGS__})/sizeof(byte)), (byte[]){__VA_ARGS__})
+#define PF(...)                     pf(vm, (sizeof((cell[]){__VA_ARGS__})/sizeof(cell)), (cell[]){__VA_ARGS__})
 
 #define PRIMS(NAME, ...)            HEADER(NAME); CF(__VA_ARGS__)
 #define COLON(NAME, ...)            HEADER(NAME); CF(NEST); PF(__VA_ARGS__)
@@ -25,13 +25,14 @@ extern cell lp;
 #define ZCOLON(NAME, ...)           cell P_##NAME = COLON(#NAME, __VA_ARGS__)
 #define IMMEDIATE                   BYTE_FETCH(XMEM, lp+CELL_SIZE) |= MASK_IMM
 
-
+// Variable and constant macros
 #define XVAR(NAME)                  XCOLON(NAME, dovar, 0)
 #define XCON(NAME, VAL)             XCOLON(NAME, docon, (VAL))
 #define YVAR(NAME, ENTRY)           YCOLON(NAME, ENTRY, dovar, 0)
 #define YCON(NAME, ENTRY, VAL)      YCOLON(NAME, ENTRY, docon, (VAL))
 
 
+// Creates a word called cold to reset the vm
 #define COLD(...)       \
     { \
         int old_hp, old_lp; \
@@ -50,19 +51,11 @@ extern cell lp;
         runc(vm, cold); \
     }
 
-
-//#define XCREATE_DOES(NAME, ADDR)    XCOLON(NAME, ldwp, (ADDR), unnest) //wrong
-
-
-// Not yet implemented
-
-//#define XCONST(NAME, X)             XCOLON(NAME, LIT, X, UNNEST)
-//#define XVAR(NAME)                  XCOLON(NAME, LIT, hp+CELLS(3), UNNEST, 0)
-//#define YCONST(NAME, ENTRY, X)      YCOLON(NAME, ENTRY, LIT, X, UNNEST)
-//#define YVAR(NAME, ENTRY)           YCOLON(NAME, ENTRY, LIT, hp+CELLS(3), UNNEST, 0)
-#define STR(S)                      PF(asdf); next_str(vm, s)
+// Macros for words that might be used in interpreter mode while compiling other words
 #define ALLOT(N)                    hp+=(N)
+//#define STR()                       cf(vm, (sizeof((byte[]){__VA_ARGS__})/sizeof(byte)), (byte[]){__VA_ARGS__})
 
+// Control flow macros
 #define IF(...)             next_if(vm);        PF(__VA_ARGS__)
 #define THEN(...)           next_then(vm);      PF(__VA_ARGS__)
 #define ELSE(...)           next_else(vm);      PF(__VA_ARGS__)
@@ -78,18 +71,17 @@ extern cell lp;
 #define PLOOP(...)          next_ploop(vm);     PF(__VA_ARGS__)
 
 
-#define FW(W)                       find_word(vm, #W)
-#define FA(ADDR)                    find_addr(vm, ADDR)
+//#define FW(W)                       find_word(vm, #W)
+//#define FA(ADDR)                    find_addr(vm, ADDR)
 
 
 cell header(VM *vm, const char *name, int len);
-void cf(VM *vm, int len, ...);
-void pf(VM *vm, int len, ...);
+void cf(VM *vm, int len, byte *args);
+void pf(VM *vm, int len, cell *args);
 
 
-//void next_constant(VM *vm, cell c);
-//void next_variable(VM *vm);
 void next_str(VM *vm, char *c);
+
 
 void next_if(VM *vm);
 void next_then(VM *vm);
@@ -106,9 +98,9 @@ void next_loop(VM *vm);
 void next_ploop(VM *vm);
 
 
-cell find_word(VM *vm, char *c);
-cell find_addr(VM *vm, cell cfa);
-cell print_word(VM *vm, cell addr);
+//cell find_word(VM *vm, char *c);
+//cell find_addr(VM *vm, cell cfa);
+//cell print_word(VM *vm, cell addr);
 
 #endif
 
