@@ -44,8 +44,8 @@ void dict(VM *vm) {
     XPRIMS(jmp,     JMP, NEXT);
     XPRIMS(jz,      JZ, NEXT);
     XPRIMS(execute, EXE, NEXT);
-    XPRIMS(rjmp,     RJMP, NEXT);
-    XPRIMS(rjz,      RJZ, NEXT);
+    XPRIMS(rjmp,    RJMP, NEXT);
+    XPRIMS(rjz,     RJZ, NEXT);
     
     // Stack manipulation and status words
     XPRIMS(dup,     DUP, NEXT);
@@ -91,17 +91,17 @@ void dict(VM *vm) {
 
     // Begining of higher primitive words
     // Flow control
-    XPRIMS(ijmp,     LIT, JMP, NEXT);
-    XPRIMS(ijz,      LIT, JZ, NEXT);
-    XPRIMS(iexecute, LIT, EXE, NEXT);
-    XPRIMS(irjmp,    LIT, RJMP, NEXT);
-    XPRIMS(irjz,     LIT, RJZ, NEXT);
+    XPRIMS(ijmp,        LIT, JMP, NEXT);
+    XPRIMS(ijz,         LIT, JZ, NEXT);
+    XPRIMS(iexecute,    LIT, EXE, NEXT);
+    XPRIMS(irjmp,       LIT, RJMP, NEXT);
+    XPRIMS(irjz,        LIT, RJZ, NEXT);
 
 
     // Begining of colon words
     // CREATE ... DOES> like words
-    XCOLON(dovar,    pop, unnest);
-    XCOLON(docon,    pop, ldc, unnest);
+    XCOLON(dovar,   pop, unnest);
+    XCOLON(docon,   pop, ldc, unnest);
 
     // Logical values
     XCON(true, TRUE);
@@ -112,11 +112,29 @@ void dict(VM *vm) {
     YCON(xcell, "cell", CELL_SIZE);
     YCON(xbyte, "byte", BYTE_SIZE);
     XCON(mems, MEM_SIZE);
+    YCOLON(cellp,   "CELL+", xcell, add, unnest);
+    YCOLON(bytep,   "BYTE+", xbyte, add, unnest);
+    XCOLON(cells,   xcell, mul, unnest);
+    XCOLON(bytes,   xbyte, mul, unnest);
 
     // Important variables
     YVAR(xhp, "hp");
     YVAR(xlp, "lp");
     XVAR(state);
+
+    // Stack words
+    XCOLON(over,    lit, 1, pick, unnest);
+    XCOLON(nip,     swap, drop, unnest);
+    YCOLON(rat,     "R@", lit, 1, rick, unnest);
+    XCOLON(rot,     push, swap, pop, swap, unnest);
+    YCOLON(mrot,    "-rot", rot, rot, unnest);
+
+    // Other CREATE ... DOES> like words
+    XCOLON(dostr,
+        rat, cellp, 
+        rat, ldc,
+        pop, over, add, cellp, jmp);
+
 
     // Start
     COLD(lit, new_hp, xhp, strc, lit, new_lp, xlp, strc, false, state, strc, halt);
@@ -155,16 +173,17 @@ XCOLON(XXXXX, lit, MEM_SIZE, unnest);
    IF(true, true, true, true);
    ELSE(false, false, false, false);
    THEN(lit, 134, halt);
+   DR(test6);
 
-    penum2func();
-    puts("");
+    XCOLON(test7, lit, 123);
+    STR("Hello World!");
+    PF(lit, 456, halt);
     pwords(vm);
     puts("");
     hexdump(vm, 16, (hp | 0xf)/16 + 1);
     puts("");
 
-   DR(test6);
-
+    DR(test7);
 
     pwords(vm);
     puts("");

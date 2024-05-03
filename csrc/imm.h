@@ -54,7 +54,7 @@ extern cell lp;
 
 // Macros for words that might be used in interpreter mode while compiling other words
 #define ALLOT(N)                    hp+=(N)
-//#define STR(X)                      PF(irjmp, sizeof(X)); cf(vm, sizeof(X), X)
+#define STR(X)                      PF(dostr, sizeof(X)-1); cf(vm, sizeof(X)-1, (byte *) X)
 
 // Control flow macros
 #define IF(...)             next_if(vm, irjz);      PF(__VA_ARGS__)
@@ -72,6 +72,7 @@ extern cell lp;
 #define PLOOP(...)          next_ploop(vm);     PF(__VA_ARGS__)
 
 
+// Utility macros
 #define PSWAP \
     { \
         cell tmp1 = PPOP; \
@@ -81,16 +82,12 @@ extern cell lp;
     }
 
 
-//#define FW(W)                       find_word(vm, #W)
-//#define FA(ADDR)                    find_addr(vm, ADDR)
-
-
 cell header(VM *vm, const char *name, int len);
 void cf(VM *vm, int len, byte *args);
 void pf(VM *vm, int len, cell *args);
 
 
-void next_str(VM *vm, char *c);
+//void next_str(VM *vm, char *c);
 
 
 void next_if(VM *vm, cell word);
