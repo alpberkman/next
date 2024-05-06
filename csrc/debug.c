@@ -217,7 +217,7 @@ void disasm_instr(VM *vm) {
 
         addr = locate(vm, XIP);
         pword(vm, addr);
-        if(wname(vm, locate(vm, XIP), "LIT") || wname(vm, locate(vm, XIP), "DOCON") || wname(vm, locate(vm, XIP), "DOVAR")) {
+        if(BYTE_FETCH(XMEM, XIP) == LIT || wname(vm, locate(vm, XIP), "DOCON") || wname(vm, locate(vm, XIP), "DOVAR")) {
             printf(" (0x%x | %i)", CELL_FETCH(XMEM, XWP), CELL_FETCH(XMEM, XWP));
         } else if (wname(vm, locate(vm, XIP), "CALL")) {
             printf(" %p", FUNC_FETCH(XMEM, XWP));

@@ -118,6 +118,3 @@ They end with words that change the control flow, with the most common one being
 # Other
 Table made using https://textik.com
 
-jmp to BRANCH ?BRANCH
-
-: ?LEAVE IF LEAVE THEN ;

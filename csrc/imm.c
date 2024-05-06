@@ -51,28 +51,7 @@ void next_else(VM *vm, cell word) {
 }
 
 /*
-void next_str(VM *vm, char *c) {
-    strcpy((void *) &BYTE_FETCH(MEM, hp), c);
-    hp += strlen(c);
-}
 
-void next_if(VM *vm) {
-    PF(FW(LIT));
-    PPUSH = hp;
-    hp += CELL_SIZE;
-    PF(FW(JZ));
-}
-void next_then(VM *vm) {
-    CELL_FETCH(MEM, PPOP) = hp;
-}
-void next_else(VM *vm) {
-    PF(FW(LIT));
-    PPUSH = hp;
-    hp += CELL_SIZE;
-    _swap(vm);
-    PF(FW(JMP));
-    CELL_FETCH(MEM, PPOP) = hp;
-}
 
 void next_begin(VM *vm) {
     PPUSH = hp;

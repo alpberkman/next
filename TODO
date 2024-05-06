@@ -39,3 +39,23 @@ relative jumps
 over sub swap !
 
 
+
+jmp to BRANCH ?BRANCH
+
+: ?LEAVE IF LEAVE THEN ;
+
+
+Object ( -- addr )
+Func ( addr -- ??? )
+-> More flexible ?
+
+or
+
+Func ( -- fun-enum )
+Object ( fun-enum -- ??? )
+
+
+
+
+Not implementing the following:
+D+ DNEGATE UM/MOD M/MOD /MOD UM* M* */MOD */ > CHAR

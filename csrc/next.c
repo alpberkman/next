@@ -33,6 +33,8 @@ void dict(VM *vm) {
     // Y -> manual
     // Z -> add P_
 
+////////////////////////////////////////////////////////////////////////////////
+
     // Begining of primitive words
     // ITC words
     XPRIMS(nop,     NOP, NEXT);
@@ -100,6 +102,7 @@ void dict(VM *vm) {
     XPRIMS(irjmp,       LIT, RJMP, NEXT);
     XPRIMS(irjz,        LIT, RJZ, NEXT);
 
+////////////////////////////////////////////////////////////////////////////////
 
     // Begining of colon words
     // CREATE ... DOES> like words
@@ -117,6 +120,8 @@ void dict(VM *vm) {
     XCON(mems, MEM_SIZE);
     YCOLON(cellp,   "CELL+", xcell, add, unnest);
     YCOLON(bytep,   "BYTE+", xbyte, add, unnest);
+    YCOLON(cellm,   "CELL-", xcell, sub, unnest);
+    YCOLON(bytem,   "BYTE-", xbyte, sub, unnest);
     XCOLON(cells,   xcell, mul, unnest);
     XCOLON(bytes,   xbyte, mul, unnest);
 
@@ -125,12 +130,38 @@ void dict(VM *vm) {
     YVAR(xlp, "lp");
     XVAR(state);
 
+    // Other constants
+    XCOLON(here, xhp, ldc, unnest);
+    XCOLON(last, xlp, ldc, unnest);
+    XCON(bl, ' ');
+
     // Stack words
     XCOLON(over,    lit, 1, pick, unnest);
     XCOLON(nip,     swap, drop, unnest);
     YCOLON(rat,     "R@", lit, 1, rick, unnest);
     XCOLON(rot,     push, swap, pop, swap, unnest);
     YCOLON(mrot,    "-rot", rot, rot, unnest);
+    YCOLON(qdup,    "?DUP", dup); IF(dup); THEN(unnest);
+    YCOLON(ddup,    "2DUP", dup, dup, unnest);
+    YCOLON(ddrop,   "2DROP", drop, drop, unnest);
+
+    // Logic words
+    YCOLON(zeq,     "0=", lit, 0, eq, unnest);
+    YCOLON(zlt,     "0<", lit, 0, lt, unnest);
+    YCOLON(zgt,     "0>", lit, 0, gt, unnest);
+    YCOLON(zneq,    "0<>", lit, 0, neq, unnest);
+    YCOLON(ult,     "U<", ddup, xor, zlt); IF(swap, drop, zlt, unnest); THEN(sub, zlt, unnest);
+
+    // Arithmetic words
+    XCOLON(not,     lit, -1, xor, unnest);
+    XCOLON(negate,  not, lit, 1, add, unnest);
+    XCOLON(abs,     dup, zlt); IF(negate); THEN(unnest);
+    XCOLON(max,     ddup, lt); IF(swap); THEN(drop, unnest);
+    XCOLON(within,  over, sub, push, sub, pop, ult, unnest);
+
+    // Machine words
+    XCOLON(alligned,    dup, xcell, mod, xcell, swap, sub, xcell, mod, add, unnest);
+    YCOLON(pldc,        "+!", swap, over, ldc, add, swap, strc, unnest);
 
     // Other CREATE ... DOES> like words
     XCOLON(dostr,
@@ -146,10 +177,9 @@ void dict(VM *vm) {
     // For debugging
     printf("%i %i\n", hp, lp);
 
+////////////////////////////////////////////////////////////////////////////////
 
-#define ON true, swap, strc
-#define OFF false, swap, strc
-#define TOGGLE lit, 0, eq
+
 XCOLON(XXXXX, lit, MEM_SIZE, unnest);
 
     penum2func();
@@ -192,14 +222,22 @@ XCOLON(XXXXX, lit, MEM_SIZE, unnest);
     XCOLON(test8, lit, 123);
     CCALL(stacks);
     PF(lit, 456, halt);
+    DR(test8);
 
 
+    XCOLON(t9, key, dup, lit, 41, neq);
+    IF(emit);//, ijmp, t9+1);
+    RECURSE;
+    THEN(drop, halt);
+
+    XCOLON(t10, lit, 16+0, alligned, lit, 16+1, alligned, lit, 16+2, alligned, lit, 16+3, alligned, lit, 16+4, alligned, lit, 16+5, alligned, halt);
+    DR(t10);
     pwords(vm);
     puts("");
     hexdump(vm, 16, (hp | 0xf)/16 + 1);
     puts("");
+    //DR(t9);
 
-    DR(test8);
 
 
    //DR(test7);
