@@ -181,6 +181,10 @@ FTH(_strb) {
     byte val = PPOP;
     BYTE_FETCH(XMEM, addr) = val;
 }
+FTH(_call) {
+    func f = MCALL;
+    f(vm);
+}
 FTH(_key) {
     byte c = getchar();
     PPUSH = c;

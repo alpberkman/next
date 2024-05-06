@@ -73,6 +73,9 @@ void disasm(VM *vm, cell addr, cell limit);
 // addr: address of a link field of a word
 // limit: address of the end of a word (address of the previous words link field)
 
+int locate(VM *vm, cell addr);
+// Given an address that belongs to a words, returns the start of it
+
 int wname(VM *vm, cell addr, char *target);
 // Checks whether the name of the word is equal to target
 // addr: address of a link field of a word

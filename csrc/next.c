@@ -84,6 +84,9 @@ void dict(VM *vm) {
     YPRIMS(ldb,     "C@", LDB, NEXT);
     YPRIMS(strb,    "C!", STRB, NEXT);
 
+    // C function calls
+    XPRIMS(call, CALL, NEXT);
+
     // IO operators
     XPRIMS(key,     KEY, NEXT);
     XPRIMS(emit,    EMIT, NEXT);
@@ -185,10 +188,18 @@ XCOLON(XXXXX, lit, MEM_SIZE, unnest);
 
     DR(test7);
 
+
+    XCOLON(test8, lit, 123);
+    CCALL(stacks);
+    PF(lit, 456, halt);
+
+
     pwords(vm);
     puts("");
     hexdump(vm, 16, (hp | 0xf)/16 + 1);
     puts("");
+
+    DR(test8);
 
 
    //DR(test7);

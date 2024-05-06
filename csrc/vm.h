@@ -125,5 +125,9 @@ void init(VM *vm, byte *mem);
 #define MEXE \
     XIP
 
+#define MCALL \
+    FUNC_FETCH(XMEM, XWP); \
+    XWP += FUNC_SIZE
+
 #endif
 

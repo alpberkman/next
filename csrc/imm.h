@@ -55,6 +55,7 @@ extern cell lp;
 // Macros for words that might be used in interpreter mode while compiling other words
 #define ALLOT(N)                    hp+=(N)
 #define STR(X)                      PF(dostr, sizeof(X)-1); cf(vm, sizeof(X)-1, (byte *) X)
+#define CCALL(X)                    PF(call); FUNC_FETCH(XMEM, hp) = (X); hp += FUNC_SIZE;
 
 // Control flow macros
 #define IF(...)             next_if(vm, irjz);      PF(__VA_ARGS__)

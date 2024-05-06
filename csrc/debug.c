@@ -119,7 +119,7 @@ void pheader(VM *vm, cell addr) {
 }
 
 void pwords(VM *vm) {
-    printf("%-10s%-11s%-17s%-4s%-4s%-4s%-9s%-24s%-19s%s\n",
+    printf("%-10s%-11s%-17s%-4s%-4s%-4s%-9s%-24s%-26s%s\n",
            "addr",
            "link",
            "name",
@@ -155,26 +155,26 @@ void disasm(VM *vm, cell addr, cell limit) {
             break;
         cfa += BYTE_SIZE;
     }
-    //for(; ctr < 2; ++ctr)
-    //    printf("%7s", "");
+    for(; ctr < 3; ++ctr)
+        printf("%7s", "");
+    
     printf(" <|> ");
-    cfa += BYTE_SIZE;
-    while(cfa < limit) {
-        cell waddr = lp;
-        while(waddr > CELL_FETCH(XMEM, cfa))
-            waddr = CELL_FETCH(XMEM, waddr);
+
+    int pfa = cfa + BYTE_SIZE;
+    while(pfa < limit) {
+        cell waddr = locate(vm, CELL_FETCH(XMEM, pfa));
         pword(vm, waddr);
         printf(" ");
         if(wname(vm, waddr, "LIT") || wname(vm, waddr, "DOCON") || wname(vm, waddr, "DOVAR") || wname(vm, waddr, "IRJMP") || wname(vm, waddr, "IRJZ")) {
-            cfa += CELL_SIZE;
-            printf("(0x%x | %i) ", CELL_FETCH(XMEM, cfa), CELL_FETCH(XMEM, cfa));
+            pfa += CELL_SIZE;
+            printf("(0x%x | %i) ", CELL_FETCH(XMEM, pfa), CELL_FETCH(XMEM, pfa));
         } else if(wname(vm, waddr, "DOSTR")) {
-            cfa += CELL_SIZE;
-            int strlen = CELL_FETCH(XMEM, cfa);
-            printf("(%i: \"%.*s\") ", strlen, strlen, &BYTE_FETCH(XMEM, cfa+CELL_SIZE));
-            cfa += strlen;
+            pfa += CELL_SIZE;
+            int strlen = CELL_FETCH(XMEM, pfa);
+            printf("(%i: \"%.*s\") ", strlen, strlen, &BYTE_FETCH(XMEM, pfa+CELL_SIZE));
+            pfa += strlen;
         }
-        cfa += CELL_SIZE;
+        pfa += CELL_SIZE;
     }
 }
 
@@ -217,8 +217,12 @@ void disasm_instr(VM *vm) {
 
         addr = locate(vm, XIP);
         pword(vm, addr);
-        if(BYTE_FETCH(XMEM, XIP) == LIT || wname(vm, locate(vm, XIP), "DOCON") || wname(vm, locate(vm, XIP), "DOVAR")) {
+        if(wname(vm, locate(vm, XIP), "LIT") || wname(vm, locate(vm, XIP), "DOCON") || wname(vm, locate(vm, XIP), "DOVAR")) {
             printf(" (0x%x | %i)", CELL_FETCH(XMEM, XWP), CELL_FETCH(XMEM, XWP));
+        } else if (wname(vm, locate(vm, XIP), "CALL")) {
+            printf(" %p", FUNC_FETCH(XMEM, XWP));
+        } else if (wname(vm, locate(vm, XIP), "DOSTR")) {
+            printf(" (%i: \"%.*s\")", CELL_FETCH(XMEM, XWP), CELL_FETCH(XMEM, XWP), &BYTE_FETCH(XMEM, XWP+CELL_SIZE));
         }
         puts("");
     }

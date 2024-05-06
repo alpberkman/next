@@ -55,6 +55,7 @@
     APPLY(STRC, _strc) \
     APPLY(LDB,  _ldb) \
     APPLY(STRB, _strb) \
+    APPLY(CALL, _call) \
     APPLY(KEY,  _key) \
     APPLY(EMIT, _emit)
 
