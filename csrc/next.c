@@ -3,7 +3,7 @@
 #include "imm.h"
 #include "prims.h"
 
-#include "debug.h"
+//#include "debug.h"
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -176,10 +176,14 @@ void dict(VM *vm) {
 
     // For debugging
     printf("%i %i\n", hp, lp);
+    disasmd(vm);
 
 ////////////////////////////////////////////////////////////////////////////////
-
-
+/*    pwords(vm);
+    puts("");
+    hexdump(vm, 16, (hp | 0xf)/16 + 1);
+    puts("");
+*//*/
 XCOLON(XXXXX, lit, MEM_SIZE, unnest);
 
     penum2func();
@@ -241,7 +245,7 @@ XCOLON(XXXXX, lit, MEM_SIZE, unnest);
 
 
    //DR(test7);
-    
+    */
 /*
     XVAR(HP);
     XVAR(LP);

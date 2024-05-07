@@ -3,7 +3,7 @@
 #include <stdio.h>
 
 #include "csrc/next.h"
-#include "csrc/debug.h"
+//#include "csrc/debug.h"
 
 
 int main(/*int argc, char *argv[]*/) {

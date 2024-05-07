@@ -58,4 +58,4 @@ Object ( fun-enum -- ??? )
 
 
 Not implementing the following:
-D+ DNEGATE UM/MOD M/MOD /MOD UM* M* */MOD */ > CHAR
+D+ DNEGATE UM/MOD M/MOD /MOD UM* M* */MOD */ > CHAR 2! 2@
