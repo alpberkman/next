@@ -36,7 +36,7 @@ void reset(VM *vm) {
     XRSP = 0;
 }
 void init(VM *vm, byte *mem) {
-
+    // Reset ITC and SPU
     reset(vm);
 
     // Setup MEM

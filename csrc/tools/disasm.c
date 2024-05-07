@@ -1,7 +1,7 @@
 
 
 #include "disasm.h"
-#include "prims.h"
+#include "../prims.h"
 
 #include <string.h>
 #include <stdio.h>
@@ -30,22 +30,36 @@ int wordeq(VM *vm, cell addr, char *target) {
     return 0 == strncmp((char *) name, target, len);
 }
 
-void pword(VM *vm, cell addr) {
-    LOCATE_DISASM(addr);
-    printf("%.*s", len, (char*) name);
-}
-void pword2(VM *vm, cell *addr) {
+int pword(VM *vm, cell *addr) {
     LOCATE_DISASM(CELL_FETCH(XMEM, *addr));
     printf("%.*s", len, (char*) name);
+    *addr += CELL_SIZE;
 
-    if(STREQ(name, "LIT", len)) {
+    if(STREQ(name, "LIT", len) || STREQ(name, "DOVAR", len) || STREQ(name, "DOCON", len)) {
+        printf("(0x%x | %i)", CELL_FETCH(XMEM, *addr), CELL_FETCH(XMEM, *addr));
         *addr += CELL_SIZE;
-        printf("(%x | %i) ", CELL_FETCH(XMEM, *addr), CELL_FETCH(XMEM, *addr));
+    } else if(STREQ(name, "IRJMP", len) || STREQ(name, "IRJZ", len)) {
+        printf("(0x%x)", CELL_FETCH(XMEM, *addr));
+        *addr += CELL_SIZE;
+    } else if(STREQ(name, "DOSTR", len)) {
+        int slen = CELL_FETCH(XMEM, *addr);
+        *addr += CELL_SIZE;
+        char *str = (char *) &BYTE_FETCH(XMEM, *addr);
+        *addr += slen;
+        printf("(%i: \"%.*s\")", slen, slen, str);
+    } else if(STREQ(name, "CALL", len)) {
+        printf("(%p)", FUNC_FETCH(XMEM, XWP));
+        *addr += FUNC_SIZE;
     }
+
+    return len;
 }
-void pprim(VM *vm, byte prim) {
-    (void) vm;
-    printf("%s", (char *[]){TABLE(XENUMNAME)}[prim]);
+int pprim(VM *vm, cell *addr) {
+    char *name = (char *[]){TABLE(XENUMNAME)}[BYTE_FETCH(XMEM, *addr)];
+    *addr += BYTE_SIZE;
+    printf("%s", name);
+
+    return strlen(name);
 }
 void pheader(VM *vm, cell addr) {
     LOCATE_DISASM(addr);
@@ -63,8 +77,8 @@ void pheader(VM *vm, cell addr) {
 void disasm_cf(VM *vm, cell cfa, cell end) {
     int space = 3 - (end - cfa);
     while(cfa < end) {
-        printf("%-7s", (char *[]){TABLE(XENUMNAME)}[BYTE_FETCH(XMEM, cfa)]);
-        cfa += BYTE_SIZE;
+        int slen = pprim(vm, &cfa);
+        printf("%.*s", 7-slen, "         ");
     }
     for(int i = 0; i < space; ++i)
         printf("%7s", "");
@@ -72,18 +86,11 @@ void disasm_cf(VM *vm, cell cfa, cell end) {
 
 void disasm_pf(VM *vm, cell pfa, cell end) {
     while(pfa < end) {
-        pword(vm, CELL_FETCH(XMEM, pfa));
+        pword(vm, &pfa);
         printf(" ");
-        pfa += CELL_SIZE;
     }
 }
-void disasm_pf2(VM *vm, cell pfa, cell end) {
-    while(pfa < end) {
-        pword2(vm, &pfa);
-        printf(" ");
-        pfa += CELL_SIZE;
-    }
-}
+
 
 
 void disasmw(VM *vm, cell addr) {
@@ -92,11 +99,28 @@ void disasmw(VM *vm, cell addr) {
     printf("<|> ");
     disasm_cf(vm, cfa, pfa);
     printf("<|> ");
-    disasm_pf2(vm, pfa, end);
+    disasm_pf(vm, pfa, end);
     puts("");
 }
 
 void disasmd(VM *vm) {
+        printf("%-8s%-7s%-11s%-4s%-4s%-4s%-8s%-7s%-11s <|> %-20s <|> %s\n",
+           "ADDR",
+           "LINK",
+           "NAME",
+           "LEN",
+           "VIS",
+           "IMM",
+           "CFA",
+           "PFA",
+           "[SPACE)",
+           "CF",
+           "PF"
+          );
+          printf("%.*s+%.*s+%.*s\n", 
+            66, "------------------------------------------------------------------", 
+            24, "------------------------",
+            36, "------------------------------------");
     for(cell addr = lp; addr != -1; addr = CELL_FETCH(XMEM, addr)) 
         disasmw(vm, addr);
 }

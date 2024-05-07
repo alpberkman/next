@@ -3,7 +3,7 @@
 #include "imm.h"
 #include "prims.h"
 
-//#include "debug.h"
+#include "tools/debug.h"
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -176,22 +176,21 @@ void dict(VM *vm) {
 
     // For debugging
     printf("%i %i\n", hp, lp);
-    disasmd(vm);
-
-////////////////////////////////////////////////////////////////////////////////
-/*    pwords(vm);
-    puts("");
-    hexdump(vm, 16, (hp | 0xf)/16 + 1);
-    puts("");
-*//*/
-XCOLON(XXXXX, lit, MEM_SIZE, unnest);
 
     penum2func();
     puts("");
-    pwords(vm);
+    disasmd(vm);
     puts("");
     hexdump(vm, 16, (hp | 0xf)/16 + 1);
     puts("");
+
+
+
+
+////////////////////////////////////////////////////////////////////////////////
+
+//*/
+XCOLON(XXXXX, lit, MEM_SIZE, unnest);
 
     XCON(test1, 123);
     XCOLON(test2, test1, halt);
@@ -215,10 +214,7 @@ XCOLON(XXXXX, lit, MEM_SIZE, unnest);
     XCOLON(test7, lit, 123);
     STR("Hello World!");
     PF(lit, 456, halt);
-    pwords(vm);
-    puts("");
-    hexdump(vm, 16, (hp | 0xf)/16 + 1);
-    puts("");
+
 
     DR(test7);
 
@@ -233,11 +229,11 @@ XCOLON(XXXXX, lit, MEM_SIZE, unnest);
     IF(emit);//, ijmp, t9+1);
     RECURSE;
     THEN(drop, halt);
+    //DR(t9);
 
     XCOLON(t10, lit, 16+0, alligned, lit, 16+1, alligned, lit, 16+2, alligned, lit, 16+3, alligned, lit, 16+4, alligned, lit, 16+5, alligned, halt);
     DR(t10);
-    pwords(vm);
-    puts("");
+
     hexdump(vm, 16, (hp | 0xf)/16 + 1);
     puts("");
     //DR(t9);
@@ -245,7 +241,7 @@ XCOLON(XXXXX, lit, MEM_SIZE, unnest);
 
 
    //DR(test7);
-    */
+ //   */
 /*
     XVAR(HP);
     XVAR(LP);

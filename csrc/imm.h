@@ -56,7 +56,8 @@ extern cell lp;
 #define ALLOT(N)                    hp+=(N)
 #define STR(X)                      PF(dostr, sizeof(X)-1); cf(vm, sizeof(X)-1, (byte *) X)
 #define CCALL(X)                    PF(call); FUNC_FETCH(XMEM, hp) = (X); hp += FUNC_SIZE
-#define RECURSE {WORD_DISASM(lp);  PF(ijmp, cfa+1);}
+//#define RECURSE {WORD_DISASM(lp);  PF(ijmp, cfa+1);}
+#define RECURSE                     PF(ijmp, lp + CELL_SIZE + BYTE_SIZE + (BYTE_FETCH(XMEM, lp + CELL_SIZE) & WORD_LEN) + BYTE_SIZE)
 
 #define ON true, swap, strc
 #define OFF false, swap, strc
