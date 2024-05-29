@@ -24,7 +24,7 @@ void dict(VM *vm) {
     // Begining of primitive words
     // ITC words
     XPRIMS(nop,     NOP, NEXT);
-    XPRIMS(halt,    HALT, NEXT);
+    XPRIMS(bye,     HALT, NEXT);
     XPRIMS(lit,     LIT, NEXT);
     XPRIMS(next,    NEXT);
     XPRIMS(nest,    NEST);
@@ -103,6 +103,7 @@ void dict(VM *vm) {
     YCON(xfunc, "func", FUNC_SIZE);
     YCON(xcell, "cell", CELL_SIZE);
     YCON(xbyte, "byte", BYTE_SIZE);
+    YCON(xmca,  "mca", MCA_SIZE);
     XCON(mems, MEM_SIZE);
     YCOLON(cellp,   "CELL+", xcell, add, unnest);
     YCOLON(bytep,   "BYTE+", xbyte, add, unnest);
@@ -157,14 +158,18 @@ void dict(VM *vm) {
         rat, cellp, 
         rat, ldc,
         pop, over, add, cellp, jmp);
-*/
     XCOLON(dostr,
         rat, count,
         dup, pop, add, cellp, jmp);
+*/
+    XCOLON(dostr,
+        rat, count,
+        pop, drop,
+        over, over, add, jmp);
 
 
     // Start
-    COLD(lit, new_hp, xhp, strc, lit, new_lp, xlp, strc, false, state, strc, halt);
+    COLD(lit, new_hp, xhp, strc, lit, new_lp, xlp, strc, false, state, strc, bye);
 
 
     // For debugging
@@ -186,14 +191,14 @@ void dict(VM *vm) {
 XCOLON(XXXXX, lit, MEM_SIZE, unnest);
 
     XCON(test1, 123);
-    XCOLON(test2, test1, halt);
+    XCOLON(test2, test1, bye);
     DR(test2);
 
     XVAR(test3);
-    XCOLON(test4, lit, 546, test3, strc, test3, ldc, halt);
+    XCOLON(test4, lit, 546, test3, strc, test3, ldc, bye);
     DR(test4);
    
-   XCOLON(test5, xbyte, mems, false, halt);
+   XCOLON(test5, xbyte, mems, false, bye);
    DR(test5);
 
 
@@ -201,12 +206,12 @@ XCOLON(XXXXX, lit, MEM_SIZE, unnest);
    XCOLON(test6, false);
    IF(true, true, true, true);
    ELSE(false, false, false, false);
-   THEN(lit, 134, halt);
+   THEN(lit, 134, bye);
    DR(test6);
 
     XCOLON(test7, lit, 123);
     STR("Hello World!");
-    PF(lit, 456, halt);
+    PF(lit, 456, bye);
 
 
     DR(test7);
@@ -214,17 +219,17 @@ XCOLON(XXXXX, lit, MEM_SIZE, unnest);
 
     XCOLON(test8, lit, 123);
     CCALL(stacks);
-    PF(lit, 456, halt);
+    PF(lit, 456, bye);
     DR(test8);
 
 
     XCOLON(t9, key, dup, lit, 41, neq);
     IF(emit);//, ijmp, t9+1);
     RECURSE;
-    THEN(drop, halt);
+    THEN(drop, bye);
     //DR(t9);
 
-    XCOLON(t10, lit, 16+0, alligned, lit, 16+1, alligned, lit, 16+2, alligned, lit, 16+3, alligned, lit, 16+4, alligned, lit, 16+5, alligned, halt);
+    XCOLON(t10, lit, 16+0, alligned, lit, 16+1, alligned, lit, 16+2, alligned, lit, 16+3, alligned, lit, 16+4, alligned, lit, 16+5, alligned, bye);
     DR(t10);
 
     hexdump(vm, 16, (hp | 0xf)/16 + 1);
