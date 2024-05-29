@@ -2,18 +2,14 @@
 #include "vm.h"
 
 
-byte fetch(VM *vm) {
-    byte op = BYTE_FETCH(XMEM, XIP);
-    XIP += BYTE_SIZE;
-    return op;
-}
-void execute(VM *vm, byte op) {
-    func f = decode(op);
-    f(vm);
+mca fetch(VM *vm) {
+    mca addr = MCA_FETCH(XMEM, XIP);
+    XIP += MCA_SIZE;
+    return addr;
 }
 void tick(VM *vm) {
-    byte op = fetch(vm);
-    execute(vm, op);
+    mca addr = fetch(vm);
+    exec(vm, addr);
 }
 void runc(VM *vm, cell addr) {
     XIP = addr;

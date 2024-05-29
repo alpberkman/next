@@ -4,9 +4,9 @@
 #include <stdio.h>
 
 
-func decode(byte op) {
-    func prims[256] = { TABLE(XFUNCTAB) };
-    return prims[op];
+void exec(VM *vm, mca addr) {
+    func f = LUT(addr);
+    f(vm);
 }
 
 FTH(_nop) {

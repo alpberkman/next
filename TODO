@@ -58,4 +58,77 @@ Object ( fun-enum -- ??? )
 
 
 Not implementing the following:
-D+ DNEGATE UM/MOD M/MOD /MOD UM* M* */MOD */ > CHAR 2! 2@
+D+ DNEGATE UM/MOD M/MOD /MOD UM* M* */MOD */ > CHAR 2! 2@ PAD TIB @EXECUTE
+
+
+
+
+Transpiler:
+VM, real HW agnostic, CELL_SIZE agnostic
+
+Language Charasteristics:
+- Size: cell, byte, double
+- Literals: how to truncate bigger numbers or expand them
+- Addresses: should be simple, use an array or lookup them every time?
+- Allignment of code field
+- Allignment of link field
+- Size change of code field
++ Extra functions for full compatibility
+
+==> Should work for 16, 32, 64 bit vm with byte code ITC
+==> Should work for 16, 32, 64 bit with real ITC
+==> Should work for native int size (VOID* == MEM* == FUNC*)
+
+
+Important Sizes
+TYPE,               CELL_SIZE,      BYTE_SIZE,      DOUBLE_SIZE,    FUNC_SIZE,      ITC_SIZE,       MEMPTR_SIZE
+byte code ITC VM,   sizeof(cell),   sizeof(byte),   CELL_SIZE*2,    sizeof(func),   BYTE_SIZE,      CELL_SIZE (indexed)
+ITC VM,             sizeof(cell),   sizeof(byte),   CELL_SIZE*2,    sizeof(func),   sizeof(func),   CELL_SIZE (indexed)
+NATIVE ITC,         native_int,     sizeof(byte),   CELL_SIZE*2,    sizeof(func),   sizeof(func),   sizeof(void *)
+=========>,         int64_t,        unsigned char,  int128_t,       func,           func,           void*
+
+#define UINT128(hi, lo) (((__uint128_t) (hi)) << 64 | (lo))
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

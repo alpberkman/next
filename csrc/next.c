@@ -163,11 +163,18 @@ void dict(VM *vm) {
     XCOLON(alligned,    dup, xcell, mod, xcell, swap, sub, xcell, mod, add, unnest);
     YCOLON(pldc,        "+!", swap, over, ldc, add, swap, strc, unnest);
 
+    // String words
+    XCOLON(count, dup, cellp, swap, ldc, unnest);
+
     // Other CREATE ... DOES> like words
-    XCOLON(dostr,
+/*    XCOLON(dostr,
         rat, cellp, 
         rat, ldc,
         pop, over, add, cellp, jmp);
+*/
+    XCOLON(dostr,
+        rat, count,
+        dup, pop, add, cellp, jmp);
 
 
     // Start

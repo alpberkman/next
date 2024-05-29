@@ -3,13 +3,11 @@
 #ifndef _VM_H
 #define _VM_H
 
-#define CELL_TYPE int
 
 #define MEM_SIZE (0x8000)
 #define MASK_VIS (1<<7)
 #define MASK_IMM (1<<6)
 #define WORD_LEN (31)
-
 
 #define FALSE   (0)
 #define TRUE    (-1)
@@ -17,10 +15,11 @@
 
 typedef struct VM VM;
 
-typedef CELL_TYPE cell;
-typedef unsigned CELL_TYPE ucell;
+typedef int cell;
+typedef unsigned int ucell;
 typedef unsigned char byte;
 typedef void (*func) (VM *vm);
+typedef byte mca;
 
 typedef enum power power;
 typedef struct stack stack;
@@ -58,9 +57,8 @@ struct VM {
 };
 
 
-byte fetch(VM *vm);
-func decode(byte op);
-void execute(VM *vm, byte op);
+mca fetch(VM *vm);
+void exec(VM *vm, mca addr);
 void tick(VM *vm);
 void runc(VM *vm, cell addr);
 void rund(VM *vm, cell addr, func debug);
@@ -72,15 +70,18 @@ void init(VM *vm, byte *mem);
 #define FUNC_SIZE (sizeof(func))
 #define CELL_SIZE (sizeof(cell))
 #define BYTE_SIZE (sizeof(byte))
+#define MCA_SIZE  (sizeof(mca))
 
 #define FUNCS(N) (N*FUNC_SIZE)
 #define CELLS(N) (N*CELL_SIZE)
 #define BYTES(N) (N*BYTE_SIZE)
+#define MCAS(N)  (N*MCA_SIZE)
 
 #define TYPE_FETCH(TYPE, MEM, ADDR) (*((TYPE *) &((MEM)[ADDR])))
 #define FUNC_FETCH(MEM, ADDR) (TYPE_FETCH(func, MEM, ADDR))
 #define CELL_FETCH(MEM, ADDR) (TYPE_FETCH(cell, MEM, ADDR))
 #define BYTE_FETCH(MEM, ADDR) (TYPE_FETCH(byte, MEM, ADDR))
+#define MCA_FETCH(MEM, ADDR)  (TYPE_FETCH(mca, MEM, ADDR))
 
 
 #define XITC (vm->itc)
