@@ -20,9 +20,9 @@ void stacks(VM *vm) {
     puts("");
 }
 
-char *enum2s(byte p) {
+char *enum2s(mca p) {
     char *names[] = {TABLE(XENUMNAME)};
-    byte keys[] = {TABLE(XENUM)};
+    mca keys[] = {TABLE(XENUM)};
     for(unsigned int i = 0; i < sizeof(keys)/sizeof(keys[0]); ++i)
         if(p == keys[i])
             return names[i];
@@ -39,7 +39,7 @@ char *func2s(func f) {
 void penum2func(void) {
     char *enames[] = {TABLE(XENUMNAME)};
     char *fnames[] = {TABLE(XFUNCNAME)};
-    byte keys[] = {TABLE(XENUM)};
+    mca keys[] = {TABLE(XENUM)};
 
     for(unsigned int i = 0; i < sizeof(keys)/sizeof(keys[0]); ++i)
         printf("0x%02x: %-6s <---> %7s\n", keys[i], enames[i], fnames[i]);

@@ -43,7 +43,7 @@ void stacks(VM *vm);
 // Prints enum and function name pairs
 void penum2func(void);
 // Returns a string that represents an enum's name
-char *enum2s(byte p);
+char *enum2s(mca p);
 // Returns a string that represents a function's name
 char *func2s(func f);
 

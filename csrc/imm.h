@@ -90,7 +90,7 @@ extern cell lp;
 
 
 cell header(VM *vm, const char *name, int len);
-void cf(VM *vm, int len, byte *args);
+void cf(VM *vm, int len, mca *args);
 void pf(VM *vm, int len, cell *args);
 
 

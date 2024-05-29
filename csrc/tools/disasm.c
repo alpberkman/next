@@ -18,9 +18,9 @@ void locate(VM *vm, cell addr, cell *start, cell *end) {
 
 cell find_pfa(VM *vm, cell cfa) {
     cell pfa = cfa;
-    while(BYTE_FETCH(XMEM, pfa) != NEXT && BYTE_FETCH(XMEM, pfa) != NEST && BYTE_FETCH(XMEM, pfa) != UNNEST)
-        pfa += BYTE_SIZE;
-    return pfa + BYTE_SIZE;
+    while(MCA_FETCH(XMEM, pfa) != NEXT && MCA_FETCH(XMEM, pfa) != NEST && MCA_FETCH(XMEM, pfa) != UNNEST)
+        pfa += MCA_SIZE;
+    return pfa + MCA_SIZE;
 }
 
 int wordeq(VM *vm, cell addr, char *target) {
@@ -56,7 +56,7 @@ int pword(VM *vm, cell *addr) {
 }
 int pprim(VM *vm, cell *addr) {
     char *name = (char *[]){TABLE(XENUMNAME)}[BYTE_FETCH(XMEM, *addr)];
-    *addr += BYTE_SIZE;
+    *addr += MCA_SIZE;
     printf("%s", name);
 
     return strlen(name);
