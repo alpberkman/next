@@ -23,10 +23,10 @@ cell header(VM *vm, const char *name, int len) {
 
     return hp;
 }
-void cf(VM *vm, int len, byte *args) {
+void cf(VM *vm, int len, mca *args) {
     for(int i = 0; i < len; ++i)
-        BYTE_FETCH(XMEM, hp+BYTES(i)) = args[i];
-    hp += BYTES(len);
+        MCA_FETCH(XMEM, hp+MCAS(i)) = args[i];
+    hp += MCAS(len);
 }
 void pf(VM *vm, int len, cell *args) {
     for(int i = 0; i < len; ++i)
@@ -48,6 +48,15 @@ void next_else(VM *vm, cell word) {
     next_if(vm, word);
     PSWAP;
     next_then(vm);
+}
+
+
+
+
+void str(VM *vm, int len, byte *args) {
+    for(int i = 0; i < len; ++i)
+        BYTE_FETCH(XMEM, hp+BYTES(i)) = args[i];
+    hp += BYTES(len);
 }
 
 /*

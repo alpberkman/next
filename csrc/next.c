@@ -6,22 +6,8 @@
 #include "tools/debug.h"
 
 #include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
 
 
-byte *falloc(void) {
-    return malloc(MEM_SIZE);
-}
-byte *setup(VM *vm) {
-    byte *mem = falloc();
-    if(mem != NULL) {
-        init(vm, mem);
-        dict(vm);
-    }
-        
-    return mem;
-}
 void dict(VM *vm) {
     //(void) vm;
     hp =  0;

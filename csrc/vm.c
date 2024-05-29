@@ -32,11 +32,13 @@ void reset(VM *vm) {
     XRSP = 0;
 }
 void init(VM *vm, byte *mem) {
+    static byte def[MEM_SIZE];
+
     // Reset ITC and SPU
     reset(vm);
 
     // Setup MEM
-    XMEM = mem;
+    XMEM = mem ? (byte *) mem : (byte *) &def;
 }
 
 

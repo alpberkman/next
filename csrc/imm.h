@@ -11,7 +11,7 @@ extern cell lp;
 
 // Macros to add primitive and colon words 
 #define HEADER(NAME)                header(vm, NAME, (sizeof(NAME)-1))
-#define CF(...)                     cf(vm, (sizeof((byte[]){__VA_ARGS__})/sizeof(byte)), (byte[]){__VA_ARGS__})
+#define CF(...)                     cf(vm, (sizeof((mca[]){__VA_ARGS__})/sizeof(mca)), (mca[]){__VA_ARGS__})
 #define PF(...)                     pf(vm, (sizeof((cell[]){__VA_ARGS__})/sizeof(cell)), (cell[]){__VA_ARGS__})
 
 #define PRIMS(NAME, ...)            HEADER(NAME); CF(__VA_ARGS__)
@@ -54,10 +54,10 @@ extern cell lp;
 
 // Macros for words that might be used in interpreter mode while compiling other words
 #define ALLOT(N)                    hp+=(N)
-#define STR(X)                      PF(dostr, sizeof(X)-1); cf(vm, sizeof(X)-1, (byte *) X)
+#define STR(X)                      PF(dostr, sizeof(X)-1); str(vm, sizeof(X)-1, (byte *) X)
 #define CCALL(X)                    PF(call); FUNC_FETCH(XMEM, hp) = (X); hp += FUNC_SIZE
 //#define RECURSE {WORD_DISASM(lp);  PF(ijmp, cfa+1);}
-#define RECURSE                     PF(ijmp, lp + CELL_SIZE + BYTE_SIZE + (BYTE_FETCH(XMEM, lp + CELL_SIZE) & WORD_LEN) + BYTE_SIZE)
+#define RECURSE                     PF(ijmp, lp + CELL_SIZE + BYTE_SIZE + (BYTE_FETCH(XMEM, lp + CELL_SIZE) & WORD_LEN) + MCA_SIZE)
 
 #define ON true, swap, strc
 #define OFF false, swap, strc
@@ -94,9 +94,6 @@ void cf(VM *vm, int len, byte *args);
 void pf(VM *vm, int len, cell *args);
 
 
-//void next_str(VM *vm, char *c);
-
-
 void next_if(VM *vm, cell word);
 void next_then(VM *vm);
 void next_else(VM *vm, cell word);
@@ -111,6 +108,8 @@ void next_do(VM *vm);
 void next_loop(VM *vm);
 void next_ploop(VM *vm);
 
+
+void str(VM *vm, int len, byte *args);
 
 //cell find_word(VM *vm, char *c);
 //cell find_addr(VM *vm, cell cfa);
