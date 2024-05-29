@@ -11,7 +11,6 @@ int main(/*int argc, char *argv[]*/) {
         setvbuf(stdout, NULL, _IONBF, 0);
 
         VM vm;
-        //setup(&vm);
         init(&vm, NULL);
         dict(&vm);
 
