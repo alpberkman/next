@@ -28,7 +28,7 @@ void dict(VM *vm) {
     XPRIMS(lit,     LIT, NEXT);
     XPRIMS(next,    NEXT);
     XPRIMS(nest,    NEST);
-    XPRIMS(unnest,  UNNEST);
+    XPRIMS(exit,  UNNEST);
     XPRIMS(jmp,     JMP, NEXT);
     XPRIMS(jz,      JZ, NEXT);
     XPRIMS(execute, EXE, NEXT);
@@ -91,9 +91,10 @@ void dict(VM *vm) {
 ////////////////////////////////////////////////////////////////////////////////
 
     // Begining of colon words
+    // Constants and variables
     // CREATE ... DOES> like words
-    XCOLON(dovar,   pop, unnest);
-    XCOLON(docon,   pop, ldc, unnest);
+    XCOLON(dovar,   pop, exit);
+    XCOLON(docon,   pop, ldc, exit);
 
     // Logical values
     XCON(true, TRUE);
@@ -105,12 +106,13 @@ void dict(VM *vm) {
     YCON(xbyte, "byte", BYTE_SIZE);
     YCON(xmca,  "mca", MCA_SIZE);
     XCON(mems, MEM_SIZE);
-    YCOLON(cellp,   "CELL+", xcell, add, unnest);
-    YCOLON(bytep,   "BYTE+", xbyte, add, unnest);
-    YCOLON(cellm,   "CELL-", xcell, sub, unnest);
-    YCOLON(bytem,   "BYTE-", xbyte, sub, unnest);
-    XCOLON(cells,   xcell, mul, unnest);
-    XCOLON(bytes,   xbyte, mul, unnest);
+    YCOLON(cellp,   "CELL+", xcell, add, exit);
+    YCOLON(bytep,   "BYTE+", xbyte, add, exit);
+    YCOLON(bytep,   "MCA+", xmca, add, exit);
+    YCOLON(cellm,   "CELL-", xcell, sub, exit);
+    YCOLON(bytem,   "BYTE-", xbyte, sub, exit);
+    XCOLON(cells,   xcell, mul, exit);
+    XCOLON(bytes,   xbyte, mul, exit);
 
     // Important variables
     YVAR(xhp, "hp");
@@ -118,40 +120,43 @@ void dict(VM *vm) {
     XVAR(state);
 
     // Other constants
-    XCOLON(here, xhp, ldc, unnest);
-    XCOLON(last, xlp, ldc, unnest);
+    XCOLON(here, xhp, ldc, exit);
+    XCOLON(last, xlp, ldc, exit);
     XCON(bl, ' ');
 
+////////////////////////////////////////////////////////////////////////////////
+
     // Stack words
-    XCOLON(over,    lit, 1, pick, unnest);
-    XCOLON(nip,     swap, drop, unnest);
-    YCOLON(rat,     "R@", lit, 1, rick, unnest);
-    XCOLON(rot,     push, swap, pop, swap, unnest);
-    YCOLON(mrot,    "-rot", rot, rot, unnest);
-    YCOLON(qdup,    "?DUP", dup); IF(dup); THEN(unnest);
-    YCOLON(ddup,    "2DUP", dup, dup, unnest);
-    YCOLON(ddrop,   "2DROP", drop, drop, unnest);
+    XCOLON(over,    lit, 1, pick, exit);
+    XCOLON(nip,     swap, drop, exit);
+    YCOLON(rat,     "R@", lit, 1, rick, exit);
+    XCOLON(rot,     push, swap, pop, swap, exit);
+    YCOLON(mrot,    "-rot", rot, rot, exit);
+    YCOLON(qdup,    "?DUP", dup); IF(dup); THEN(exit);
+    YCOLON(ddup,    "2DUP", over, over, exit);
+    YCOLON(ddrop,   "2DROP", drop, drop, exit);
 
     // Logic words
-    YCOLON(zeq,     "0=", lit, 0, eq, unnest);
-    YCOLON(zlt,     "0<", lit, 0, lt, unnest);
-    YCOLON(zgt,     "0>", lit, 0, gt, unnest);
-    YCOLON(zneq,    "0<>", lit, 0, neq, unnest);
-    YCOLON(ult,     "U<", ddup, xor, zlt); IF(swap, drop, zlt, unnest); THEN(sub, zlt, unnest);
+    YCOLON(zeq,     "0=", lit, 0, eq, exit);
+    YCOLON(zlt,     "0<", lit, 0, lt, exit);
+    YCOLON(zgt,     "0>", lit, 0, gt, exit);
+    YCOLON(zneq,    "0<>", lit, 0, neq, exit);
+    YCOLON(ult,     "U<", ddup, xor, zlt); IF(swap, drop, zlt, exit); THEN(sub, zlt, exit);
 
     // Arithmetic words
-    XCOLON(not,     lit, -1, xor, unnest);
-    XCOLON(negate,  not, lit, 1, add, unnest);
-    XCOLON(abs,     dup, zlt); IF(negate); THEN(unnest);
-    XCOLON(max,     ddup, lt); IF(swap); THEN(drop, unnest);
-    XCOLON(within,  over, sub, push, sub, pop, ult, unnest);
+    XCOLON(not,     lit, -1, xor, exit);
+    XCOLON(negate,  not, lit, 1, add, exit);
+    XCOLON(abs,     dup, zlt); IF(negate); THEN(exit);
+    XCOLON(max,     ddup, lt); IF(swap); THEN(drop, exit);
+    XCOLON(within,  over, sub, push, sub, pop, ult, exit);
 
     // Machine words
-    XCOLON(alligned,    dup, xcell, mod, xcell, swap, sub, xcell, mod, add, unnest);
-    YCOLON(pldc,        "+!", swap, over, ldc, add, swap, strc, unnest);
+    XCOLON(alligned,    dup, xcell, mod, xcell, swap, sub, xcell, mod, add, exit);
+    YCOLON(pldc,        "+!", swap, over, ldc, add, swap, strc, exit);
+    XCOLON(allot,       xhp, pldc);
 
     // String words
-    XCOLON(count, dup, cellp, swap, ldc, unnest);
+    XCOLON(count, dup, cellp, swap, ldc, exit);
 
     // Other CREATE ... DOES> like words
 /*    XCOLON(dostr,
@@ -188,7 +193,7 @@ void dict(VM *vm) {
 ////////////////////////////////////////////////////////////////////////////////
 
 //*/
-XCOLON(XXXXX, lit, MEM_SIZE, unnest);
+XCOLON(XXXXX, lit, MEM_SIZE, exit);
 
     XCON(test1, 123);
     XCOLON(test2, test1, bye);
