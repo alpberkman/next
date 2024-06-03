@@ -50,8 +50,39 @@ void next_else(VM *vm, cell word) {
     next_then(vm);
 }
 
-
-
+void next_begin(VM *vm) {
+    PPUSH = hp;
+}
+void next_agin(VM *vm, cell word) {
+    PF(word);
+    cell addr = PPOP;
+    cell offset = addr - hp - CELL_SIZE;
+    CELL_FETCH(XMEM, hp) = offset;
+    hp += CELL_SIZE;
+}
+void next_until(VM *vm, cell word) {
+    PF(word);
+    cell addr = PPOP;
+    cell offset = addr - hp - CELL_SIZE;
+    CELL_FETCH(XMEM, hp) = offset;
+    hp += CELL_SIZE;
+}
+void next_while(VM *vm, cell word) {
+    PF(word);
+    PPUSH = hp;
+    hp += CELL_SIZE;
+}
+void next_repeat(VM *vm, cell word) {
+    PF(word);
+    PSWAP;
+    cell addr = PPOP;
+    cell offset = addr - hp - CELL_SIZE;
+    CELL_FETCH(XMEM, hp) = offset;
+    hp += CELL_SIZE;
+    addr = PPOP;
+    offset = hp - addr - CELL_SIZE;
+    CELL_FETCH(XMEM, addr) = offset;
+}
 
 void str(VM *vm, int len, byte *args) {
     for(int i = 0; i < len; ++i)
@@ -60,30 +91,6 @@ void str(VM *vm, int len, byte *args) {
 }
 
 /*
-
-
-void next_begin(VM *vm) {
-    PPUSH = hp;
-}
-void next_agin(VM *vm) {
-    PF(FW(LIT), PPOP, FW(JMP));
-}
-void next_until(VM *vm) {
-    PF(FW(LIT), PPOP, FW(JZ));
-}
-void next_while(VM *vm) {
-    PF(FW(LIT));
-    PPUSH = hp;
-    hp += CELL_SIZE;
-    PF(FW(JZ));
-}
-void next_repeat(VM *vm) {
-    PF(FW(LIT));
-    _swap(vm);
-    PF(PPOP, FW(JMP));
-    CELL_FETCH(MEM, PPOP) = hp;
-}
-
 void next_do(VM *vm) {
     (void) vm;
 }

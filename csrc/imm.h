@@ -68,11 +68,11 @@ extern cell lp;
 #define THEN(...)           next_then(vm);          PF(__VA_ARGS__)
 #define ELSE(...)           next_else(vm, irjmp);   PF(__VA_ARGS__)
 
-#define BEGIN(...)          next_begin(vm);     PF(__VA_ARGS__)
-#define AGAIN(...)          next_agin(vm);      PF(__VA_ARGS__)
-#define UNTIL(...)          next_until(vm);     PF(__VA_ARGS__)
-#define WHILE(...)          next_while(vm);     PF(__VA_ARGS__)
-#define REPEAT(...)         next_repeat(vm);    PF(__VA_ARGS__)
+#define BEGIN(...)          next_begin(vm);         PF(__VA_ARGS__)
+#define AGAIN(...)          next_agin(vm, irjmp);   PF(__VA_ARGS__)
+#define UNTIL(...)          next_until(vm, irjz);   PF(__VA_ARGS__)
+#define WHILE(...)          next_while(vm, irjz);  PF(__VA_ARGS__)
+#define REPEAT(...)         next_repeat(vm, irjmp); PF(__VA_ARGS__)
 
 #define DO(...)             next_do(vm);        PF(__VA_ARGS__)
 #define LOOP(...)           next_loop(vm);      PF(__VA_ARGS__)
@@ -99,10 +99,10 @@ void next_then(VM *vm);
 void next_else(VM *vm, cell word);
 
 void next_begin(VM *vm);
-void next_agin(VM *vm);
-void next_until(VM *vm);
-void next_while(VM *vm);
-void next_repeat(VM *vm);
+void next_agin(VM *vm, cell word);
+void next_until(VM *vm, cell word);
+void next_while(VM *vm, cell word);
+void next_repeat(VM *vm, cell word);
 
 void next_do(VM *vm);
 void next_loop(VM *vm);

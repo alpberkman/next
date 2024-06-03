@@ -244,6 +244,22 @@ XCOLON(XXXXX, lit, MEM_SIZE, exit);
     DR(t11);
     //DR(t9);
 
+    XCOLON(echo);
+    BEGIN(key, emit);
+    AGAIN();
+
+    XCOLON(echo2);
+    BEGIN(key, dup, emit, lit, 'q', eq);
+    UNTIL(bye);
+
+    XCOLON(echo3);
+    BEGIN(key, dup, lit, 'q', neq);
+    WHILE(emit);
+    REPEAT(drop, bye);
+
+    disasmd(vm);
+    puts("");
+    DR(echo3);
 
 
    //DR(test7);

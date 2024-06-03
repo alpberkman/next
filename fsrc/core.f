@@ -82,32 +82,37 @@ B: MOD ( n1 n2 -- n3 );
 : NEGATE ( n1 -- n2 ) INVERT 1+ ;
 : S>D ( n -- d ) DUP 0< IF -1 ELSE 0 THEN ;
 : U< ( u1 u2 -- flag ) 2DUP XOR 0< IF SWAP DROP ELSE - THEN 0< ;
-N: */ ;
-N: */MOD ;
-N: /MOD ;
-N: FM/MOD ;
-N: UM* ;
-N: M* ;
-N: SM/REM ;
-N: UM/MOD ;
+B: M* ( n1 n2 -- d ) ;  
+B: FM/MOD ( d1 n1 -- n2 n3 ) ;
+B: SM/REM (  d1 n1 -- n2 n3 ) ;
+B: UM* ( u1 u2 -- ud ) ;
+N: UM/MOD ( ud u1 -- u2 u3 ) ;
+: /MOD ( n1 n2 -- n3 n4 ) >R S>D R> FM/MOD ;
+: */MOD ( n1 n2 n3 -- n4 n5 ) >R M* R> FM/MOD ;
+: */ ( n1 n2 n3 -- n4 ) */MOD SWAP DROP ;
+
 
 \ Looping and logic structures
 B: EXIT ( -- ) ( R: nest-sys -- ) ;
+B: IRJZ ( flag offset -- ) ;
+B: IRJMP ( offset -- ) ;
 : RECURSE ( -- ) LAST CELL+ DUP C@ 31 OR + BYTE+ , ;
+: IF ( C: -- orig ) ( x -- ) POSTPONE IRJZ HERE CELL ALLOT ; IMMEDIATE
+: THEN ( C: orig -- ) ( -- ) HERE OVER - CELL - SWAP ! ; IMMEDIATE
+: ELSE ( C: orig1 -- orig2 ) ( -- ) POSTPONE IRJMP HERE CELL ALLOT SWAP POSTPONE THEN ; IMMEDIATE
 N: DO ; IMMEDIATE
 N: LOOP ; IMMEDIATE
 N: +LOOP ; IMMEDIATE
 N: UNLOOP ;
 N: I ;
 N: J ;
-N: BEGIN ; IMMEDIATE
-N: UNTIL ; IMMEDIATE
-N: WHILE ; IMMEDIATE
-N: REPEAT ; IMMEDIATE
 N: LEAVE ;
-N: IF ; IMMEDIATE
-N: ELSE ; IMMEDIATE
-N: THEN ; IMMEDIATE
+N: BEGIN ( C: -- dest ) ( -- ) HERE ; IMMEDIATE
+N: UNTIL ( C: dest -- ) ( x -- ) POSTPONE IRJZ HERE - CELL - , ; IMMEDIATE
+N: WHILE ( C: dest -- orig dest ) ( x -- ) POSTPONE IRJZ HERE CELL ALLOT ; IMMEDIATE
+N: REPEAT ( C: orig dest -- ) ( -- ) POSTPONE IRJMP SWAP HERE - CELL - , HERE OVER - CELL - SWAP ! ; IMMEDIATE
+
+
 
 
 \ String
@@ -115,7 +120,7 @@ N: THEN ; IMMEDIATE
 : SPACE ( -- ) BL EMIT ;
 : SPACES ( n -- ) 0 MAX 0 ?DO SPACE LOOP ;
 : CR ( -- ) 13 EMIT 10 EMIT ;
-: ( ( "ccc<paren>" -- ) [CHAR] ) PARSE 2DROP ;
+: ( ( "ccc<paren>" -- ) [CHAR] ) PARSE 2DROP ;              \ Not happy because of parse, should something that doesnt dpend on a buffer
 : ." ( "ccc<quote>" -- ) [CHAR] " PARSE TYPE ; IMMEDIATE
 : COUNT DUP CELL+ SWAP @ ;
 N: . ;
@@ -170,9 +175,48 @@ B: KEY ( -- char ) ;
 N: #TIB ;
 : .( ( "ccc<paren>" -- ) [CHAR] ) PARSE TYPE ; IMMEDIATE
 N: .R ;
+: 0<> ( x -- flag ) 0 <> ;
 : 0> ( n -- flag ) 0 > ;
-: 2R> ( -- x1 x2 ) ( R: x1 x2 -- ) SWAP R> R> ;
-: 2>R ( x1 x2 -- ) ( R: -- x1 x2 ) >R >R SWAP ;
+: 2>R ( x1 x2 -- ) ( R: -- x1 x2 ) SWAP >R >R ;
+: 2R> ( -- x1 x2 ) ( R: x1 x2 -- ) R> R> SWAP ;
 : 2R@ ( -- x1 x2 ) ( R: x1 x2 -- x1 x2 ) 2 RICK 1 RICK ;
+N: :NONAME ;
+B: <> ( x1 x2 -- flag ) ;
+N: ?DO ;
+: AGAIN ( C: dest -- ) ( -- ) POSTPONE IRJMP HERE - CELL - , ;
+N: C" ;
+N: CASE ;
+: COMPILE, ( xt -- ) , ;
+N: CONVERT ;
+N: ENDCASE ;
+N: ENDOF ;
+N: ERASE ;
+N: EXPECT ;
+0 CONSTANT FALSE ( -- false )
+: HEX ( -- ) 16 BASE ! ;
+N: MARKER ;
+: NIP ( x1 x2 -- x2 ) SWAP DROP ;
+N: OF ;
+N: PAD ;
+N: PARSE ;
+B: PICK ( xu ... x1 x0 u -- xu ... x1 x0 xu ) ;
+N: QUERY ;
+N: REFILL ;
+N: RESTORE-INPUT ;
+N: ROLL ;
+N: SAVE-INPUT ;
+N: SOURCE-ID ;
+N: SPAN ;
+N: TIB ;
+N: TO ;
+-1 CONSTANT TRUE ( -- true )
+: TUCK ( x1 x2 -- x2 x1 x2 ) SWAP OVER ;
+N: U.R ;
+N: U> ;
+N: UNUSED ;
+N: VALUE ;
+N: WITHIN ;
+N: [COMPILE] ;
+N: \ ;
 
 : -ROT ROT ROT ;
