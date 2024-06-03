@@ -71,4 +71,18 @@ enum PRIM {
     TABLE(XENUM)
 };
 
+
+#define BINOP(FUNC, MOD) \
+    cell tos = PPOP; \
+    cell nos = PPOP; \
+    PPUSH = MOD(nos FUNC tos);
+
+#define EMPTY
+
+#define MBINOP(FUNC) \
+    BINOP(FUNC, EMPTY)
+
+#define LBINOP(FUNC) \
+    BINOP(FUNC, LOGICAL)
+
 #endif

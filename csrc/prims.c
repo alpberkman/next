@@ -54,18 +54,16 @@ FTH(_rjz) {
         MJMP += addr;
 }
 FTH(_dup) {
-    cell val = PPOP;
-    PPUSH = val;
+    cell val = TOS;
     PPUSH = val;
 }
 FTH(_drop) {
     (void) PPOP;
 }
 FTH(_swap) {
-    cell a = PPOP;
-    cell b = PPOP;
-    PPUSH = a;
-    PPUSH = b;
+    cell tmp = NOS;
+    NOS = TOS;
+    TOS = tmp;
 }
 FTH(_push) {
     RPUSH = PPOP;
@@ -91,76 +89,20 @@ FTH(_ldr) {
     byte val = XRSP;
     PPUSH = val;
 }
-FTH(_eq) {
-    cell a = PPOP;
-    cell b = PPOP;
-    PPUSH = LOGICAL(b == a);
-}
-FTH(_neq) {
-    cell a = PPOP;
-    cell b = PPOP;
-    PPUSH = LOGICAL(b != a);
-}
-FTH(_gt) {
-    cell a = PPOP;
-    cell b = PPOP;
-    PPUSH = LOGICAL(b > a);
-}
-FTH(_lt) {
-    cell a = PPOP;
-    cell b = PPOP;
-    PPUSH = LOGICAL(b < a);
-}
-FTH(_and) {
-    cell a = PPOP;
-    cell b = PPOP;
-    PPUSH = b & a;
-}
-FTH(_or) {
-    cell a = PPOP;
-    cell b = PPOP;
-    PPUSH = b | a;
-}
-FTH(_xor) {
-    cell a = PPOP;
-    cell b = PPOP;
-    PPUSH = b ^ a;
-}
-FTH(_shr) {
-    cell a = PPOP;
-    cell b = PPOP;
-    PPUSH = b >> a;
-}
-FTH(_shl) {
-    cell a = PPOP;
-    cell b = PPOP;
-    PPUSH = b << a;
-}
-FTH(_add) {
-    cell a = PPOP;
-    cell b = PPOP;
-    PPUSH = b + a;
-}
-FTH(_sub) {
-    cell a = PPOP;
-    cell b = PPOP;
-    PPUSH = b - a;
-}
-FTH(_mul) {
-    cell a = PPOP;
-    cell b = PPOP;
-    PPUSH = b * a;
-}
-FTH(_div) {
-    cell a = PPOP;
-    cell b = PPOP;
-    PPUSH = b / a;
-}
-FTH(_mod) {
-    cell a = PPOP;
-    cell b = PPOP;
-    PPUSH = b % a;
-}
+FTH(_eq)  { LBINOP(==); }
+FTH(_neq) { LBINOP(!=); }
+FTH(_gt)  { LBINOP(>); }
+FTH(_lt)  { LBINOP(<); }
+FTH(_and) { MBINOP(&); }
+FTH(_or)  { MBINOP(|); }
+FTH(_xor) { MBINOP(^); }
+FTH(_shr) { MBINOP(>>); }
+FTH(_shl) { MBINOP(<<); }
+FTH(_add) { MBINOP(+); }
+FTH(_sub) { MBINOP(-); }
+FTH(_mul) { MBINOP(*); }
+FTH(_div) { MBINOP(/); }
+FTH(_mod) { MBINOP(%); }
 FTH(_ldc) {
     cell addr = PPOP;
     cell val = CELL_FETCH(XMEM, addr);

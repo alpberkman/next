@@ -104,7 +104,8 @@ void init(VM *vm, byte *mem);
 #define PPUSH   (XPS[XPSP++])
 #define RPOP    (XRS[--XRSP])
 #define RPUSH   (XRS[XRSP++])
-
+#define TOS     (XPS[XPSP-1])
+#define NOS     (XPS[XPSP-2])
 
 #define MEXT \
     XIP = CELL_FETCH(XMEM, XWP); \

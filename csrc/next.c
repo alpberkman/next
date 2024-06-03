@@ -108,7 +108,7 @@ void dict(VM *vm) {
     XCON(mems, MEM_SIZE);
     YCOLON(cellp,   "CELL+", xcell, add, exit);
     YCOLON(bytep,   "BYTE+", xbyte, add, exit);
-    YCOLON(bytep,   "MCA+", xmca, add, exit);
+    YCOLON(mcap,   "MCA+", xmca, add, exit);
     YCOLON(cellm,   "CELL-", xcell, sub, exit);
     YCOLON(bytem,   "BYTE-", xbyte, sub, exit);
     XCOLON(cells,   xcell, mul, exit);
@@ -239,6 +239,9 @@ XCOLON(XXXXX, lit, MEM_SIZE, exit);
 
     hexdump(vm, 16, (hp | 0xf)/16 + 1);
     puts("");
+
+    XCOLON(t11, lit, 1, lit, 3, lt, bye);
+    DR(t11);
     //DR(t9);
 
 
