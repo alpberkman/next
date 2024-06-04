@@ -90,13 +90,23 @@ void str(VM *vm, int len, byte *args) {
     hp += BYTES(len);
 }
 
-/*
-void next_do(VM *vm) {
-    (void) vm;
+void next_do1(VM *vm) {
+    PPUSH = hp;
+    hp += CELL_SIZE;
+}
+void next_do2(VM *vm) {
+    PPUSH = hp;
 }
 void next_loop(VM *vm) {
     (void) vm;
+    cell addr = PPOP;
+    cell offset = addr - hp - CELL_SIZE;
+    CELL_FETCH(XMEM, hp) = offset;
+    hp += CELL_SIZE;
+    addr = PPOP;
+    CELL_FETCH(XMEM, addr) = hp;
 }
+/*
 void next_ploop(VM *vm) {
     (void) vm;
 }

@@ -144,16 +144,18 @@ void dict(VM *vm) {
     YCOLON(ult,     "U<", ddup, xor, zlt); IF(swap, drop, zlt, exit); THEN(sub, zlt, exit);
 
     // Arithmetic words
-    XCOLON(not,     lit, -1, xor, exit);
-    XCOLON(negate,  not, lit, 1, add, exit);
+    XCOLON(invert,  lit, -1, xor, exit);
+    XCOLON(negate,  invert, lit, 1, add, exit);
     XCOLON(abs,     dup, zlt); IF(negate); THEN(exit);
     XCOLON(max,     ddup, lt); IF(swap); THEN(drop, exit);
     XCOLON(within,  over, sub, push, sub, pop, ult, exit);
+    YCOLON(onep,    "1+", lit, 1, add, exit);
 
     // Machine words
     XCOLON(alligned,    dup, xcell, mod, xcell, swap, sub, xcell, mod, add, exit);
     YCOLON(pldc,        "+!", swap, over, ldc, add, swap, strc, exit);
     XCOLON(allot,       xhp, pldc);
+    YCOLON(comma,       ",", here, xcell, allot, strc);
 
     // String words
     XCOLON(count, dup, cellp, swap, ldc, exit);
@@ -171,6 +173,13 @@ void dict(VM *vm) {
         rat, count,
         pop, drop,
         over, over, add, jmp);
+
+
+
+    XCOLON(unloop, pop, pop, drop, pop, drop, pop, drop, push, exit);
+    XCOLON(i, lit, 1, rick, exit);
+    XCOLON(j, lit, 4, rick, exit);
+    XCOLON(leave, pop, drop, pop, drop, pop, drop, pop, jmp);
 
 
     // Start
@@ -257,55 +266,17 @@ XCOLON(XXXXX, lit, MEM_SIZE, exit);
     WHILE(emit);
     REPEAT(drop, bye);
 
+    XCOLON(echo4, lit, 3, lit, 0);
+    DO(i, lit, 3, lit, 0);
+        DO(i, j);
+        LOOP();
+    LOOP(bye);
+
     disasmd(vm);
     puts("");
-    DR(echo3);
+    DR(echo4);
 
 
-   //DR(test7);
- //   */
-/*
-    XVAR(HP);
-    XVAR(LP);
-
-
-    // COLD: resets the dictionary
-    cell _hp = hp;
-    cell _lp = lp;
-    XCOLON(COLD, LIT, _hp, HP, STRC, LIT, _lp, LP, STRC, HALT);
-    runf(vm, COLD);
-    */
-
-    /*
-
-        XPRIMS(t1, _tru, _tru, _next);
-
-        XCOLON(t2, t1, t1, UNNEST);
-        XCOLON(m, t2, LIT, 123, LIT, t1, EXE, t1, HALT);
-        XCOLON(m2, LIT, 123, DUP, ADD, TRU, MUL, FLS, m);
-        XCOLON(m3, NOP);
-        BEGIN(KEY, DUP, LIT, 65, EQ);
-        IF(HALT);
-        ELSE(FLS);
-        THEN(LIT, 777);
-        AGAIN(HALT);
-
-        XCOLON(echo, NOP);
-        BEGIN(KEY, DUP, EMIT, LIT, 'q', EQ);
-        UNTIL(HALT);
-
-        XCOLON(e2, NOP);
-        BEGIN(KEY, DUP, LIT, 'q', NEQ);
-        WHILE(DUP, EMIT);
-        REPEAT(LIT, 1234, HALT);
-
-        CONST(X1, 123);
-        VAR(Z1);
-        VAR(Z2);
-        XCOLON(t3, Z1, LDB, X1, Z1, STRB, TRU, Z1, LDB, HALT);
-
-        runf(vm, t3);
-        */
 ;;;;;
 }
 

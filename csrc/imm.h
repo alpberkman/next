@@ -58,6 +58,8 @@ extern cell lp;
 #define CCALL(X)                    PF(call); FUNC_FETCH(XMEM, hp) = (X); hp += FUNC_SIZE
 //#define RECURSE {WORD_DISASM(lp);  PF(ijmp, cfa+1);}
 #define RECURSE                     PF(ijmp, lp + CELL_SIZE + BYTE_SIZE + (BYTE_FETCH(XMEM, lp + CELL_SIZE) & WORD_LEN) + MCA_SIZE)
+#define POSTPONE(XT)                PF(lit, XT, comma)
+#define POSTPONEI(XT)               PF(XT)
 
 #define ON true, swap, strc
 #define OFF false, swap, strc
@@ -71,12 +73,17 @@ extern cell lp;
 #define BEGIN(...)          next_begin(vm);         PF(__VA_ARGS__)
 #define AGAIN(...)          next_agin(vm, irjmp);   PF(__VA_ARGS__)
 #define UNTIL(...)          next_until(vm, irjz);   PF(__VA_ARGS__)
-#define WHILE(...)          next_while(vm, irjz);  PF(__VA_ARGS__)
+#define WHILE(...)          next_while(vm, irjz);   PF(__VA_ARGS__)
 #define REPEAT(...)         next_repeat(vm, irjmp); PF(__VA_ARGS__)
 
-#define DO(...)             next_do(vm);        PF(__VA_ARGS__)
-#define LOOP(...)           next_loop(vm);      PF(__VA_ARGS__)
-#define PLOOP(...)          next_ploop(vm);     PF(__VA_ARGS__)
+#define DO(...)             PF(swap, lit); next_do1(vm); \
+                            PF(push, push, push); next_do2(vm); \
+                            PF(__VA_ARGS__)
+#define LOOP(...)           PF(lit, 1); PLOOP(__VA_ARGS__)
+#define PLOOP(...)          PF(pop, add, push, lit, 0, rick, lit, 1, rick, lt, zeq, irjz); \
+                            next_loop(vm); \
+                            PF(unloop); \
+                            PF(__VA_ARGS__)
 
 
 // Utility macros
@@ -104,7 +111,8 @@ void next_until(VM *vm, cell word);
 void next_while(VM *vm, cell word);
 void next_repeat(VM *vm, cell word);
 
-void next_do(VM *vm);
+void next_do1(VM *vm);
+void next_do2(VM *vm);
 void next_loop(VM *vm);
 void next_ploop(VM *vm);
 
