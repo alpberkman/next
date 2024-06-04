@@ -9,7 +9,7 @@ extern cell hp;
 extern cell lp;
 
 
-#define STREQ(X, Y, N) (0 == strncmp((char*)(X), (char*)(Y), (N)))
+#define STREQ(X, Y, N) (strlen((char*)(Y)) == (N) && 0 == strncmp((char*)(X), (char*)(Y), (N)))
 
 // Given the address of a link field, disassembles a words's fields
 #define HEADER_DISASM(ADDR) \

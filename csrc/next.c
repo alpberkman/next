@@ -142,6 +142,8 @@ void dict(VM *vm) {
     YCOLON(zgt,     "0>", lit, 0, gt, exit);
     YCOLON(zneq,    "0<>", lit, 0, neq, exit);
     YCOLON(ult,     "U<", ddup, xor, zlt); IF(swap, drop, zlt, exit); THEN(sub, zlt, exit);
+    YCOLON(geq,     ">=", lt, zeq, exit);
+    YCOLON(leq,     "<=", gt, zeq, exit);
 
     // Arithmetic words
     XCOLON(invert,  lit, -1, xor, exit);
@@ -179,13 +181,14 @@ void dict(VM *vm) {
     XCOLON(unloop, pop, pop, drop, pop, drop, pop, drop, push, exit);
     XCOLON(i, lit, 1, rick, exit);
     XCOLON(j, lit, 4, rick, exit);
-    XCOLON(leave, pop, drop, pop, drop, pop, drop, bye, pop, cellp, push);
-    YCOLON(pploop,  "[+loop]", pop, pop, rot, add, push, push,
-        lit, 1, rick, lit, 2, rick, lt);
-        IF(pop, ldc, jmp);
-        ELSE(pop, cellp, unloop, jmp);
-        THEN(exit);
-
+    XCOLON(leave, pop, drop, pop, drop, pop, drop, exit);
+    YCOLON(pploop,  "[+loop]", 
+        pop, swap,
+        lit, 0, rick, lit, 1, rick, lt,
+        pop, rot, add, push, 
+        lit, 0, rick, lit, 1, rick, geq, and);
+        IF(cellp, unloop); ELSE(ldc); THEN(push, exit);
+    YCOLON(pdo,     "[do]", pop, dup, ldc, push, mrot, swap, push, push, cellp, push, exit);
     // Start
     COLD(lit, new_hp, xhp, strc, lit, new_lp, xlp, strc, false, state, strc, bye);
 
@@ -205,7 +208,6 @@ void dict(VM *vm) {
 
 ////////////////////////////////////////////////////////////////////////////////
 
-//*/
 XCOLON(XXXXX, lit, MEM_SIZE, exit);
 
     XCON(test1, 123);
@@ -270,15 +272,43 @@ XCOLON(XXXXX, lit, MEM_SIZE, exit);
     WHILE(emit);
     REPEAT(drop, bye);
 
-    XCOLON(echo4, lit, 3, lit, 0);
-    DO(i, lit, 3, lit, 0, );
-        //DO(i, leave);
-        //LOOP();
-    LOOP(lit, 666, bye);
+    XCOLON(echo4, lit, 84, lit, 0);
+    DO(i, lit, 3, lit, 0);
+        DO(i, leave);
+        LOOP(lit, 667, lit, 1);
+    PLOOP(bye);
+
+    XCOLON(echo5);
+        PF(lit, 250, lit, 0); DO(lit, 9); LOOP();
+
+        PF(lit, 1000, lit, 0); DO();
+            PF(lit, 3, lit, 0); DO(j);
+                PF(leave);
+            LOOP();
+        LOOP(bye);
+
+    XCOLON(echo6);
+        PF(lit, 1000, lit, 0); DO();
+            PF(lit, 3, lit, 0); DO(j);
+                PF(j, lit, 10, eq);
+                IF(unloop, leave); THEN();
+            LOOP();
+        LOOP(bye);
+
+    XCOLON(echo7);
+        PF(lit, 1000, lit, 0); DO();
+            PF(lit, 3, lit, 0); DO(j);
+                PF(j, lit, 10, eq);
+                IF(unloop, unloop, bye); THEN();
+            LOOP();
+        LOOP(bye);
+
 
     disasmd(vm);
     puts("");
-    DR(echo4);
+    hexdump(vm, 16, (hp | 0xf)/16 + 1);
+    puts("");
+    DR(echo7);
 
 
 ;;;;;

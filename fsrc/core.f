@@ -10,6 +10,8 @@ sizeof(cell) CONSTANT CELL
 sizeof(byte) CONSTANT BYTE
 sizeof(mca) CONSTANT MCA
 : LAST LP @ ;
+X: WP ( -- addr ) 0 RICK ;
+
 \ To deal with -ROT and ?DO
 
 
@@ -96,44 +98,33 @@ N: UM/MOD ( ud u1 -- u2 u3 ) ;
 B: EXIT ( -- ) ( R: nest-sys -- ) ;
 B: IRJZ ( flag offset -- ) ;
 B: IRJMP ( offset -- ) ;
-X: WP ( -- addr ) 0 RICK ;
 : RECURSE ( -- ) LAST CELL+ DUP C@ 31 OR + BYTE+ , ;
 : IF ( C: -- orig ) ( x -- ) POSTPONE IRJZ HERE CELL ALLOT ; IMMEDIATE
 : THEN ( C: orig -- ) ( -- ) HERE OVER - CELL - SWAP ! ; IMMEDIATE
 : ELSE ( C: orig1 -- orig2 ) ( -- ) POSTPONE IRJMP HERE CELL ALLOT SWAP POSTPONE THEN ; IMMEDIATE
 
-X: [DO] 
-    SWAP POSTPONE LIT
+: BEGIN ( C: -- dest ) ( -- ) HERE ; IMMEDIATE
+: UNTIL ( C: dest -- ) ( x -- ) POSTPONE IRJZ HERE - CELL - , ; IMMEDIATE
+: WHILE ( C: dest -- orig dest ) ( x -- ) POSTPONE IRJZ HERE CELL ALLOT ; IMMEDIATE
+: REPEAT ( C: orig dest -- ) ( -- ) POSTPONE IRJMP SWAP HERE - CELL - , HERE OVER - CELL - SWAP ! ; IMMEDIATE
+
+X: [DO] ( limit index -- ) ( R: -- leave-addr limit index) R> DUP @ >R -ROT SWAP >R >R CELL+ >R ;
+: DO ( C: -- do-sys ) ( n1|u1 n2|u2 -- ) ( R: -- loop-sys ) POSTPONE [DO] HERE CELL ALLOT HERE ; IMMEDIATE
+: LOOP ( C: do-sys -- ) ( -- ) ( R: loop-sys1 -- | loop-sys2 ) 1 LITERAL POSTPONE +LOOP ; IMMEDIATE
+X: [+LOOP] ( R: loop-sys1 -- | loop-sys2 )
+    R> SWAP
+    0 RICK 1 RICK <
+    R> ROT + >R
+    0 RICK 1 RICK >=
+    AND IF CELL+ UNLOOP ELSE @ THEN >R
 ;
-N: DO 
-    POSTPONE SWAP POSTPONE LIT HERE CELL ALLOT 
-    POSTPONE >R POSTPONE >R POSTPONE >R 
-    HERE
-; IMMEDIATE
-N: LOOP 1 LITERAL POSTPONE +LOOP ; IMMEDIATE
-X: [+LOOP]
-    R> R> ROT + >R >R
-    1 RICK 2 RICK <
-    IF R> @ JMP
-    ELSE R> CELL+ UNLOOP JMP THEN
-;
-N: +LOOP
-    POSTPONE [+LOOP]
-    ,
-    HERE SWAP !
-; IMMEDIATE
+: +LOOP ( C: do-sys -- ) ( n -- ) ( R: loop-sys1 -- | loop-sys2 ) POSTPONE [+LOOP] , HERE SWAP ! ; IMMEDIATE
 
 N: UNLOOP ( -- ) ( R: loop-sys -- ) R> R> DROP R> DROP R> DROP >R ;
 N: I ( -- n|u ) ( R:  loop-sys -- loop-sys ) 1 RICK ;
 N: J ( -- n|u ) ( R: loop-sys1 loop-sys2 -- loop-sys1 loop-sys2 ) 4 RICK ;
-N: LEAVE ( -- ) ( R: loop-sys -- ) 
-    R> DROP R> DROP R> DROP
-    JMP
-;
-N: BEGIN ( C: -- dest ) ( -- ) HERE ; IMMEDIATE
-N: UNTIL ( C: dest -- ) ( x -- ) POSTPONE IRJZ HERE - CELL - , ; IMMEDIATE
-N: WHILE ( C: dest -- orig dest ) ( x -- ) POSTPONE IRJZ HERE CELL ALLOT ; IMMEDIATE
-N: REPEAT ( C: orig dest -- ) ( -- ) POSTPONE IRJMP SWAP HERE - CELL - , HERE OVER - CELL - SWAP ! ; IMMEDIATE
+N: LEAVE ( -- ) ( R: loop-sys -- ) R> DROP R> DROP R> DROP ;
+
 
 
 

@@ -100,12 +100,12 @@ void init(VM *vm, byte *mem);
 
 #define LOGICAL(FLAG) ((FLAG) ? TRUE : FALSE)
 
-#define PPOP    (XPS[--XPSP])
-#define PPUSH   (XPS[XPSP++])
-#define RPOP    (XRS[--XRSP])
-#define RPUSH   (XRS[XRSP++])
-#define TOS     (XPS[XPSP-1])
-#define NOS     (XPS[XPSP-2])
+#define PPOP    (XPS[0xff & (--XPSP)])
+#define PPUSH   (XPS[0xff & (XPSP++)])
+#define RPOP    (XRS[0xff & (--XRSP)])
+#define RPUSH   (XRS[0xff & (XRSP++)])
+#define TOS     (XPS[0xff & (XPSP-1)])
+#define NOS     (XPS[0xff & (XPSP-2)])
 
 #define MEXT \
     XIP = CELL_FETCH(XMEM, XWP); \

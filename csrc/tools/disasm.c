@@ -41,6 +41,9 @@ int pword(VM *vm, cell *addr) {
     } else if(STREQ(name, "IRJMP", len) || STREQ(name, "IRJZ", len)) {
         printf("(0x%x)", CELL_FETCH(XMEM, *addr));
         *addr += CELL_SIZE;
+    } else if(STREQ(name, "[DO]", len) || STREQ(name, "[+LOOP]", len)) {
+        printf("(0x%x)", CELL_FETCH(XMEM, *addr));
+        *addr += CELL_SIZE;
     } else if(STREQ(name, "DOSTR", len)) {
         int slen = CELL_FETCH(XMEM, *addr);
         *addr += CELL_SIZE;

@@ -90,11 +90,9 @@ void str(VM *vm, int len, byte *args) {
     hp += BYTES(len);
 }
 
-void next_do1(VM *vm) {
+void next_do(VM *vm) {
     PPUSH = hp;
     hp += CELL_SIZE;
-}
-void next_do2(VM *vm) {
     PPUSH = hp;
 }
 void next_loop(VM *vm) {
@@ -106,11 +104,6 @@ void next_loop(VM *vm) {
     CELL_FETCH(XMEM, addr) = hp;
 }
 /*
-void next_ploop(VM *vm) {
-    (void) vm;
-}
-
-
 cell find_word(VM *vm, char *c) {
     for(cell addr = lp; addr != 0; addr = CELL_FETCH(MEM, addr)) {
         byte len = BYTE_FETCH(MEM, addr + CELL_SIZE) & WORD_LEN;
