@@ -179,8 +179,12 @@ void dict(VM *vm) {
     XCOLON(unloop, pop, pop, drop, pop, drop, pop, drop, push, exit);
     XCOLON(i, lit, 1, rick, exit);
     XCOLON(j, lit, 4, rick, exit);
-    XCOLON(leave, pop, drop, pop, drop, pop, drop, pop, jmp);
-
+    XCOLON(leave, pop, drop, pop, drop, pop, drop, bye, pop, cellp, push);
+    YCOLON(pploop,  "[+loop]", pop, pop, rot, add, push, push,
+        lit, 1, rick, lit, 2, rick, lt);
+        IF(pop, ldc, jmp);
+        ELSE(pop, cellp, unloop, jmp);
+        THEN(exit);
 
     // Start
     COLD(lit, new_hp, xhp, strc, lit, new_lp, xlp, strc, false, state, strc, bye);
@@ -267,10 +271,10 @@ XCOLON(XXXXX, lit, MEM_SIZE, exit);
     REPEAT(drop, bye);
 
     XCOLON(echo4, lit, 3, lit, 0);
-    DO(i, lit, 3, lit, 0);
-        DO(i, j);
-        LOOP();
-    LOOP(bye);
+    DO(i, lit, 3, lit, 0, );
+        //DO(i, leave);
+        //LOOP();
+    LOOP(lit, 666, bye);
 
     disasmd(vm);
     puts("");

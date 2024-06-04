@@ -100,8 +100,7 @@ void next_do2(VM *vm) {
 void next_loop(VM *vm) {
     (void) vm;
     cell addr = PPOP;
-    cell offset = addr - hp - CELL_SIZE;
-    CELL_FETCH(XMEM, hp) = offset;
+    CELL_FETCH(XMEM, hp) = addr;
     hp += CELL_SIZE;
     addr = PPOP;
     CELL_FETCH(XMEM, addr) = hp;

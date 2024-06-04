@@ -80,9 +80,8 @@ extern cell lp;
                             PF(push, push, push); next_do2(vm); \
                             PF(__VA_ARGS__)
 #define LOOP(...)           PF(lit, 1); PLOOP(__VA_ARGS__)
-#define PLOOP(...)          PF(pop, add, push, lit, 0, rick, lit, 1, rick, lt, zeq, irjz); \
+#define PLOOP(...)          PF(pploop); \
                             next_loop(vm); \
-                            PF(unloop); \
                             PF(__VA_ARGS__)
 
 
