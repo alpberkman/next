@@ -78,7 +78,7 @@ extern cell lp;
 
 #define DO(...)             PF(pdo); next_do(vm); PF(__VA_ARGS__)
 #define LOOP(...)           PF(lit, 1); PLOOP(__VA_ARGS__)
-#define PLOOP(...)          PF(pploop); next_loop(vm); PF(__VA_ARGS__)
+#define PLOOP(...)          PF(pploop); next_ploop(vm); PF(__VA_ARGS__)
 
 
 // Utility macros
@@ -107,7 +107,7 @@ void next_while(VM *vm, cell word);
 void next_repeat(VM *vm, cell word);
 
 void next_do(VM *vm);
-void next_loop(VM *vm);
+void next_ploop(VM *vm);
 
 
 void str(VM *vm, int len, byte *args);

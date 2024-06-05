@@ -30,3 +30,8 @@
 : TIMES ' SWAP 0 DO DUP >R EXECUTE R> LOOP DROP ;
 
 3 times .s
+
+\ Skips next n inlined arguements
+\ lit, n, skip, 0, 1, ... , n-1 <jump to here>
+: SKIP ( n -- ) ( R: ret-addr -- ret-addr+n*cell)
+    R> R> ROT CELLS + >R >R ;

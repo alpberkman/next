@@ -95,13 +95,15 @@ void next_do(VM *vm) {
     hp += CELL_SIZE;
     PPUSH = hp;
 }
-void next_loop(VM *vm) {
-    (void) vm;
+void next_ploop(VM *vm) {
     cell addr = PPOP;
-    CELL_FETCH(XMEM, hp) = addr;
+    cell offset = addr - hp ;
+    CELL_FETCH(XMEM, hp) = offset;
     hp += CELL_SIZE;
+
     addr = PPOP;
-    CELL_FETCH(XMEM, addr) = hp;
+    offset = hp - addr;
+    CELL_FETCH(XMEM, addr) = offset;
 }
 /*
 cell find_word(VM *vm, char *c) {

@@ -120,6 +120,30 @@ X: [+LOOP] ( R: loop-sys1 -- | loop-sys2 )
 ;
 : +LOOP ( C: do-sys -- ) ( n -- ) ( R: loop-sys1 -- | loop-sys2 ) POSTPONE [+LOOP] , HERE SWAP ! ; IMMEDIATE
 
+
+( **********************************************)
+X: [DO] ( limit index -- ) ( R: -- leave-addr limit index) 
+    R> DUP DUP @ + >R ( -- ret-addr ) ( R: ret-addr -- leave-addr ) 
+    -ROT SWAP >R >R CELL+ >R ( limit index ret-addr -- ) ( R: -- limit index ret-addr+cell ) 
+;
+: DO ( C: -- do-sys ) ( n1|u1 n2|u2 -- ) ( R: -- loop-sys ) POSTPONE [DO] HERE CELL ALLOT HERE ; IMMEDIATE
+
+X: [+LOOP] ( n -- ) ( R: leave-addr limit index -- | leave-addr limit index+n )
+    R> SWAP ( n -- ret-addr n ) ( ret-addr -- )
+    0 RICK 1 RICK < ( -- index<limit ) ( limit index -- limit index )
+    R> ROT + >R ( n index<limit -- index<limit ) ( R: index -- index+n )
+    0 RICK 1 RICK >= ( -- index+n>=limit ) ( limit index+n -- limit index+n )
+    AND IF UNLOOP CELL+ ELSE DUP @ + THEN >R ( ret-addr index<limit index+n>=limit -- ) ( R: leave-addr limit index+n -- ret-addr+cell | leave-addr limit index+n ret-addr' )
+;
+: +LOOP ( C: do-sys -- ) ( n -- ) ( R: loop-sys1 -- | loop-sys2 )
+    POSTPONE [+LOOP]
+    HERE - ,
+    HERE OVER - SWAP !
+; IMMEDIATE
+: LOOP ( C: do-sys -- ) ( -- ) ( R: loop-sys1 -- | loop-sys2 ) 1 LITERAL POSTPONE +LOOP ; IMMEDIATE
+
+( **********************************************)
+
 N: UNLOOP ( -- ) ( R: loop-sys -- ) R> R> DROP R> DROP R> DROP >R ;
 N: I ( -- n|u ) ( R:  loop-sys -- loop-sys ) 1 RICK ;
 N: J ( -- n|u ) ( R: loop-sys1 loop-sys2 -- loop-sys1 loop-sys2 ) 4 RICK ;

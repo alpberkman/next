@@ -125,7 +125,8 @@ void dict(VM *vm) {
     XCON(bl, ' ');
 
 ////////////////////////////////////////////////////////////////////////////////
-
+    //XCOLON(wp, lit, 0, rick, exit);
+    XPRIMS(wp, POP, DUP, PUSH, NEXT);
     // Stack words
     XCOLON(over,    lit, 1, pick, exit);
     XCOLON(nip,     swap, drop, exit);
@@ -182,13 +183,14 @@ void dict(VM *vm) {
     XCOLON(i, lit, 1, rick, exit);
     XCOLON(j, lit, 4, rick, exit);
     XCOLON(leave, pop, drop, pop, drop, pop, drop, exit);
-    YCOLON(pploop,  "[+loop]", 
+    YCOLON(pploop,  "[+loop]",
         pop, swap,
         lit, 0, rick, lit, 1, rick, lt,
         pop, rot, add, push, 
         lit, 0, rick, lit, 1, rick, geq, and);
-        IF(cellp, unloop); ELSE(ldc); THEN(push, exit);
-    YCOLON(pdo,     "[do]", pop, dup, ldc, push, mrot, swap, push, push, cellp, push, exit);
+        IF(unloop, cellp); ELSE(dup, ldc, add); THEN(push, exit);
+    //YCOLON(pdo,     "[do]", pop, dup, ldc, push, mrot, swap, push, push, cellp, push, exit);
+    YCOLON(pdo,     "[do]", pop, dup, dup, ldc, add, push, mrot, swap, push, push, cellp, push, exit);
     // Start
     COLD(lit, new_hp, xhp, strc, lit, new_lp, xlp, strc, false, state, strc, bye);
 
@@ -196,13 +198,13 @@ void dict(VM *vm) {
     // For debugging
     printf("%i %i\n", hp, lp);
 
-    penum2func();
+/*     penum2func();
     puts("");
     disasmd(vm);
     puts("");
     hexdump(vm, 16, (hp | 0xf)/16 + 1);
     puts("");
-
+ */
 
 
 
@@ -281,14 +283,14 @@ XCOLON(XXXXX, lit, MEM_SIZE, exit);
     XCOLON(echo5);
         PF(lit, 250, lit, 0); DO(lit, 9); LOOP();
 
-        PF(lit, 1000, lit, 0); DO();
+        PF(lit, 300, lit, 0); DO();
             PF(lit, 3, lit, 0); DO(j);
                 PF(leave);
             LOOP();
         LOOP(bye);
 
     XCOLON(echo6);
-        PF(lit, 1000, lit, 0); DO();
+        PF(lit, 300, lit, 0); DO();
             PF(lit, 3, lit, 0); DO(j);
                 PF(j, lit, 10, eq);
                 IF(unloop, leave); THEN();
@@ -296,19 +298,24 @@ XCOLON(XXXXX, lit, MEM_SIZE, exit);
         LOOP(bye);
 
     XCOLON(echo7);
-        PF(lit, 1000, lit, 0); DO();
+        PF(lit, 300, lit, 0); DO();
             PF(lit, 3, lit, 0); DO(j);
                 PF(j, lit, 10, eq);
                 IF(unloop, unloop, bye); THEN();
             LOOP();
         LOOP(bye);
 
+    XCOLON(echo8); PF(lit, 300, lit, 0); DO(i); LOOP(bye);
 
-    disasmd(vm);
-    puts("");
+    DR(echo5);
+    DR(echo6);
+    DR(echo7);
+
     hexdump(vm, 16, (hp | 0xf)/16 + 1);
     puts("");
-    DR(echo7);
+    disasmd(vm);
+    puts("");
+    DR(echo8);
 
 
 ;;;;;
