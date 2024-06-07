@@ -66,15 +66,15 @@ extern cell lp;
 #define TOGGLE lit, 0, eq
 
 // Control flow macros
-#define IF(...)             next_if(vm, irjz);      PF(__VA_ARGS__)
-#define THEN(...)           next_then(vm);          PF(__VA_ARGS__)
-#define ELSE(...)           next_else(vm, irjmp);   PF(__VA_ARGS__)
+#define IF(...)             next_if(vm, pif);       PF(__VA_ARGS__)
+#define THEN(...)           next_then(vm, pthen);   PF(__VA_ARGS__)
+#define ELSE(...)           next_else(vm, pelse);   PF(__VA_ARGS__)
 
-#define BEGIN(...)          next_begin(vm);         PF(__VA_ARGS__)
-#define AGAIN(...)          next_agin(vm, irjmp);   PF(__VA_ARGS__)
-#define UNTIL(...)          next_until(vm, irjz);   PF(__VA_ARGS__)
-#define WHILE(...)          next_while(vm, irjz);   PF(__VA_ARGS__)
-#define REPEAT(...)         next_repeat(vm, irjmp); PF(__VA_ARGS__)
+#define BEGIN(...)          next_begin(vm, pbegin); PF(__VA_ARGS__)
+#define AGAIN(...)          next_agin(vm, pagain);  PF(__VA_ARGS__)
+#define UNTIL(...)          next_until(vm, puntil); PF(__VA_ARGS__)
+#define WHILE(...)          next_while(vm, pwhile); PF(__VA_ARGS__)
+#define REPEAT(...)         next_repeat(vm, prepeat); PF(__VA_ARGS__)
 
 #define DO(...)             PF(pdo); next_do(vm); PF(__VA_ARGS__)
 #define LOOP(...)           PF(lit, 1); PLOOP(__VA_ARGS__)
@@ -90,6 +90,12 @@ extern cell lp;
         PPUSH = tmp2; \
     }
 
+#define HERE            PPUSH=hp
+#define CELL_ALLOT      hp+=CELL_SIZE
+#define HERE_CELL_ALLOT HERE; CELL_ALLOT
+#define HERE_SWAP_STORE CELL_FETCH(XMEM, PPOP) = hp
+#define APPEND(X)       CELL_FETCH(XMEM, hp) = (X); hp += CELL_SIZE;
+
 
 cell header(VM *vm, const char *name, int len);
 void cf(VM *vm, int len, mca *args);
@@ -97,10 +103,10 @@ void pf(VM *vm, int len, cell *args);
 
 
 void next_if(VM *vm, cell word);
-void next_then(VM *vm);
+void next_then(VM *vm, cell word);
 void next_else(VM *vm, cell word);
 
-void next_begin(VM *vm);
+void next_begin(VM *vm, cell word);
 void next_agin(VM *vm, cell word);
 void next_until(VM *vm, cell word);
 void next_while(VM *vm, cell word);

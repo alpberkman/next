@@ -98,15 +98,21 @@ N: UM/MOD ( ud u1 -- u2 u3 ) ;
 B: EXIT ( -- ) ( R: nest-sys -- ) ;
 B: IRJZ ( flag offset -- ) ;
 B: IRJMP ( offset -- ) ;
-: RECURSE ( -- ) LAST CELL+ DUP C@ 31 OR + BYTE+ , ;
-: IF ( C: -- orig ) ( x -- ) POSTPONE IRJZ HERE CELL ALLOT ; IMMEDIATE
-: THEN ( C: orig -- ) ( -- ) HERE OVER - CELL - SWAP ! ; IMMEDIATE
-: ELSE ( C: orig1 -- orig2 ) ( -- ) POSTPONE IRJMP HERE CELL ALLOT SWAP POSTPONE THEN ; IMMEDIATE
-
-: BEGIN ( C: -- dest ) ( -- ) HERE ; IMMEDIATE
-: UNTIL ( C: dest -- ) ( x -- ) POSTPONE IRJZ HERE - CELL - , ; IMMEDIATE
-: WHILE ( C: dest -- orig dest ) ( x -- ) POSTPONE IRJZ HERE CELL ALLOT ; IMMEDIATE
-: REPEAT ( C: orig dest -- ) ( -- ) POSTPONE IRJMP SWAP HERE - CELL - , HERE OVER - CELL - SWAP ! ; IMMEDIATE
+: RECURSE ( -- ) LAST CELL+ DUP C@ 31 OR + MCA+ , ;
+: IF ( C: -- orig ) ( x -- ) POSTPONE [IF] HERE CELL ALLOT ; IMMEDIATE
+: THEN ( C: orig -- ) ( -- ) POSTPONE [THEN] HERE SWAP ! ; IMMEDIATE
+: ELSE ( C: orig1 -- orig2 ) ( -- ) POSTPONE [ELSE] HERE CELL ALLOT SWAP HERE SWAP ! ; IMMEDIATE
+\ : IF ( C: -- orig ) ( x -- ) POSTPONE IRJZ HERE CELL ALLOT ; IMMEDIATE
+\ : THEN ( C: orig -- ) ( -- ) HERE OVER - CELL - SWAP ! ; IMMEDIATE
+\ : ELSE ( C: orig1 -- orig2 ) ( -- ) POSTPONE IRJMP HERE CELL ALLOT SWAP POSTPONE THEN ; IMMEDIATE
+: BEGIN ( C: -- dest ) ( -- ) POSTPONE [BEGIN] HERE ; IMMEDIATE
+: UNTIL ( C: dest -- ) ( x -- ) POSTPONE [UNTIL] , ; IMMEDIATE
+: WHILE ( C: dest -- orig dest ) ( x -- ) POSTPONE [WHILE] HERE CELL ALLOT ; IMMEDIATE
+: REPEAT ( C: orig dest -- ) ( -- ) POSTPONE [REPEAT] SWAP , HERE SWAP ! ; IMMEDIATE
+\ : BEGIN ( C: -- dest ) ( -- ) HERE ; IMMEDIATE
+\ : UNTIL ( C: dest -- ) ( x -- ) POSTPONE IRJZ HERE - CELL - , ; IMMEDIATE
+\ : WHILE ( C: dest -- orig dest ) ( x -- ) POSTPONE IRJZ HERE CELL ALLOT ; IMMEDIATE
+\ : REPEAT ( C: orig dest -- ) ( -- ) POSTPONE IRJMP SWAP HERE - CELL - , HERE OVER - CELL - SWAP ! ; IMMEDIATE
 
 X: [DO] ( limit index -- ) ( R: -- leave-addr limit index) R> DUP @ >R -ROT SWAP >R >R CELL+ >R ;
 : DO ( C: -- do-sys ) ( n1|u1 n2|u2 -- ) ( R: -- loop-sys ) POSTPONE [DO] HERE CELL ALLOT HERE ; IMMEDIATE

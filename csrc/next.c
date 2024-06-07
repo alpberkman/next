@@ -28,7 +28,7 @@ void dict(VM *vm) {
     XPRIMS(lit,     LIT, NEXT);
     XPRIMS(next,    NEXT);
     XPRIMS(nest,    NEST);
-    XPRIMS(exit,  UNNEST);
+    XPRIMS(exit,    UNNEST);
     XPRIMS(jmp,     JMP, NEXT);
     XPRIMS(jz,      JZ, NEXT);
     XPRIMS(execute, EXE, NEXT);
@@ -88,6 +88,21 @@ void dict(VM *vm) {
     XPRIMS(irjmp,       LIT, RJMP, NEXT);
     XPRIMS(irjz,        LIT, RJZ, NEXT);
 
+    XPRIMS(wp,      POP, DUP, PUSH, NEXT);
+
+    YPRIMS(pif,     "[IF]",     LIT, JZ, NEXT);
+    YPRIMS(pthen,   "[THEN]",   NEXT);
+    YPRIMS(pelse,   "[ELSE]",   LIT, JMP, NEXT);
+
+    YPRIMS(pbegin,  "[BEGIN]",  NEXT);
+    YPRIMS(pagain,  "[AGAIN]",  LIT, JMP, NEXT);
+    YPRIMS(puntil,  "[UNTIL]",  LIT, JZ, NEXT);
+    YPRIMS(pwhile,  "[WHILE]",  LIT, JZ, NEXT);
+    YPRIMS(prepeat, "[REPEAT]", LIT, JMP, NEXT);
+
+    YPRIMS(pdo,     "[DO]",     LIT, PUSH, SWAP, PUSH, PUSH, NEXT);
+    YPRIMS(pploop,  "[+LOOP]",  LIT, NEXT);
+
 ////////////////////////////////////////////////////////////////////////////////
 
     // Begining of colon words
@@ -126,7 +141,7 @@ void dict(VM *vm) {
 
 ////////////////////////////////////////////////////////////////////////////////
     //XCOLON(wp, lit, 0, rick, exit);
-    XPRIMS(wp, POP, DUP, PUSH, NEXT);
+    
     // Stack words
     XCOLON(over,    lit, 1, pick, exit);
     XCOLON(nip,     swap, drop, exit);
@@ -307,15 +322,22 @@ XCOLON(XXXXX, lit, MEM_SIZE, exit);
 
     XCOLON(echo8); PF(lit, 300, lit, 0); DO(i); LOOP(bye);
 
-    DR(echo5);
-    DR(echo6);
-    DR(echo7);
+    //DR(echo5);
+    //DR(echo6);
+    //DR(echo7);
+    XCOLON(echo9, lit, 10, lit, 0);
+    DO(i, lit, 2, mod); IF(i); ELSE(lit, -1); THEN(); LOOP(bye); 
+
+    XCOLON(echo10, lit, 0); BEGIN(dup, lit, 1, add, dup, lit, 10, eq); IF(bye); THEN(); AGAIN(bye);
+    XCOLON(echo11, lit, 0); BEGIN(dup, lit, 1, add, dup, lit, 10, eq); UNTIL(bye);
+    XCOLON(echo12, lit, 0); BEGIN(dup, lit, 1, add, dup, lit, 10, neq); WHILE(lit, 666, swap); REPEAT(bye);
 
     hexdump(vm, 16, (hp | 0xf)/16 + 1);
     puts("");
     disasmd(vm);
     puts("");
-    DR(echo8);
+    //DR(echo9);
+    DR(echo12);
 
 
 ;;;;;

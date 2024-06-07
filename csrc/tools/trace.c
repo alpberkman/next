@@ -17,6 +17,8 @@ void tword(VM *vm, cell p) {
             printf(" (0x%x | %i)", CELL_FETCH(XMEM, XWP), CELL_FETCH(XMEM, XWP));
         } else if(STREQ(name, "IRJMP", len) || STREQ(name, "IRJZ", len)) {
             printf(" (0x%x)", CELL_FETCH(XMEM, XWP));
+        } else if(STREQ(name, "[IF]", len) || STREQ(name, "[ELSE]", len)) {
+            printf(" (0x%x)", CELL_FETCH(XMEM, XWP));
         } else if(STREQ(name, "[DO]", len) || STREQ(name, "[+LOOP]", len)) {
             printf(" (0x%x)", CELL_FETCH(XMEM, XWP));
         } else if(STREQ(name, "DOSTR", len)) {

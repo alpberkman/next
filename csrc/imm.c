@@ -36,52 +36,40 @@ void pf(VM *vm, int len, cell *args) {
 
 void next_if(VM *vm, cell word) {
     PF(word);
-    PPUSH = hp;
-    hp += CELL_SIZE;
+    HERE_CELL_ALLOT;
 }
-void next_then(VM *vm) {
-    cell addr = PPOP;
-    cell offset = hp - addr - CELL_SIZE;
-    CELL_FETCH(XMEM, addr) = offset;
+void next_then(VM *vm, cell word) {
+    PF(word);
+    HERE_SWAP_STORE;
 }
 void next_else(VM *vm, cell word) {
-    next_if(vm, word);
+    PF(word);
+    HERE_CELL_ALLOT;
     PSWAP;
-    next_then(vm);
+    HERE_SWAP_STORE;
 }
 
-void next_begin(VM *vm) {
-    PPUSH = hp;
+void next_begin(VM *vm, cell word) {
+    PF(word);
+    HERE;
 }
 void next_agin(VM *vm, cell word) {
     PF(word);
-    cell addr = PPOP;
-    cell offset = addr - hp - CELL_SIZE;
-    CELL_FETCH(XMEM, hp) = offset;
-    hp += CELL_SIZE;
+    APPEND(PPOP);
 }
 void next_until(VM *vm, cell word) {
     PF(word);
-    cell addr = PPOP;
-    cell offset = addr - hp - CELL_SIZE;
-    CELL_FETCH(XMEM, hp) = offset;
-    hp += CELL_SIZE;
+    APPEND(PPOP);
 }
 void next_while(VM *vm, cell word) {
     PF(word);
-    PPUSH = hp;
-    hp += CELL_SIZE;
+    HERE_CELL_ALLOT;
 }
 void next_repeat(VM *vm, cell word) {
     PF(word);
     PSWAP;
-    cell addr = PPOP;
-    cell offset = addr - hp - CELL_SIZE;
-    CELL_FETCH(XMEM, hp) = offset;
-    hp += CELL_SIZE;
-    addr = PPOP;
-    offset = hp - addr - CELL_SIZE;
-    CELL_FETCH(XMEM, addr) = offset;
+    APPEND(PPOP);
+    HERE_SWAP_STORE;
 }
 
 void str(VM *vm, int len, byte *args) {
