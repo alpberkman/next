@@ -66,17 +66,17 @@ extern cell lp;
 #define TOGGLE lit, 0, eq
 
 // Control flow macros
-#define IF(...)             next_if(vm, pif);       PF(__VA_ARGS__)
-#define THEN(...)           next_then(vm, pthen);   PF(__VA_ARGS__)
-#define ELSE(...)           next_else(vm, pelse);   PF(__VA_ARGS__)
+#define IF(...)             PF(pif);    next_if(vm);    PF(__VA_ARGS__)
+#define THEN(...)           PF(pthen);  next_then(vm);  PF(__VA_ARGS__)
+#define ELSE(...)           PF(pelse);  next_else(vm);  PF(__VA_ARGS__)
 
-#define BEGIN(...)          next_begin(vm, pbegin); PF(__VA_ARGS__)
-#define AGAIN(...)          next_agin(vm, pagain);  PF(__VA_ARGS__)
-#define UNTIL(...)          next_until(vm, puntil); PF(__VA_ARGS__)
-#define WHILE(...)          next_while(vm, pwhile); PF(__VA_ARGS__)
-#define REPEAT(...)         next_repeat(vm, prepeat); PF(__VA_ARGS__)
+#define BEGIN(...)          PF(pbegin); next_begin(vm); PF(__VA_ARGS__)
+#define AGAIN(...)          PF(pagain); next_agin(vm);  PF(__VA_ARGS__)
+#define UNTIL(...)          PF(puntil); next_until(vm); PF(__VA_ARGS__)
+#define WHILE(...)          PF(pwhile); next_while(vm); PF(__VA_ARGS__)
+#define REPEAT(...)         PF(prepeat); next_repeat(vm); PF(__VA_ARGS__)
 
-#define DO(...)             PF(pdo); next_do(vm); PF(__VA_ARGS__)
+#define DO(...)             PF(pdo);    next_do(vm);    PF(__VA_ARGS__)
 #define LOOP(...)           PF(lit, 1); PLOOP(__VA_ARGS__)
 #define PLOOP(...)          PF(pploop); next_ploop(vm); PF(__VA_ARGS__)
 
@@ -102,15 +102,15 @@ void cf(VM *vm, int len, mca *args);
 void pf(VM *vm, int len, cell *args);
 
 
-void next_if(VM *vm, cell word);
-void next_then(VM *vm, cell word);
-void next_else(VM *vm, cell word);
+void next_if(VM *vm);
+void next_then(VM *vm);
+void next_else(VM *vm);
 
-void next_begin(VM *vm, cell word);
-void next_agin(VM *vm, cell word);
-void next_until(VM *vm, cell word);
-void next_while(VM *vm, cell word);
-void next_repeat(VM *vm, cell word);
+void next_begin(VM *vm);
+void next_agin(VM *vm);
+void next_until(VM *vm);
+void next_while(VM *vm);
+void next_repeat(VM *vm);
 
 void next_do(VM *vm);
 void next_ploop(VM *vm);

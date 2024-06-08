@@ -113,7 +113,18 @@ B: IRJMP ( offset -- ) ;
 \ : UNTIL ( C: dest -- ) ( x -- ) POSTPONE IRJZ HERE - CELL - , ; IMMEDIATE
 \ : WHILE ( C: dest -- orig dest ) ( x -- ) POSTPONE IRJZ HERE CELL ALLOT ; IMMEDIATE
 \ : REPEAT ( C: orig dest -- ) ( -- ) POSTPONE IRJMP SWAP HERE - CELL - , HERE OVER - CELL - SWAP ! ; IMMEDIATE
+: DO POSTPONE [DO] HERE CELL ALLOT HERE ; IMMEDIATE
+: +LOOP POSTPONE [+LOOP] , HERE SWAP ! ; IMMEDIATE
+X: [+LOOP] 
+    R> SWAP
+    0 RICK 1 RICK <
+    R> ROT + >R
+    0 RICK 1 RICK >= AND
+    SWAP ! >R
+    IF UNLOOP THEN
+;
 
+( **********************************************)
 X: [DO] ( limit index -- ) ( R: -- leave-addr limit index) R> DUP @ >R -ROT SWAP >R >R CELL+ >R ;
 : DO ( C: -- do-sys ) ( n1|u1 n2|u2 -- ) ( R: -- loop-sys ) POSTPONE [DO] HERE CELL ALLOT HERE ; IMMEDIATE
 : LOOP ( C: do-sys -- ) ( -- ) ( R: loop-sys1 -- | loop-sys2 ) 1 LITERAL POSTPONE +LOOP ; IMMEDIATE
@@ -125,7 +136,7 @@ X: [+LOOP] ( R: loop-sys1 -- | loop-sys2 )
     AND IF CELL+ UNLOOP ELSE @ THEN >R
 ;
 : +LOOP ( C: do-sys -- ) ( n -- ) ( R: loop-sys1 -- | loop-sys2 ) POSTPONE [+LOOP] , HERE SWAP ! ; IMMEDIATE
-
+( **********************************************)
 
 ( **********************************************)
 X: [DO] ( limit index -- ) ( R: -- leave-addr limit index) 

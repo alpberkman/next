@@ -101,8 +101,11 @@ void dict(VM *vm) {
     YPRIMS(prepeat, "[REPEAT]", LIT, JMP, NEXT);
 
     YPRIMS(pdo,     "[DO]",     LIT, PUSH, SWAP, PUSH, PUSH, NEXT);
-    YPRIMS(pploop,  "[+LOOP]",  LIT, NEXT);
-
+/*    YPRIMS(pploop,  "[+LOOP]",  
+    POP, POP, OVER, OVER, PUSH, PUSH, LT, SWAP,
+    POP, ADD, POP, OVER, OVER, PUSH, PUSH, LT, DUP, DUP, XOR, EQ,
+    AND, LIT, JZ, POP, DROP, POP, DROP, POP, DROP, NEXT);
+*/
 ////////////////////////////////////////////////////////////////////////////////
 
     // Begining of colon words
@@ -198,14 +201,16 @@ void dict(VM *vm) {
     XCOLON(i, lit, 1, rick, exit);
     XCOLON(j, lit, 4, rick, exit);
     XCOLON(leave, pop, drop, pop, drop, pop, drop, exit);
-    YCOLON(pploop,  "[+loop]",
+    YCOLON(pploop,  "[+LOOP]",
         pop, swap,
         lit, 0, rick, lit, 1, rick, lt,
         pop, rot, add, push, 
-        lit, 0, rick, lit, 1, rick, geq, and);
-        IF(unloop, cellp); ELSE(dup, ldc, add); THEN(push, exit);
+        lit, 0, rick, lit, 1, rick, geq, and,
+        swap, ldc, push);
+        IF(unloop); THEN(exit);
     //YCOLON(pdo,     "[do]", pop, dup, ldc, push, mrot, swap, push, push, cellp, push, exit);
-    YCOLON(pdo,     "[do]", pop, dup, dup, ldc, add, push, mrot, swap, push, push, cellp, push, exit);
+/*    YCOLON(pdo,     "[do]", pop, dup, dup, ldc, add, push, mrot, swap, push, push, cellp, push, exit);
+*/
     // Start
     COLD(lit, new_hp, xhp, strc, lit, new_lp, xlp, strc, false, state, strc, bye);
 
@@ -325,7 +330,7 @@ XCOLON(XXXXX, lit, MEM_SIZE, exit);
     //DR(echo5);
     //DR(echo6);
     //DR(echo7);
-    XCOLON(echo9, lit, 10, lit, 0);
+    //XCOLON(echo9, lit, 10, lit, 0);
     DO(i, lit, 2, mod); IF(i); ELSE(lit, -1); THEN(); LOOP(bye); 
 
     XCOLON(echo10, lit, 0); BEGIN(dup, lit, 1, add, dup, lit, 10, eq); IF(bye); THEN(); AGAIN(bye);
@@ -337,7 +342,7 @@ XCOLON(XXXXX, lit, MEM_SIZE, exit);
     disasmd(vm);
     puts("");
     //DR(echo9);
-    DR(echo12);
+    DR(echo5);
 
 
 ;;;;;
