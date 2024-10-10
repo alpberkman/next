@@ -8,7 +8,7 @@
 #include <stdio.h>
 
 
-void tword(VM *vm, cell p) {
+void tword(FTH *fth, cell p) {
     LOCATE_DISASM(p);
     printf("%.*s", len, name);
 
@@ -35,7 +35,7 @@ void tword(VM *vm, cell p) {
     }
 }
 
-void ptrace(VM *vm) {
+void ptrace(FTH *fth) {
     if(DEBUG_ENABLE(2, DEBUG_ENABLE(1, XWP != 0) && MCA_FETCH(XMEM, XIP) != NEXT)) {
 
         if(DEBUG_ENABLE(4, 0)) {
@@ -52,13 +52,13 @@ void ptrace(VM *vm) {
         printf("%4x %4x | %-7s: ", XIP, XWP, enum2s(MCA_FETCH(XMEM, XIP)));
         for(int i = 0; i < XRSP-1; ++i) printf("  ");
 
-        tword(vm, XWP);
+        tword(fth, XWP);
         printf(": ");
-        tword(vm, XIP);
+        tword(fth, XIP);
 
         puts("");
     }
 }
-void trace(VM *vm, cell addr) {
-    rund(vm, addr, ptrace);
+void trace(FTH *fth, cell addr) {
+    rund(fth, addr, ptrace);
 }

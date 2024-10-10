@@ -7,7 +7,7 @@
 #include <stdio.h>
 
 
-void locate(VM *vm, cell addr, cell *start, cell *end) {
+void locate(FTH *fth, cell addr, cell *start, cell *end) {
     *start = lp;
     *end = hp;
     while(*start > addr && *start != -1) {
@@ -16,21 +16,21 @@ void locate(VM *vm, cell addr, cell *start, cell *end) {
     }
 }
 
-cell find_pfa(VM *vm, cell cfa) {
+cell find_pfa(FTH *fth, cell cfa) {
     cell pfa = cfa;
     while(MCA_FETCH(XMEM, pfa) != NEXT && MCA_FETCH(XMEM, pfa) != NEST && MCA_FETCH(XMEM, pfa) != UNNEST)
         pfa += MCA_SIZE;
     return pfa + MCA_SIZE;
 }
 
-int wordeq(VM *vm, cell addr, char *target) {
+int wordeq(FTH *fth, cell addr, char *target) {
     LOCATE_DISASM(addr);
     if(strlen(target) != len)
         return 0;
     return 0 == strncmp((char *) name, target, len);
 }
 
-int pword(VM *vm, cell *addr) {
+int pword(FTH *fth, cell *addr) {
     LOCATE_DISASM(CELL_FETCH(XMEM, *addr));
     printf("%.*s", len, (char*) name);
     *addr += CELL_SIZE;
@@ -69,14 +69,14 @@ int pword(VM *vm, cell *addr) {
 
     return len;
 }
-int pprim(VM *vm, cell *addr) {
+int pprim(FTH *fth, cell *addr) {
     char *name = (char *[]){TABLE(XENUMNAME)}[BYTE_FETCH(XMEM, *addr)];
     *addr += MCA_SIZE;
     printf("%s", name);
 
     return strlen(name);
 }
-void pheader(VM *vm, cell addr) {
+void pheader(FTH *fth, cell addr) {
     LOCATE_DISASM(addr);
     printf("0x%04x: 0x%04x %-10.*s %2i   %c   %c  0x%04x  0x%04x [%04x-%04x] ",
            start,
@@ -89,36 +89,36 @@ void pheader(VM *vm, cell addr) {
            start, end);
 }
 
-void disasm_cf(VM *vm, cell cfa, cell end) {
+void disasm_cf(FTH *fth, cell cfa, cell end) {
     int space = 3 - (end - cfa);
     while(cfa < end) {
-        int slen = pprim(vm, &cfa);
+        int slen = pprim(fth, &cfa);
         printf("%.*s", 7-slen, "         ");
     }
     for(int i = 0; i < space; ++i)
         printf("%7s", "");
 }
 
-void disasm_pf(VM *vm, cell pfa, cell end) {
+void disasm_pf(FTH *fth, cell pfa, cell end) {
     while(pfa < end) {
-        pword(vm, &pfa);
+        pword(fth, &pfa);
         printf(" ");
     }
 }
 
 
 
-void disasmw(VM *vm, cell addr) {
+void disasmw(FTH *fth, cell addr) {
     LOCATE_DISASM(addr);
-    pheader(vm, start);
+    pheader(fth, start);
     printf("<|> ");
-    disasm_cf(vm, cfa, pfa);
+    disasm_cf(fth, cfa, pfa);
     printf("<|> ");
-    disasm_pf(vm, pfa, end);
+    disasm_pf(fth, pfa, end);
     puts("");
 }
 
-void disasmd(VM *vm) {
+void disasmd(FTH *fth) {
         printf("%-8s%-7s%-11s%-4s%-4s%-4s%-8s%-7s%-11s <|> %-20s <|> %s\n",
            "ADDR",
            "LINK",
@@ -137,5 +137,5 @@ void disasmd(VM *vm) {
             24, "------------------------",
             36, "------------------------------------");
     for(cell addr = lp; addr != -1; addr = CELL_FETCH(XMEM, addr)) 
-        disasmw(vm, addr);
+        disasmw(fth, addr);
 }

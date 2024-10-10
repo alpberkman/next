@@ -2,7 +2,7 @@
 #ifndef _DEBUG_H
 #define _DEBUG_H
 
-#include "../vm.h"
+#include "../core.h"
 #include "trace.h"
 #include "disasm.h"
 
@@ -29,16 +29,16 @@ extern cell lp;
 
 
 // Dump all words
-#define HEXDUMP hexdump(vm, 16, (hp | 0xf)/16 + 1);
+#define HEXDUMP hexdump(fth, 16, (hp | 0xf)/16 + 1);
 
 // Wrapper for debug runs 
-#define DR(X) reset(vm); trace(vm, (X)); stacks(vm); puts("")
+#define DR(X) init(fth); trace(fth, (X)); stacks(fth); puts("")
 
 
 // Prints a given stack
 void pstack(cell *s, cell p, char *sname, char *fstr);
 // Prints both stacks
-void stacks(VM *vm);
+void stacks(FTH *fth);
 
 // Prints enum and function name pairs
 void penum2func(void);
@@ -50,7 +50,7 @@ char *func2s(func f);
 // Dumps the memory contents, both in hex and if printable using chars
 // rlen: length of rows
 // clen: length of columns
-void hexdump(VM *vm, int rlen, int clen);
+void hexdump(FTH *fth, int rlen, int clen);
 
 
 #endif

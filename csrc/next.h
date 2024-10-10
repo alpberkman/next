@@ -3,11 +3,11 @@
 #ifndef _NEXT_H
 #define _NEXT_H
 
-#include "vm.h"
+#include "core.h"
 
 
-void dict(VM *vm);
-// Initialize the vm's memory
+void xdict(FTH *fth);
+// Initialize the fth's memory
 
 #endif
 

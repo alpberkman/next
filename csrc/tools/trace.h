@@ -3,14 +3,14 @@
 #ifndef _TRACE_H
 #define _TRACE_H
 
-#include "../vm.h"
+#include "../core.h"
 
 // Inspect p
-void tword(VM *vm, cell p);
+void tword(FTH *fth, cell p);
 // Print trace
-void ptrace(VM *vm);
-// Run the VM with ptrace starting from addr
-void trace(VM *vm, cell addr);
+void ptrace(FTH *fth);
+// Run the FTH with ptrace starting from addr
+void trace(FTH *fth, cell addr);
 
 
 #endif

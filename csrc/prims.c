@@ -4,13 +4,13 @@
 #include <stdio.h>
 
 
-void exec(VM *vm, mca addr) {
+void exec(FTH *fth, mca addr) {
     func f = LUT(addr);
-    f(vm);
+    f(fth);
 }
 
 FTH(_nop) {
-    (void) vm;
+    (void) fth;
 }
 FTH(_halt) {
     XP = OFF;
@@ -42,16 +42,6 @@ FTH(_jz) {
 FTH(_exe) {
     cell addr = PPOP;
     MEXE = addr;
-}
-FTH(_rjmp) {
-    cell addr = PPOP;
-    MJMP += addr;
-}
-FTH(_rjz) {
-    cell addr = PPOP;
-    cell flag = PPOP;
-    if(flag == FALSE)
-        MJMP += addr;
 }
 FTH(_dup) {
     cell val = TOS;
@@ -125,7 +115,7 @@ FTH(_strb) {
 }
 FTH(_call) {
     func f = MCALL;
-    f(vm);
+    f(fth);
 }
 FTH(_key) {
     byte c = getchar();

@@ -8,8 +8,8 @@
 #include <stdio.h>
 
 
-void dict(VM *vm) {
-    //(void) vm;
+void xdict(FTH *fth) {
+    //(void) fth;
     hp =  0;
     lp = -1;
 
@@ -32,8 +32,8 @@ void dict(VM *vm) {
     XPRIMS(jmp,     JMP, NEXT);
     XPRIMS(jz,      JZ, NEXT);
     XPRIMS(execute, EXE, NEXT);
-    XPRIMS(rjmp,    RJMP, NEXT);
-    XPRIMS(rjz,     RJZ, NEXT);
+    //XPRIMS(rjmp,    RJMP, NEXT);
+    //XPRIMS(rjz,     RJZ, NEXT);
     
     // Stack manipulation and status words
     XPRIMS(dup,     DUP, NEXT);
@@ -85,8 +85,8 @@ void dict(VM *vm) {
     XPRIMS(ijmp,        LIT, JMP, NEXT);
     XPRIMS(ijz,         LIT, JZ, NEXT);
     XPRIMS(iexecute,    LIT, EXE, NEXT);
-    XPRIMS(irjmp,       LIT, RJMP, NEXT);
-    XPRIMS(irjz,        LIT, RJZ, NEXT);
+    //XPRIMS(irjmp,       LIT, RJMP, NEXT);
+    //XPRIMS(irjz,        LIT, RJZ, NEXT);
 
     XPRIMS(wp,      POP, DUP, PUSH, NEXT);
 
@@ -220,9 +220,9 @@ void dict(VM *vm) {
 
 /*     penum2func();
     puts("");
-    disasmd(vm);
+    disasmd(fth);
     puts("");
-    hexdump(vm, 16, (hp | 0xf)/16 + 1);
+    hexdump(fth, 16, (hp | 0xf)/16 + 1);
     puts("");
  */
 
@@ -274,7 +274,7 @@ XCOLON(XXXXX, lit, MEM_SIZE, exit);
     XCOLON(t10, lit, 16+0, alligned, lit, 16+1, alligned, lit, 16+2, alligned, lit, 16+3, alligned, lit, 16+4, alligned, lit, 16+5, alligned, bye);
     DR(t10);
 
-    hexdump(vm, 16, (hp | 0xf)/16 + 1);
+    hexdump(fth, 16, (hp | 0xf)/16 + 1);
     puts("");
 
     XCOLON(t11, lit, 1, lit, 3, lt, bye);
@@ -337,9 +337,9 @@ XCOLON(XXXXX, lit, MEM_SIZE, exit);
     XCOLON(echo11, lit, 0); BEGIN(dup, lit, 1, add, dup, lit, 10, eq); UNTIL(bye);
     XCOLON(echo12, lit, 0); BEGIN(dup, lit, 1, add, dup, lit, 10, neq); WHILE(lit, 666, swap); REPEAT(bye);
 
-    hexdump(vm, 16, (hp | 0xf)/16 + 1);
+    hexdump(fth, 16, (hp | 0xf)/16 + 1);
     puts("");
-    disasmd(vm);
+    disasmd(fth);
     puts("");
     //DR(echo9);
     DR(echo5);

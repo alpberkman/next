@@ -12,7 +12,7 @@ void pstack(cell *s, cell p, char *sname, char *fstr) {
     for(int i = 0; i < p; ++i)
         printf(fstr, s[i]);
 }
-void stacks(VM *vm) {
+void stacks(FTH *fth) {
     printf("SPU:\n");
     pstack(XPS, XPSP, "PS", "%i ");
     puts("");
@@ -45,7 +45,7 @@ void penum2func(void) {
         printf("0x%02x: %-6s <---> %7s\n", keys[i], enames[i], fnames[i]);
 }
 
-void hexdump(VM *vm, int rlen, int clen) {
+void hexdump(FTH *fth, int rlen, int clen) {
     for(int i = 0; i < clen; ++i) {
         printf("0x%04x: ", i*rlen);
         for(int j = 0; j < rlen; ++j) {

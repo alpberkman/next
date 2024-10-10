@@ -2,18 +2,18 @@
 #ifndef _PRIMS_H
 #define _PRIMS_H
 
-#include "vm.h"
+#include "core.h"
 
 
 #define FTH(NAME) \
-    void NAME (VM *vm)
+    void NAME (FTH *fth)
 
 #define XENUM(E, F)  E,
 #define XFUNC(E, F)   F,
 #define XENUMNAME(E, F) #E,
 #define XFUNCNAME(E, F) #F,
 #define XENUM2FUNC(E, F) #E, #F
-#define XFUNCSIG(E, F) void F (VM *vm);
+#define XFUNCSIG(E, F) void F (FTH *fth);
 #define XFUNCTAB(E, F) [E] = F,
 
 #define TABLE(APPLY) \
@@ -26,8 +26,6 @@
     APPLY(JMP,  _jmp) \
     APPLY(JZ,   _jz) \
     APPLY(EXE,  _exe) \
-    APPLY(RJMP,  _rjmp) \
-    APPLY(RJZ,   _rjz) \
     APPLY(DUP,  _dup) \
     APPLY(DROP, _drop) \
     APPLY(SWAP, _swap) \

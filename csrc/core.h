@@ -1,7 +1,6 @@
 
-
-#ifndef _VM_H
-#define _VM_H
+#ifndef _CORE_H
+#define _CORE_H
 
 
 #define MEM_SIZE (0x8000)
@@ -13,20 +12,19 @@
 #define TRUE    (-1)
 
 
-typedef struct VM VM;
+typedef struct FTH FTH;
+typedef void (*func) (FTH *fth);
 
 typedef int cell;
-typedef unsigned int ucell;
 typedef unsigned char byte;
-typedef void (*func) (VM *vm);
 typedef byte mca;
 
 typedef enum power power;
 typedef struct stack stack;
 
-typedef struct ITC ITC;
+typedef struct ITU ITU;
 typedef struct SPU SPU;
-typedef byte *MEM;
+typedef byte MEM[MEM_SIZE];
 
 
 enum power {
@@ -39,7 +37,7 @@ struct stack {
     byte sp;
 };
 
-struct ITC {
+struct ITU {
     power p;
     cell ip;
     cell wp;
@@ -50,21 +48,19 @@ struct SPU {
     stack r;
 };
 
-struct VM {
-    ITC itc;
+struct FTH {
+    ITU itu;
     SPU spu;
     MEM mem;
 };
 
 
-mca fetch(VM *vm);
-void exec(VM *vm, mca addr);
-void tick(VM *vm);
-void runc(VM *vm, cell addr);
-void rund(VM *vm, cell addr, func debug);
-
-void reset(VM *vm);
-void init(VM *vm, byte *mem);
+mca fetch(FTH *fth);
+void exec(FTH *fth, mca addr);
+void tick(FTH *fth);
+void runc(FTH *fth, cell addr);
+void rund(FTH *fth, cell addr, func debug);
+void init(FTH *fth);
 
 
 #define FUNC_SIZE (sizeof(func))
@@ -84,18 +80,18 @@ void init(VM *vm, byte *mem);
 #define MCA_FETCH(MEM, ADDR)  (TYPE_FETCH(mca, MEM, ADDR))
 
 
-#define XITC (vm->itc)
-#define XP   (vm->itc.p)
-#define XIP  (vm->itc.ip)
-#define XWP  (vm->itc.wp)
+#define XITU (fth->itu)
+#define XP   (fth->itu.p)
+#define XIP  (fth->itu.ip)
+#define XWP  (fth->itu.wp)
 
-#define XSPU (vm->spu)
-#define XPSP (vm->spu.p.sp)
-#define XRSP (vm->spu.r.sp)
-#define XPS  (vm->spu.p.s)
-#define XRS  (vm->spu.r.s)
+#define XSPU (fth->spu)
+#define XPSP (fth->spu.p.sp)
+#define XRSP (fth->spu.r.sp)
+#define XPS  (fth->spu.p.s)
+#define XRS  (fth->spu.r.s)
 
-#define XMEM (vm->mem)
+#define XMEM (fth->mem)
 
 
 #define LOGICAL(FLAG) ((FLAG) ? TRUE : FALSE)
@@ -132,5 +128,5 @@ void init(VM *vm, byte *mem);
     FUNC_FETCH(XMEM, XWP); \
     XWP += FUNC_SIZE
 
-#endif
 
+#endif
