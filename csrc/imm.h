@@ -26,10 +26,16 @@ extern cell lp;
 #define IMMEDIATE                   BYTE_FETCH(XMEM, lp+CELL_SIZE) |= MASK_IMM
 
 
+// DOES> part of CREATE ... DOES>
+#define XDOES(NAME, ...)            XCOLON(NAME, pop, __VA_ARGS__)
+
+
 // Variable and constant macros
 #define XVAR(NAME)                  XCOLON(NAME, dovar, 0)
+#define XVARINIT(NAME, VAL)         XCOLON(NAME, dovar, (VAL))
 #define XCON(NAME, VAL)             XCOLON(NAME, docon, (VAL))
 #define YVAR(NAME, ENTRY)           YCOLON(NAME, ENTRY, dovar, 0)
+#define YVARINIT(NAME, ENTRY, VAL)  YCOLON(NAME, ENTRY, dovar, (VAL))
 #define YCON(NAME, ENTRY, VAL)      YCOLON(NAME, ENTRY, docon, (VAL))
 
 
@@ -53,7 +59,7 @@ extern cell lp;
     }
 
 // Macros for words that might be used in interpreter mode while compiling other words
-#define ALLOT(N)                    hp+=(N)
+#define ALLOT(N)                    hp+=(BYTES())
 #define STR(X)                      PF(dostr, sizeof(X)-1); str(fth, sizeof(X)-1, (byte *) X)
 #define CCALL(X)                    PF(call); FUNC_FETCH(XMEM, hp) = (X); hp += FUNC_SIZE
 //#define RECURSE {WORD_DISASM(lp);  PF(ijmp, cfa+1);}

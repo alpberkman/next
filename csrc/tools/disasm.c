@@ -41,19 +41,19 @@ int pword(FTH *fth, cell *addr) {
     } else if(STREQ(name, "IRJMP", len) || STREQ(name, "IRJZ", len)) {
         printf("(0x%x)", CELL_FETCH(XMEM, *addr));
         *addr += CELL_SIZE;
-    } else if(STREQ(name, "[IF]", len) || STREQ(name, "[ELSE]", len)) {
+    } else if(STREQ(name, "(IF)", len) || STREQ(name, "(ELSE)", len)) {
         printf("(0x%x)", CELL_FETCH(XMEM, *addr));
         *addr += CELL_SIZE;
-    } else if(STREQ(name, "[BEGIN]", len) || STREQ(name, "[AGAIN]", len)) {
+    } else if(STREQ(name, "(BEGIN)", len) || STREQ(name, "(AGAIN)", len)) {
         printf("(0x%x)", CELL_FETCH(XMEM, *addr));
         *addr += CELL_SIZE;
-    } else if(STREQ(name, "[UNTIL]", len)) {
+    } else if(STREQ(name, "(UNTIL)", len)) {
         printf("(0x%x)", CELL_FETCH(XMEM, *addr));
         *addr += CELL_SIZE;
-    } else if(STREQ(name, "[WHILE]", len) || STREQ(name, "[REPEAT]", len)) {
+    } else if(STREQ(name, "(WHILE)", len) || STREQ(name, "(REPEAT)", len)) {
         printf("(0x%x)", CELL_FETCH(XMEM, *addr));
         *addr += CELL_SIZE;
-    } else if(STREQ(name, "[DO]", len) || STREQ(name, "[+LOOP]", len)) {
+    } else if(STREQ(name, "(DO)", len) || STREQ(name, "(+LOOP)", len)) {
         printf("(0x%x)", CELL_FETCH(XMEM, *addr));
         *addr += CELL_SIZE;
     } else if(STREQ(name, "DOSTR", len)) {
@@ -80,7 +80,7 @@ void pheader(FTH *fth, cell addr) {
     LOCATE_DISASM(addr);
     printf("0x%04x: 0x%04x %-10.*s %2i   %c   %c  0x%04x  0x%04x [%04x-%04x] ",
            start,
-           link,
+           link & 0xffff,
            len, name,
            len,
            vis ? '+' : '-',

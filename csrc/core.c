@@ -22,7 +22,7 @@ void rund(FTH *fth, cell addr, func debug) {
 }
 
 void init(FTH *fth) {
-    // Setup ITC
+    // Setup ITU
     XP = OFF;
     XIP = 0;
     XWP = 0;

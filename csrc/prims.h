@@ -61,7 +61,7 @@
 TABLE(XFUNCSIG);
 
 
-#define LUT(ADDR) ((func [256]) { TABLE(XFUNCTAB) })[ADDR]
+#define LUT(ADDR) ((func [256]) { TABLE(XFUNCTAB) })[0xff & (ADDR)]
 
 
 typedef enum PRIM PRIM;
