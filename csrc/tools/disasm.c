@@ -44,7 +44,7 @@ int pword(FTH *fth, cell *addr) {
     } else if(STREQ(name, "(IF)", len) || STREQ(name, "(ELSE)", len)) {
         printf("(0x%x)", CELL_FETCH(XMEM, *addr));
         *addr += CELL_SIZE;
-    } else if(STREQ(name, "(BEGIN)", len) || STREQ(name, "(AGAIN)", len)) {
+    } else if(/*STREQ(name, "(BEGIN)", len) ||*/ STREQ(name, "(AGAIN)", len)) {
         printf("(0x%x)", CELL_FETCH(XMEM, *addr));
         *addr += CELL_SIZE;
     } else if(STREQ(name, "(UNTIL)", len)) {
