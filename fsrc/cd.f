@@ -35,3 +35,11 @@
 \ lit, n, skip, 0, 1, ... , n-1 <jump to here>
 : SKIP ( n -- ) ( R: ret-addr -- ret-addr+n*cell)
     R> R> ROT CELLS + >R >R ;
+
+
+    : prime?
+dup 2 < if drop false exit then  
+dup 2 = if drop true exit then
+dup 2 do dup i mod 0= 
+    if drop false unloop exit then 
+loop true ; 

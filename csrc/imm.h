@@ -27,7 +27,7 @@ extern cell lp;
 
 
 // DOES> part of CREATE ... DOES>
-#define XDOES(NAME, ...)            XCOLON(NAME, pop, __VA_ARGS__)
+#define XDOES(NAME, ...)            XCOLON(NAME, pdoes, __VA_ARGS__)
 
 
 // Variable and constant macros
@@ -64,8 +64,8 @@ extern cell lp;
 #define CCALL(X)                    PF(call); FUNC_FETCH(XMEM, hp) = (X); hp += FUNC_SIZE
 //#define RECURSE {WORD_DISASM(lp);  PF(ijmp, cfa+1);}
 #define RECURSE                     PF(ijmp, lp + CELL_SIZE + BYTE_SIZE + (BYTE_FETCH(XMEM, lp + CELL_SIZE) & WORD_LEN) + MCA_SIZE)
-#define POSTPONE(XT)                PF(lit, XT, comma)
-#define POSTPONEI(XT)               PF(XT)
+#define POSTPONE(XT)                lit, (XT), comma
+#define POSTPONEI(XT)               (XT)
 
 #define ON true, swap, strc
 #define OFF false, swap, strc

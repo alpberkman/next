@@ -47,7 +47,7 @@ B: EXECUTE ( i*x xt -- j*x ) ;
 : ] FALSE STATE ! ;
 : CHAR ( "<spaces>name" -- char ) BL WORD CELL+ C@ ;
 : [CHAR] ( "<spaces>name" -- ) CHAR POSTPONE LITERAL ; IMMEDIATE
-: IMMEDIATE ( -- ) LAST CELL+ DUP @ [ 1 6 LSHIFT ] LITERAL OR SWAP ! ;
+: IMMEDIATE ( -- ) LAST CELL+ DUP C@ [ 1 6 LSHIFT ] LITERAL OR SWAP C! ;
 : DECIMAL ( -- ) 10 BASE ! ;
 N: ' ;
 : ['] ( "<spaces>name" -- ) ( -- xt ) ' POSTPONE LITERAL ; IMMEDIATE
@@ -98,7 +98,7 @@ N: UM/MOD ( ud u1 -- u2 u3 ) ;
 B: EXIT ( -- ) ( R: nest-sys -- ) ;
 B: IRJZ ( flag offset -- ) ;
 B: IRJMP ( offset -- ) ;
-: RECURSE ( -- ) LAST CELL+ DUP C@ 31 OR + MCA+ , ;
+: RECURSE ( -- ) LAST CELL+ DUP C@ 31 AND + MCA+ , ;
 : IF ( C: -- orig ) ( x -- ) POSTPONE [IF] HERE CELL ALLOT ; IMMEDIATE
 : THEN ( C: orig -- ) ( -- ) POSTPONE [THEN] HERE SWAP ! ; IMMEDIATE
 : ELSE ( C: orig1 -- orig2 ) ( -- ) POSTPONE [ELSE] HERE CELL ALLOT SWAP HERE SWAP ! ; IMMEDIATE
